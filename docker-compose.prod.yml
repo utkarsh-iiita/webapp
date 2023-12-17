@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  app:
+    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: ./Dockerfile.prod
+      args:
+        NEXT_PUBLIC_CLIENTVAR: "clientvar"
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    image: t3-app
+    environment:
+      - DATABASE_URL=mysql://utkarsh:utkarsh@db/utkarsh
+    networks:
+      default:
+      internal:
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: utkarsh
+      MYSQL_DATABASE: utkarsh
+      MYSQL_USER: utkarsh
+      MYSQL_PASSWORD: utkarsh
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      internal:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uutkarsh", "-putkarsh"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+  cache:
+    image: redis:4
+    restart: always
+    volumes:
+      - redis:/data
+    networks:
+      internal:
+
+volumes:
+  mysql:
+  webapp-node-cache:
+  redis:
+
+
+networks:
+  default:
+  internal:
