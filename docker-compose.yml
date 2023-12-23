@@ -12,6 +12,10 @@ services:
       - ./src:/app/src
     environment:
       - DATABASE_URL=mysql://utkarsh:utkarsh@db/utkarsh
+      - REDIS_URL=redis://cache:6379
+      - NODE_ENV=development
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=secret
     ports:
       - 3000:3000
       - 4983:4983 # Drizzle studio
