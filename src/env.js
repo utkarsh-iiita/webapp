@@ -29,6 +29,8 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
+    AVIRAL_SESSION: z.string().optional(),
+    USE_AVIRAL: z.string().optional(),
   },
 
   /**
@@ -50,6 +52,8 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    AVIRAL_SESSION: process.env.AVIRAL_SESSION,
+    USE_AVIRAL: process.env.USE_AVIRAL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
