@@ -38,8 +38,9 @@ The project has dockerized development environment. So, you don't have to worry 
     ```bash
     cd utkarsh
     ```
+3. Create a blank file named `.env.local`, optionally you can add custom environment variables that bypass the ones defined in `docker-compose.yml`.
 
-3. For ease of development you may have to perform `npm install` to remove the errors in your IDE.
+4. For ease of development you may have to perform `npm install` to remove the errors in your IDE.
   
 ## Development
 Handy commands for development, make sure you are in the project directory. Linux users may have to use `sudo` for the following commands. The project runs on port `3000`.
