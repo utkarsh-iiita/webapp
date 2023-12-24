@@ -1,4 +1,6 @@
 import axios from "axios";
+import { env } from "../../env";
+
 const BASE_URL = 'https://aviral.iiita.ac.in/api/';
 
 type AviralData = Promise<{
@@ -29,7 +31,7 @@ export const getAviralData = async (username : string, password : string) : Avir
       res = await axios.get(BASE_URL + 'student/dashboard/', {
         headers: {
           Authorization: res.data['jwt_token'],
-          Session: 'JAN-23',
+          Session: env.AVIRAL_SESSION,
         },
       });
   
