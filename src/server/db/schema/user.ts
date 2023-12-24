@@ -1,6 +1,6 @@
 import { relations, sql } from "drizzle-orm";
+import ShortUniqueId from "short-unique-id";
 import {
-  bigint,
   index,
   int,
   mysqlTableCreator,
@@ -11,25 +11,36 @@ import {
 } from "drizzle-orm/mysql-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
+const uid = new ShortUniqueId({ length: 10 });
 
-export const mysqlTable = mysqlTableCreator((name) => `utkarsh-portal_${name}`);
+const mysqlTable = mysqlTableCreator((name) => `utkarsh-portal_${name}`);
 
 export const users = mysqlTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: varchar("name", { length: 255 }),
+  // required for next-auth
+  id: varchar("id", { length: 255 }).notNull().$defaultFn(() => {
+    return uid.randomUUID();
+  }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     fsp: 3,
   }).default(sql`CURRENT_TIMESTAMP(3)`),
   image: varchar("image", { length: 255 }),
-});
+
+  // custom fields
+  username: varchar("username", { length: 32 }).notNull().unique(),
+  userGroup: varchar("userGroup", { length: 32 }).notNull(),
+}, (user) => ({
+  usernameIdx: index("username_idx").on(user.username),
+}));
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
 }));
 
+// required for next-auth
 export const accounts = mysqlTable(
   "account",
   {
@@ -57,6 +68,7 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
 
+// required for next-auth
 export const sessions = mysqlTable(
   "session",
   {
@@ -75,6 +87,7 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
+// required for next-auth
 export const verificationTokens = mysqlTable(
   "verificationToken",
   {

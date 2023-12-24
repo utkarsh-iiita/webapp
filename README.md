@@ -1,28 +1,137 @@
-# Create T3 App
+# Utkarsh (Placements Portal of IIITA)
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## Table of Contents
 
-## What's next? How do I make an app with this?
+- [Utkarsh (Placements Portal of IIITA)](#utkarsh-placements-portal-of-iiita)
+  - [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+  - [Development](#development)
+  - [Deployment](#deployment)
+    - [Deploy with docker](#deploy-with-docker)
+      - [Pre-requisites:](#pre-requisites)
+      - [Instructions:](#instructions)
+      - [Error handling](#error-handling)
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Getting Started
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+The project has dockerized development environment. So, you don't have to worry about installing any dependencies on your machine. It includes the Node enviornment, MySQL database and Redis cache. The project is written in Typescript and is build using the **[T3-Stack](https://create.t3.gg/)**.
 
-## Learn More
+### Prerequisites
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- [Docker Desktop](https://docs.docker.com/desktop/) installed on your machine.
+- (Optional) For ease of development, install NodeJS (v20+).
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### Installation
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+1. Clone the repository:
 
-## How do I deploy this?
+    ```bash
+    git clone https://github.com/BuddyLongLegs/utkarsh
+    ```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+2. Navigate to the project directory:
+
+    ```bash
+    cd utkarsh
+    ```
+
+3. For ease of development you may have to perform `npm install` to remove the errors in your IDE.
+  
+## Development
+Handy commands for development, make sure you are in the project directory. Linux users may have to use `sudo` for the following commands. The project runs on port `3000`.
+
+  - Starting the project:
+    ```bash
+    docker compose up
+    ```
+    *Press <Ctrl+C> (<⌘+C> for Mac) to stop the project*
+  
+  - Starting the project in background:
+    ```bash
+    docker compose up -d
+    ```
+  - Stopping the project running in background:
+    ```bash
+    docker compose down
+    ```
+
+  - For development, the docker automatically syncs all the changes made in the code to the container. So, you don't have to restart the container everytime you make a change in the code. But this is only the case for the code present in the `src` directory. If you make any changes outside the `src` directory, which includes new npm package installation, you will have to rebuild the container. To do so, run the following command:
+    ```bash
+    docker compose up --build
+    ```
+
+  - To run any command inside the container, use the following command:
+    ***Make sure the container is running***
+    ```bash
+    docker compose exec <service-name> sh -c <command>
+    ```
+
+    The service names are as follows:
+    - `webapp` for the NextJs application.
+    - `db` for the MySQL database.
+    - `cache` for the Redis cache.
+
+    Frequently used commands:
+    - To run Drizzle Studio (visual editor for the database):
+      ```bash
+      docker compose exec webapp sh -c "npm run db:studio"
+      ```
+    - To push the schema changes to the database:
+      ```bash
+      docker compose exec webapp sh -c "npm run db:push"
+      ```
+  
+## Deployment
+
+There are two ways to deploy the project:
+1. Deploy with docker.
+2. Deploy with NodeJS.
+
+### Deploy with docker
+When deploying with docker, the database, cache, nginx, and daily-backup is automatically setup. Daily backup happens at 0300 hrs and are saved in the `prod_backup` directory.
+
+#### Pre-requisites:
+   - Docker installed on the server.
+  
+#### Instructions:
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/BuddyLongLegs/utkarsh
+    ```
+
+2. Navigate to the project directory:
+
+    ```bash
+    cd utkarsh
+    ```
+
+3. Edit the `docker-compose.prod.yml` file, and make the following changes:
+   - Change the `NEXTAUTH_URL` on line 21 to the URL of your website.
+   - Change the `NEXTAUTH_SECRET` on line 22 to a random string.
+   - If you have a reverse proxy running on your system, you can remove the nginx service from the file, and site will be available at `44444` port.
+   - You can change other configurations as per your need.
+
+4. Start the server in the detached mode:
+   ```bash
+   docker compose -f "./docker-compose.prod.yml" up -d
+   ```
+
+
+  
+#### Error handling
+You may encounter an error about the database not being synced with the schema during first installation and whenever you make changes in the database schema. You can follow this hack to overcome this issue:
+
+1. Edit the `docker-compose.prod.yml`, change the command at line 12 with `npm run dev`.
+   
+2. Restart the server.
+   
+3. Run the following command to sync database with the schema:
+   ```bash
+   docker compose -f "./docker-compose.prod.yml" exec app sh -c "npm run db:push"
+   ```
+
+4. Once the database is in sync, stop the server, undo the previous change in `docker-compose.prod.yml`. Now the problem is fixed.

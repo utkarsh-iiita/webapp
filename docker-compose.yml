@@ -5,7 +5,7 @@ services:
   webapp:
     build:
       context: .
-      dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile
     command: npm run dev
     volumes:
       - webapp-node-cache:/root/.npm
