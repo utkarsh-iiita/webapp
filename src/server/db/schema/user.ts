@@ -1,6 +1,7 @@
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import ShortUniqueId from "short-unique-id";
 import {
+  boolean,
   index,
   int,
   mysqlTableCreator,
@@ -15,27 +16,37 @@ const uid = new ShortUniqueId({ length: 10 });
 
 const mysqlTable = mysqlTableCreator((name) => `utkarsh-portal_${name}`);
 
-export const users = mysqlTable("user", {
+export const userModel = mysqlTable("user", {
   // required for next-auth
   id: varchar("id", { length: 255 }).notNull().$defaultFn(() => {
     return uid.randomUUID();
   }).primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  email: varchar("email", { length: 255 }).notNull(),
-  emailVerified: timestamp("emailVerified", {
-    mode: "date",
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  image: varchar("image", { length: 255 }),
+  // email: varchar("email", { length: 255 }).notNull(),
+  // emailVerified: timestamp("emailVerified", {
+  //   mode: "date",
+  //   fsp: 3,
+  // }).default(sql`CURRENT_TIMESTAMP(3)`),
+  // image: varchar("image", { length: 255 }),
 
   // custom fields
-  username: varchar("username", { length: 32 }).notNull().unique(),
-  userGroup: varchar("userGroup", { length: 32 }).notNull(),
+  // username: varchar("username", { length: 32 }).notNull().unique(),
+  rollNumber: varchar("rollNumber", { length: 10 }).notNull().unique(),
+  mobile : varchar("mobile", { length: 10 }).notNull().unique(),
+  cgpa : int("cgpa").notNull(),
+  resumeLink : varchar("resumeLink", { length: 255 }),
+  currentSem : varchar("currentSem", { length: 255 }).notNull(),
+  completedCredits : int("completedCredits").notNull(),
+  totalCredits : int("totalCredits").notNull(),
+  admissionYear : int("admissionYear").notNull(),
+  program : varchar("program", { length: 255 }).notNull(),
+  isAdmin : boolean("isAdmin").default(false),
+  // userGroup: varchar("userGroup", { length: 32 }).notNull(),
 }, (user) => ({
-  usernameIdx: index("username_idx").on(user.username),
+  rollNumberIdx : index("rollNumber_idx").on(user.rollNumber),
 }));
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(userModel, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
 }));
@@ -65,7 +76,7 @@ export const accounts = mysqlTable(
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(users, { fields: [accounts.userId], references: [users.id] }),
+  user: one(userModel, { fields: [accounts.userId], references: [userModel.id] }),
 }));
 
 // required for next-auth
@@ -84,7 +95,7 @@ export const sessions = mysqlTable(
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(users, { fields: [sessions.userId], references: [users.id] }),
+  user: one(userModel, { fields: [sessions.userId], references: [userModel.id] }),
 }));
 
 // required for next-auth

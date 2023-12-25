@@ -5,7 +5,7 @@ const BASE_URL = 'https://aviral.iiita.ac.in/api/';
 
 type AviralData = Promise<{
     name: string;
-    semester: number;
+    currentSem: string;
     rollNumber: string;
     mobile: string;
     cgpa: number;
@@ -40,6 +40,7 @@ export const getAviralData = async (username : string, password : string) : Avir
       }
   
       const data = {
+        username : username,
         name:
           res.data['first_name'] +
           ' ' +
@@ -47,7 +48,7 @@ export const getAviralData = async (username : string, password : string) : Avir
           ' ' +
           res.data['last_name'],
   
-        semester: res.data['semester'],
+        currentSem: res.data['semester'],
         rollNumber: res.data['student_id'],
         mobile: res.data['phone'],
         cgpa: res.data['cgpi'],
@@ -63,4 +64,23 @@ export const getAviralData = async (username : string, password : string) : Avir
       return null;
     }
 };
+
+const verifyAviralPassword = async (username : string, password : string) => {
+  let res = await axios.post(BASE_URL + 'login/', {
+    username: username?.toLowerCase(),
+    password,
+  });
+  return res.data['user_group'] ? true : false;
+};
   
+
+
+export function verifyPassword(username : string, password : string) {
+  // if (env.USE_AVIRAL === 'true') {
+  return verifyAviralPassword(username, password);
+  // } else {
+    // return authenticateLdap(username, password);
+  // }
+}
+
+
