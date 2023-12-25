@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import ShortUniqueId from "short-unique-id";
 import {
   boolean,
@@ -22,12 +22,12 @@ export const userModel = mysqlTable("user", {
     return uid.randomUUID();
   }).primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  // email: varchar("email", { length: 255 }).notNull(),
-  // emailVerified: timestamp("emailVerified", {
-  //   mode: "date",
-  //   fsp: 3,
-  // }).default(sql`CURRENT_TIMESTAMP(3)`),
-  // image: varchar("image", { length: 255 }),
+  email: varchar("email", { length: 255 }).notNull(),
+  emailVerified: timestamp("emailVerified", {
+    mode: "date",
+    fsp: 3,
+  }).default(sql`CURRENT_TIMESTAMP(3)`),
+  image: varchar("image", { length: 255 }),
 
   // custom fields
   // username: varchar("username", { length: 32 }).notNull().unique(),

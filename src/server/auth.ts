@@ -10,7 +10,6 @@ import { db } from "~/server/db";
 import { mysqlTable } from "~/server/db/schema";
 import { getAviralData, verifyPassword } from './utils/aviral';
 import { userModel } from './db/schema/user';
-import { eq } from 'drizzle-orm';
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -46,18 +45,26 @@ export const authOptions: NextAuthOptions = {
         if(!await verifyPassword(credentials.username, credentials.password))
           throw new Error('Invalid Credentials');
 
-        const user = await db.select().from(userModel).where(eq(userModel.rollNumber, credentials.username));
+        const user = await db.query.userModel.findFirst({
+          where : (user, {eq}) =>{
+            return eq(user.rollNumber, credentials.username)
+          }
+        })
 
         if(!user){
-          const userData = await getAviralData(credentials.username, credentials.password);
+          let userData : any = await getAviralData(credentials.username, credentials.password);
           if(!userData)
               throw new Error('User Not Found');
+          
+          userData.email = `${userData.rollNumber.toLowerCase()}@iiita.ac.in`;
           await db.insert(userModel).values(userData);
         } 
 
         return { id: credentials.username };
       },
     }),
-
   ],
+  // pages :  {
+  //   signIn: '/auth/signin',
+  // },
 };
