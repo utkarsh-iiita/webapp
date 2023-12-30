@@ -1,4 +1,5 @@
-import { encode, decode } from "next-auth/jwt";
+import { decode,encode } from "next-auth/jwt";
+
 import { env } from "@/env";
 
 export const tokenOneDay = 24 * 60 * 60;

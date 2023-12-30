@@ -1,15 +1,15 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
-  getServerSession,
   type DefaultSession,
+  getServerSession,
   type NextAuthOptions,
 } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { db } from "@/server/db";
-import { jwtHelper, tokenOnWeek, tokenOneDay } from "@/utils/jwtHelper";
 import { getStudentAviralData, verifyPassword } from "@/utils/aviral";
+import { jwtHelper, tokenOneDay,tokenOnWeek } from "@/utils/jwtHelper";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 declare module "next-auth" {
   interface User {

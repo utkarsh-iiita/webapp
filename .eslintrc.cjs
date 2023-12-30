@@ -4,15 +4,9 @@ const config = {
   parserOptions: {
     project: true,
   },
-  plugins: ["@typescript-eslint"],
-  extends: [
-    "plugin:@next/next/recommended",
-    // "plugin:@typescript-eslint/recommended-type-checked",
-    // "plugin:@typescript-eslint/stylistic-type-checked",
-  ],
+  plugins: ["@typescript-eslint", "simple-import-sort"],
+  extends: ["plugin:@next/next/recommended"],
   rules: {
-    // These opinionated rules are enabled in stylistic-type-checked above.
-    // Feel free to reconfigure them to your own preference.
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
 
@@ -31,7 +25,37 @@ const config = {
         checksVoidReturn: { attributes: false },
       },
     ],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
   },
+  overrides: [
+    {
+      files: ["**/*.js", "**/*.ts", "**/*.tsx"],
+      rules: {
+        "simple-import-sort/imports": [
+          "error",
+          {
+            groups: [
+              // `react` first, `next` second, then packages starting with a character
+              ["^react$", "^next", "^[a-z]"],
+              // Packages starting with `@`
+              ["^@"],
+              // Packages starting with `~`
+              ["^~"],
+              // Imports starting with `../`
+              ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+              // Imports starting with `./`
+              ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+              // Style imports
+              ["^.+\\.s?css$"],
+              // Side effect imports
+              ["^\\u0000"],
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
 
 module.exports = config;

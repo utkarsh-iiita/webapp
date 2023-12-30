@@ -13,10 +13,7 @@ WORKDIR /app
 # install app dependencies
 COPY package.json ./
 COPY package-lock.json ./
-RUN npm i 
+RUN npm i
 
-# EXPOSE 3000
-# ENV PORT 3000
-
-# add app
 COPY . ./
+RUN npm run postinstall
