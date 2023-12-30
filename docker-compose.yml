@@ -1,0 +1,65 @@
+version: "3.7"
+
+services:
+
+  webapp:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run dev
+    volumes:
+      - webapp-node-cache:/root/.npm
+      - ./src:/app/src
+    environment:
+      - DATABASE_URL=mysql://utkarsh:utkarsh@db/utkarsh
+      - REDIS_URL=redis://cache:6379
+      - NODE_ENV=development
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=secret
+    env_file:
+      - .env.local
+    ports:
+      - 3000:3000
+      - 4983:4983 # Drizzle studio
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      default:
+      internal:
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: utkarsh
+      MYSQL_DATABASE: utkarsh
+      MYSQL_USER: utkarsh
+      MYSQL_PASSWORD: utkarsh
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      internal:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uutkarsh", "-putkarsh"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+  cache:
+    image: redis:4
+    restart: always
+    volumes:
+      - redis:/data
+    networks:
+      internal:
+
+volumes:
+  mysql:
+  webapp-node-cache:
+  redis:
+
+
+networks:
+  default:
+  internal:
