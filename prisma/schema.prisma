@@ -2,28 +2,13 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-    provider = "sqlite"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    provider = "mysql"
     url      = env("DATABASE_URL")
-}
-
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
 }
 
 // Necessary for Next auth
@@ -33,12 +18,12 @@ model Account {
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.Text
+    id_token          String? @db.Text
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -55,13 +40,18 @@ model Session {
 
 model User {
     id            String    @id @default(cuid())
-    name          String?
+    name          String
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+
+    username  String @unique
+    userGroup String
+
+    accounts Account[]
+    sessions Session[]
+    student  Students?
+    admin    Admin?
 }
 
 model VerificationToken {
@@ -70,4 +60,60 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Students {
+    userId           String   @id @default(cuid())
+    program          String
+    duration         Int
+    admissionYear    Int
+    currentSemester  String
+    completedCredits Int
+    totalCredits     Int
+    cgpa             Float
+    email            String?
+    phone            String?
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+    user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    resume            StudentResume[]
+    placementSessions PlacementSessionParticipants[]
+}
+
+model StudentResume {
+    id         String   @id @default(cuid())
+    userId     String
+    resumeLink String   @db.Text
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    student    Students @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model PlacementSession {
+    id        String   @id @default(cuid())
+    name      String
+    targets   Json
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    participants PlacementSessionParticipants[]
+}
+
+model PlacementSessionParticipants {
+    placementSessionId String
+    studentId          String
+
+    placementSession PlacementSession @relation(fields: [placementSessionId], references: [id], onDelete: Cascade)
+    student          Students         @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+    @@id([placementSessionId, studentId])
+}
+
+model Admin {
+    userId      String   @id @default(cuid())
+    permissions Int      @default(0)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
