@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { env } from "../../env";
+import { env } from "@/env";
 
 const BASE_URL = 'https://aviral.iiita.ac.in/api/';
 
@@ -13,12 +13,13 @@ type AviralData = Promise<{
   completedCredits: number;
   totalCredits: number;
   program: string;
+  duration: number;
   admissionYear: number;
 } | null>;
 
 
 
-export const getAviralData = async (username: string, password: string): AviralData => {
+export const getStudentAviralData = async (username: string, password: string): AviralData => {
   try {
     let res = await axios.post(BASE_URL + 'login/', {
       username: username?.toLowerCase(),
@@ -57,6 +58,7 @@ export const getAviralData = async (username: string, password: string): AviralD
       totalCredits: res.data['total_credits'],
       program: res.data['program'],
       admissionYear: res.data['admission_year'],
+      duration: res.data['duration']
     };
 
     return data;
@@ -71,7 +73,7 @@ const verifyAviralPassword = async (username: string, password: string) => {
     username: username?.toLowerCase(),
     password,
   });
-  return res.data['user_group'] ? true : false;
+  return res.data['user_group'];
 };
 
 

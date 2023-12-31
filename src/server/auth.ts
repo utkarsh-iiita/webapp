@@ -7,8 +7,8 @@ import {
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { db } from "@/server/db";
-import { getStudentAviralData, verifyPassword } from "@/utils/aviral";
-import { jwtHelper, tokenOneDay,tokenOnWeek } from "@/utils/jwtHelper";
+import { getStudentAviralData, verifyPassword } from "@/server/utils/aviral";
+import { jwtHelper, tokenOneDay, tokenOnWeek } from "@/server/utils/jwtHelper";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 declare module "next-auth" {
@@ -179,9 +179,6 @@ export const authOptions: NextAuthOptions = {
   ],
 };
 
-export const getServerAuthSession = (ctx: {
-  req: GetServerSidePropsContext["req"];
-  res: GetServerSidePropsContext["res"];
-}) => {
-  return getServerSession(ctx.req, ctx.res, authOptions);
+export const getServerAuthSession = () => {
+  return getServerSession(authOptions);
 };
