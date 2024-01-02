@@ -1,14 +1,16 @@
-import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
+import { SessionProvider } from "next-auth/react";
 
-import { TRPCReactProvider } from "@/trpc/react";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter"; // or `v14-appRouter` if you are using Next.js v14
 
-import "@/styles/globals.css";
+import { TRPCReactProvider } from "~/trpc/react";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+import ThemeRegistry from "./_utils/theme/ThemeRegistry";
+
+import "~/styles/globals.css";
+
+import "@fontsource/ibm-plex-sans";
+import "@fontsource-variable/oswald";
 
 export const metadata = {
   title: "Create T3 App",
@@ -23,9 +25,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
+      <body id="__next">
         <TRPCReactProvider cookies={cookies().toString()}>
-          {children}
+          <AppRouterCacheProvider
+            options={{
+              enableCssLayer: true,
+            }}
+          >
+            <ThemeRegistry options={{ key: "mui-theme", prepend: true }}>
+              {children}
+            </ThemeRegistry>
+          </AppRouterCacheProvider>
         </TRPCReactProvider>
       </body>
     </html>

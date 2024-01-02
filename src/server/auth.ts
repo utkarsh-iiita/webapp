@@ -1,4 +1,3 @@
-import { type GetServerSidePropsContext } from "next";
 import {
   type DefaultSession,
   getServerSession,
@@ -6,10 +5,11 @@ import {
 } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-import { db } from "@/server/db";
-import { getStudentAviralData, verifyPassword } from "@/server/utils/aviral";
-import { jwtHelper, tokenOneDay, tokenOnWeek } from "@/server/utils/jwtHelper";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+
+import { db } from "~/server/db";
+import { getStudentAviralData, verifyPassword } from "~/server/utils/aviral";
+import { jwtHelper, tokenOneDay, tokenOnWeek } from "~/server/utils/jwtHelper";
 
 declare module "next-auth" {
   interface User {
@@ -39,11 +39,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
+
 export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
@@ -177,6 +173,9 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  pages: {
+    signIn: "/login",
+  }
 };
 
 export const getServerAuthSession = () => {

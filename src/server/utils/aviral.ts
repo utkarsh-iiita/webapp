@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { env } from "@/env";
+import { env } from "~/env";
 
 const BASE_URL = 'https://aviral.iiita.ac.in/api/';
 
@@ -44,11 +44,11 @@ export const getStudentAviralData = async (username: string, password: string): 
     const data = {
       username: username,
       name:
-        res.data['first_name'] +
-        ' ' +
-        res.data['middle_name'] +
-        ' ' +
-        res.data['last_name'],
+        (res.data['first_name'] +
+          ' ' +
+          res.data['middle_name'] +
+          ' ' +
+          res.data['last_name']).trim(),
 
       currentSem: res.data['semester'],
       rollNumber: res.data['student_id'],
