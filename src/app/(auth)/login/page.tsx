@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -25,16 +25,11 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
 
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
-  const { data: session, status } = useSession();
-
-  useEffect(() => {
-    console.log(session, status);
-  }, [session, status]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -44,14 +39,19 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsLoading(true);
     signIn("credentials", {
       callbackUrl: "/",
-      redirect: false,
       username,
       password,
-    });
-    // signOut();
-    // mutation.mutate({ username, password, remember });
+    })
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch((e) => {
+        setIsLoading(false);
+        console.log(e);
+      });
   };
   return (
     <div className="w-full h-screen grid grid-cols-1 md:grid-cols-2 relative">
@@ -113,23 +113,14 @@ export default function Login() {
             />
           </FormControl>
 
-          <FormControlLabel
-            control={<Checkbox />}
-            label="Remember me"
-            className="self-end my-1"
-            checked={remember}
-            onChange={(e: any) => {
-              setRemember(e.target.checked);
-            }}
-          />
-
           <LoadingButton
             type="submit"
             variant="contained"
             color="primary"
-            className="mt-2"
+            className="mt-6"
             fullWidth
             size="large"
+            loading={isLoading}
           >
             <span>Login</span>
           </LoadingButton>

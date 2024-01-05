@@ -11,7 +11,7 @@ import { getServerAuthSession } from "~/server/auth";
 
 // site meta
 export const metadata: Metadata = seo({
-  title: "Home · Utkarsh IIITA",
+  title: "Home",
   desc: "Home page of the IIIT Allahabad Placement Portal",
 });
 
@@ -80,7 +80,11 @@ export default async function Home() {
                 </Button>
               </Link>
             </div>
-            <Image src={vector} className="m-auto" alt="Placements vector" />
+            <Image
+              src={vector}
+              className="m-auto max-w-[80vw] md:max-w-[50vw] max-h-[70vh] md:max-h-[50vh]"
+              alt="Placements vector"
+            />
           </div>
         </Container>
         <Container

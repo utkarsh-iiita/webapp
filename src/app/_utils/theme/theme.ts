@@ -19,7 +19,7 @@ export function getTheme(mode: "light" | "dark") {
       ...(mode === "light"
         ? {
           primary: {
-            main: "#017eff",
+            main: "#3399FF",
           },
           background: {
             default: "#fefeff",
@@ -35,17 +35,17 @@ export function getTheme(mode: "light" | "dark") {
             main: "#66b2ff",
           },
           background: {
-            default: "#0B1829",
-            paper: "#0B1829",
+            default: "#101418",
+            paper: "#101418",
           },
-          bgclear: "rgba(11, 24, 41, 0.8)",
+          bgclear: "rgba(16, 21, 25, 0.8)",
         }),
     },
     typography: {
       fontFamily: '"IBM Plex Sans", sans-serif',
     },
     shape: {
-      borderRadius: 8,
+      borderRadius: 12,
     },
     components: {
       MuiPopover: {
