@@ -8,10 +8,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
-  Checkbox,
   Container,
   FormControl,
-  FormControlLabel,
   IconButton,
   InputAdornment,
   OutlinedInput,

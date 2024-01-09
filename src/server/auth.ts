@@ -131,6 +131,8 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
+        console.log(user);
+
         if (!user) {
           if (authenticatedUserGroup === 'student') {
             let userData = await getStudentAviralData(credentials.username, credentials.password);

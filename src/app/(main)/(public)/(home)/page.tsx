@@ -7,7 +7,6 @@ import { Button, Container, Typography } from "@mui/material";
 
 import seo from "~/app/_components/SEO";
 import vector from "~/assets/vectors/home.svg";
-import { getServerAuthSession } from "~/server/auth";
 
 // site meta
 export const metadata: Metadata = seo({
@@ -16,8 +15,6 @@ export const metadata: Metadata = seo({
 });
 
 export default async function Home() {
-  const session = await getServerAuthSession();
-  console.log(session);
   return (
     <>
       <div
