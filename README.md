@@ -47,6 +47,11 @@ The project has dockerized development environment. So, you don't have to worry 
 ## Development
 Handy commands for development, make sure you are in the project directory. Linux users may have to use `sudo` for the following commands. The project runs on port `3000`.
 
+  - Initial Configuration:
+    ```bash
+    docker compose run webapp sh -c "npm run db:push" &&
+    docker compose run webapp sh -c "npm run db:seed"
+    ```
   - Starting the project:
     ```bash
     docker compose up
@@ -62,7 +67,7 @@ Handy commands for development, make sure you are in the project directory. Linu
     docker compose down
     ```
 
-  - For development, the docker automatically syncs all the changes made in the code to the container. So, you don't have to restart the container everytime you make a change in the code. But this is only the case for the code present in the `src` directory. If you make any changes outside the `src` directory, which includes new npm package installation, you will have to rebuild the container. To do so, run the following command:
+  - For development, the docker automatically syncs all the changes made in the code to the container. So, you don't have to restart the container everytime you make a change in the code. But this is only the case for the code present in the `src` directory. If you make any changes outside the `src` directory, which includes new npm package installation or change in database schema, you will have to rebuild the container. To do so, run the following command:
     ```bash
     docker compose up --build
     ```
@@ -79,7 +84,7 @@ Handy commands for development, make sure you are in the project directory. Linu
     - `cache` for the Redis cache.
 
     Frequently used commands:
-    - To run Drizzle Studio (visual editor for the database):
+    - To run Prisma Studio (visual editor for the database):
       ```bash
       docker compose exec webapp sh -c "npm run db:studio"
       ```
