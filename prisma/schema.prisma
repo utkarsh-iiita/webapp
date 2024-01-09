@@ -91,7 +91,7 @@ model StudentResume {
 }
 
 model PlacementSession {
-    id        String   @id @default(cuid())
+    id        String   @id
     name      String
     targets   Json
     createdAt DateTime @default(now())
