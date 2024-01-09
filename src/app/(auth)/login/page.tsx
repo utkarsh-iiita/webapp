@@ -39,7 +39,7 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     signIn("credentials", {
-      callbackUrl: "/",
+      callbackUrl: "/dashboard",
       username,
       password,
     })

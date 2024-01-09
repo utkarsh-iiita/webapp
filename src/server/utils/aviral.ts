@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { env } from "~/env";
+import { db } from "~/server/db";
 
 const BASE_URL = 'https://aviral.iiita.ac.in/api/';
 
@@ -21,6 +21,11 @@ type AviralData = Promise<{
 
 export const getStudentAviralData = async (username: string, password: string): AviralData => {
   try {
+    const aviralSession = await db.config.findFirst({
+      where: {
+        key: 'AVIRAL_SESSION',
+      },
+    });
     let res = await axios.post(BASE_URL + 'login/', {
       username: username?.toLowerCase(),
       password,
@@ -33,7 +38,7 @@ export const getStudentAviralData = async (username: string, password: string): 
     res = await axios.get(BASE_URL + 'student/dashboard/', {
       headers: {
         Authorization: res.data['jwt_token'],
-        Session: env.AVIRAL_SESSION,
+        Session: aviralSession.value,
       },
     });
 
@@ -79,11 +84,7 @@ const verifyAviralPassword = async (username: string, password: string) => {
 
 
 export function verifyPassword(username: string, password: string) {
-  // if (env.USE_AVIRAL === 'true') {
   return verifyAviralPassword(username, password);
-  // } else {
-  // return authenticateLdap(username, password);
-  // }
 }
 
 

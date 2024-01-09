@@ -1,8 +1,5 @@
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
-import { SessionProvider } from "next-auth/react";
-
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter"; // or `v14-appRouter` if you are using Next.js v14
 
 import { TRPCReactProvider } from "~/trpc/react";
 

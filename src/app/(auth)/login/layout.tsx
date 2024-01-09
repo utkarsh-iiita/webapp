@@ -5,7 +5,7 @@ import { getServerAuthSession } from "~/server/auth";
 export default async function LoginLayout(props) {
   const session = await getServerAuthSession();
   if (session) {
-    redirect("/");
+    redirect("/dashboard");
   }
 
   return props.children;

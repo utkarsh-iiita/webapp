@@ -16,6 +16,10 @@ declare module "next-auth" {
     id?: string,
     name?: string,
     username?: string,
+    userGroup?: string,
+    admin?: {
+      permissions: number
+    },
   }
 
   interface Session {
@@ -23,6 +27,10 @@ declare module "next-auth" {
       id?: string,
       name?: string,
       username?: string,
+      userGroup?: string,
+      admin?: {
+        permissions: number
+      },
     },
     error?: "RefreshAccessTokenError"
   }
@@ -46,7 +54,7 @@ export const authOptions: NextAuthOptions = {
 
       // credentials provider:  Save the access token and refresh token in the JWT on the initial login
       if (user) {
-        const authUser = { id: user.id, name: user.name, username: user.username };
+        const authUser = { ...user };
 
         const accessToken = await jwtHelper.createAcessToken(authUser);
         const refreshToken = await jwtHelper.createRefreshToken(authUser);
@@ -126,12 +134,18 @@ export const authOptions: NextAuthOptions = {
           where: {
             username: credentials.username
           },
-          include: {
-            admin: true,
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            userGroup: true,
+            admin: {
+              select: {
+                permissions: true,
+              }
+            },
           }
         })
-
-        console.log(user);
 
         if (!user) {
           if (authenticatedUserGroup === 'student') {
@@ -158,8 +172,16 @@ export const authOptions: NextAuthOptions = {
                   }
                 }
               },
-              include: {
-                admin: true,
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                userGroup: true,
+                admin: {
+                  select: {
+                    permissions: true,
+                  }
+                },
               }
             });
 
@@ -171,6 +193,8 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           name: user.name,
           username: user.username,
+          userGroup: user.userGroup,
+          admin: user.admin,
         } as DefaultSession['user'];
       },
     }),
