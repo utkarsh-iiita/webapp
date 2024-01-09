@@ -73,6 +73,7 @@ export const authOptions: NextAuthOptions = {
               });
 
               if (user) {
+                console.log(user);
                 const accessToken = await jwtHelper.createAcessToken(token.user);
                 const accessTokenExpired = Date.now() / 1000 + tokenOneDay;
 
