@@ -13,45 +13,43 @@ import { jwtHelper, tokenOneDay, tokenOnWeek } from "~/server/utils/jwtHelper";
 
 declare module "next-auth" {
   interface User {
-    id?: string,
-    name?: string,
-    username?: string,
-    userGroup?: string,
+    id?: string;
+    name?: string;
+    username?: string;
+    userGroup?: string;
     admin?: {
-      permissions: number
-    },
+      permissions: number;
+    };
   }
 
   interface Session {
     user: {
-      id?: string,
-      name?: string,
-      username?: string,
-      userGroup?: string,
+      id?: string;
+      name?: string;
+      username?: string;
+      userGroup?: string;
       admin?: {
-        permissions: number
-      },
-    },
-    error?: "RefreshAccessTokenError"
+        permissions: number;
+      };
+    };
+    error?: "RefreshAccessTokenError";
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    user: any,
-    accessToken: string,
-    refreshToken: string,
-    accessTokenExpired: number,
-    refreshTokenExpired: number,
-    error?: "RefreshAccessTokenError"
+    user: any;
+    accessToken: string;
+    refreshToken: string;
+    accessTokenExpired: number;
+    refreshTokenExpired: number;
+    error?: "RefreshAccessTokenError";
   }
 }
-
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
-
       // credentials provider:  Save the access token and refresh token in the JWT on the initial login
       if (user) {
         const authUser = { ...user };
@@ -62,10 +60,13 @@ export const authOptions: NextAuthOptions = {
         const refreshTokenExpired = Date.now() / 1000 + tokenOnWeek;
 
         return {
-          ...token, accessToken, refreshToken, accessTokenExpired, refreshTokenExpired,
-          user: authUser
-        }
-
+          ...token,
+          accessToken,
+          refreshToken,
+          accessTokenExpired,
+          refreshTokenExpired,
+          user: authUser,
+        };
       } else {
         if (token) {
           // In subsequent requests, check access token has expired, try to refresh it
@@ -73,27 +74,28 @@ export const authOptions: NextAuthOptions = {
             const verifyToken = await jwtHelper.verifyToken(token.refreshToken);
 
             if (verifyToken) {
-
               const user = await db.user.findFirst({
                 where: {
-                  id: token.user.id
-                }
+                  id: token.user.id,
+                },
               });
 
               if (user) {
-                const accessToken = await jwtHelper.createAcessToken(token.user);
+                const accessToken = await jwtHelper.createAcessToken(
+                  token.user,
+                );
                 const accessTokenExpired = Date.now() / 1000 + tokenOneDay;
 
-                return { ...token, accessToken, accessTokenExpired }
+                return { ...token, accessToken, accessTokenExpired };
               }
             }
 
-            return { ...token, error: "RefreshAccessTokenError" }
+            return { ...token, error: "RefreshAccessTokenError" };
           }
         }
       }
 
-      return token
+      return token;
     },
 
     async session({ session, token }) {
@@ -104,15 +106,15 @@ export const authOptions: NextAuthOptions = {
           id: token.user.id,
           admin: token.user.admin,
           userGroup: token.user.userGroup,
-        }
+        };
       }
       session.error = token.error;
       return session;
-    }
+    },
   },
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60
+    maxAge: 60 * 60,
   },
   adapter: PrismaAdapter(db),
   providers: [
@@ -125,16 +127,18 @@ export const authOptions: NextAuthOptions = {
       // @ts-ignore
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password)
-          throw new Error('Missing Credentials');
+          throw new Error("Missing Credentials");
 
-        let authenticatedUserGroup = await verifyPassword(credentials.username, credentials.password);
+        let authenticatedUserGroup = await verifyPassword(
+          credentials.username,
+          credentials.password,
+        );
 
-        if (!authenticatedUserGroup)
-          throw new Error('Invalid Credentials');
+        if (!authenticatedUserGroup) throw new Error("Invalid Credentials");
 
         let user = await db.user.findFirst({
           where: {
-            username: credentials.username
+            username: credentials.username,
           },
           select: {
             id: true,
@@ -144,23 +148,25 @@ export const authOptions: NextAuthOptions = {
             admin: {
               select: {
                 permissions: true,
-              }
+              },
             },
-          }
-        })
+          },
+        });
 
         if (!user) {
-          if (authenticatedUserGroup === 'student') {
-            let userData = await getStudentAviralData(credentials.username, credentials.password);
-            if (!userData)
-              throw new Error('User Not Found');
+          if (authenticatedUserGroup === "student") {
+            let userData = await getStudentAviralData(
+              credentials.username,
+              credentials.password,
+            );
+            if (!userData) throw new Error("User Not Found");
 
             user = await db.user.create({
               data: {
                 userGroup: authenticatedUserGroup,
                 username: credentials.username,
                 name: userData.name,
-                email: credentials.username + '@iiita.ac.in',
+                email: credentials.username + "@iiita.ac.in",
                 student: {
                   create: {
                     program: userData.program,
@@ -170,9 +176,9 @@ export const authOptions: NextAuthOptions = {
                     completedCredits: userData.completedCredits,
                     totalCredits: userData.totalCredits,
                     cgpa: userData.cgpa,
-                    email: credentials.username + '@iiita.ac.in',
-                  }
-                }
+                    email: credentials.username + "@iiita.ac.in",
+                  },
+                },
               },
               select: {
                 id: true,
@@ -182,13 +188,43 @@ export const authOptions: NextAuthOptions = {
                 admin: {
                   select: {
                     permissions: true,
-                  }
+                  },
                 },
-              }
+              },
             });
 
+            const allSessions = await db.placementSession.findMany({
+              select: {
+                id: true,
+                targets: true,
+              },
+            });
+
+            const eligibleSessions = allSessions.filter((session) => {
+              let eligible = false;
+              session.targets?.groups.forEach((group) => {
+                if (
+                  group.program === userData.program &&
+                  group.year === userData.admissionYear &&
+                  group.minCredits <= userData.completedCredits &&
+                  group.minCGPA <= userData.cgpa
+                ) {
+                  eligible = true;
+                }
+              });
+              return eligible;
+            });
+
+            db.placementSessionParticipants.createMany({
+              data: eligibleSessions.map((session) => {
+                return {
+                  placementSessionId: session.id,
+                  studentId: user.id,
+                };
+              }),
+            });
           } else {
-            throw new Error('Only students supported');
+            throw new Error("Only students supported");
           }
         }
         return {
@@ -197,13 +233,13 @@ export const authOptions: NextAuthOptions = {
           username: user.username,
           userGroup: user.userGroup,
           admin: user.admin,
-        } as DefaultSession['user'];
+        } as DefaultSession["user"];
       },
     }),
   ],
   pages: {
     signIn: "/login",
-  }
+  },
 };
 
 export const getServerAuthSession = () => {
