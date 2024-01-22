@@ -81,7 +81,6 @@ export const authOptions: NextAuthOptions = {
               });
 
               if (user) {
-                console.log(user);
                 const accessToken = await jwtHelper.createAcessToken(token.user);
                 const accessTokenExpired = Date.now() / 1000 + tokenOneDay;
 
@@ -102,7 +101,9 @@ export const authOptions: NextAuthOptions = {
         session.user = {
           username: token.user.username as string,
           name: token.user.name as string,
-          id: token.user.id
+          id: token.user.id,
+          admin: token.user.admin,
+          userGroup: token.user.userGroup,
         }
       }
       session.error = token.error;

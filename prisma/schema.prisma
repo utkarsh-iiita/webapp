@@ -82,12 +82,16 @@ model Students {
 }
 
 model StudentResume {
-    id         String   @id @default(cuid())
-    userId     String
-    resumeLink String   @db.Text
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    student    Students @relation(fields: [userId], references: [userId], onDelete: Cascade)
+    id                 String   @id @default(cuid())
+    userId             String
+    name               String
+    src                String   @db.Text
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+    placementSessionId String
+
+    placementSession PlacementSession @relation(fields: [placementSessionId], references: [id], onDelete: Cascade)
+    student          Students         @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 model PlacementSession {
@@ -98,6 +102,7 @@ model PlacementSession {
     updatedAt DateTime @updatedAt
 
     participants PlacementSessionParticipants[]
+    resumes      StudentResume[]
 }
 
 model PlacementSessionParticipants {
@@ -120,7 +125,7 @@ model Admin {
 
 model Config {
     key       String   @id
-    value      String
+    value     String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
