@@ -52,7 +52,7 @@ export default function Login() {
       });
   };
   return (
-    <div className="w-full h-screen grid grid-cols-1 md:grid-cols-2 relative">
+    <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 relative">
       <Container className="flex flex-col justify-center items-center">
         <Paper
           component="form"
@@ -125,7 +125,7 @@ export default function Login() {
         </Paper>
       </Container>
       <Container
-        className="hidden md:flex flex-col justify-center items-center max-h-screen"
+        className="hidden md:flex flex-col justify-center items-center max-h-svh"
         sx={{ bgcolor: "primary.main" }}
       >
         <Image src={vector} alt="Login" className="max-w-full max-h-min" />

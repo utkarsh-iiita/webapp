@@ -5,3 +5,8 @@
 body {
   min-height: 100svh;
 }
+
+a {
+  color: currentColor;
+  text-decoration: none;
+}

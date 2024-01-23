@@ -36,11 +36,13 @@ export default async function Home() {
           height: "100%",
           width: "100%",
           position: "absolute",
+          left: 0,
+          top: 0,
           zIndex: 2,
           backdropFilter: "blur(8vmax)",
         }}
       ></div>
-      <div className="flex flex-col w-full h-screen overflow-hidden">
+      <div className="flex flex-col w-full h-full overflow-hidden">
         <Container
           maxWidth="xl"
           className="z-10 flex flex-grow items-center justify-center"
@@ -79,7 +81,7 @@ export default async function Home() {
             </div>
             <Image
               src={vector}
-              className="m-auto max-w-[80vw] md:max-w-[50vw] max-h-[70vh] md:max-h-[50vh]"
+              className="m-auto max-w-[80vw] md:max-w-[50vw] h-auto"
               alt="Placements vector"
             />
           </div>

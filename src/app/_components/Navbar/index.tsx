@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
@@ -39,7 +39,11 @@ export default function Navbar({
   let [sideMenuOpen, setSideMenuOpen] = useState(false);
   let sideMenuRef = useRef(null);
   let menuRef = useRef(null);
-  let { data: session } = useSession();
+  let { data: session, status } = useSession();
+  console.log(status);
+  const isStudent = useMemo(() => {
+    return session?.user.userGroup === "student";
+  }, [session?.user]);
 
   function handleLogout() {
     signOut();
@@ -47,8 +51,8 @@ export default function Navbar({
 
   return (
     <AppBar
-      position="fixed"
-      className="fixed bg-none shadow-none"
+      position="sticky"
+      className="sticky w-full top bg-none shadow-none"
       sx={{
         borderBottom: "1px solid",
         borderColor: "divider",
@@ -121,67 +125,85 @@ export default function Navbar({
             </Typography>
           </Box>
           <div className="flex-row justify-end items-center gap-2 hidden md:flex">
-            <ThemeSwitch checked={themeMode === "dark"} onClick={toggleTheme} />
-            {session ? (
-              <>
-                <Button
-                  color="primary"
-                  className="text-lg"
-                  endIcon={<ArrowDropDownIcon />}
-                  ref={menuRef}
-                  aria-controls={menuOpen ? "menu-list" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={menuOpen ? "true" : undefined}
-                  onClick={() => setMenuOpen(true)}
-                >
-                  {session.user.username}
-                </Button>
-                <Menu
-                  PaperProps={{
-                    id: "menu-list",
-                  }}
-                  anchorEl={menuRef.current}
-                  open={menuOpen}
-                  onClose={() => setMenuOpen(false)}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                >
-                  <MenuItem
-                    onClick={() => {
-                      router.push("/dashboard/profile");
-                      setMenuOpen(false);
+            {status !== "loading" &&
+              (session ? (
+                <>
+                  <Button
+                    color="primary"
+                    className="text-lg"
+                    endIcon={<ArrowDropDownIcon />}
+                    ref={menuRef}
+                    aria-controls={menuOpen ? "menu-list" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={menuOpen ? "true" : undefined}
+                    onClick={() => setMenuOpen(true)}
+                  >
+                    {session.user.username}
+                  </Button>
+                  <Menu
+                    PaperProps={{
+                      id: "menu-list",
+                    }}
+                    anchorEl={menuRef.current}
+                    open={menuOpen}
+                    onClose={() => setMenuOpen(false)}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
                     }}
                   >
-                    My Profile
-                  </MenuItem>
-                  <MenuItem
+                    <MenuItem>
+                      Theme
+                      <ThemeSwitch
+                        sx={{ ml: 1 }}
+                        small
+                        checked={themeMode === "dark"}
+                        onClick={toggleTheme}
+                      />
+                    </MenuItem>
+                    {isStudent && (
+                      <MenuItem
+                        onClick={() => {
+                          router.push("/dashboard/profile");
+                          setMenuOpen(false);
+                        }}
+                      >
+                        My Profile
+                      </MenuItem>
+                    )}
+                    <MenuItem
+                      onClick={() => {
+                        handleLogout();
+                        setMenuOpen(false);
+                      }}
+                    >
+                      Log Out
+                    </MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                <>
+                  <ThemeSwitch
+                    checked={themeMode === "dark"}
+                    onClick={toggleTheme}
+                  />
+
+                  <Button
+                    aria-label="Login Button"
+                    variant="outlined"
+                    className="normal-case font-semibold tracking-wider border-2"
                     onClick={() => {
-                      handleLogout();
-                      setMenuOpen(false);
+                      router.push("/login");
                     }}
                   >
-                    Log Out
-                  </MenuItem>
-                </Menu>
-              </>
-            ) : (
-              <Button
-                aria-label="Login Button"
-                variant="outlined"
-                className="normal-case font-semibold tracking-wider border-2"
-                onClick={() => {
-                  router.push("/login");
-                }}
-              >
-                Log In
-              </Button>
-            )}
+                    Log In
+                  </Button>
+                </>
+              ))}
           </div>
           <IconButton
             size="large"
@@ -218,37 +240,40 @@ export default function Navbar({
                 onClick={toggleTheme}
               />
             </MenuItem>
-            {session ? (
-              [
+            {status !== "loading" &&
+              (session ? (
+                [
+                  isStudent && (
+                    <MenuItem
+                      onClick={() => {
+                        router.push("/dashboard/profile");
+                        setSideMenuOpen(false);
+                      }}
+                      key="profile"
+                    >
+                      My Profile
+                    </MenuItem>
+                  ),
+                  <MenuItem
+                    onClick={() => {
+                      handleLogout();
+                      setSideMenuOpen(false);
+                    }}
+                    key="logout"
+                  >
+                    Log Out
+                  </MenuItem>,
+                ]
+              ) : (
                 <MenuItem
                   onClick={() => {
-                    router.push("/dashboard/profile");
+                    router.push("/login");
                     setSideMenuOpen(false);
                   }}
-                  key="profile"
                 >
-                  My Profile
-                </MenuItem>,
-                <MenuItem
-                  onClick={() => {
-                    handleLogout();
-                    setSideMenuOpen(false);
-                  }}
-                  key="logout"
-                >
-                  Log Out
-                </MenuItem>,
-              ]
-            ) : (
-              <MenuItem
-                onClick={() => {
-                  router.push("/login");
-                  setSideMenuOpen(false);
-                }}
-              >
-                Log In
-              </MenuItem>
-            )}
+                  Log In
+                </MenuItem>
+              ))}
           </Menu>
         </Container>
       </Toolbar>

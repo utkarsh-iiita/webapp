@@ -10,11 +10,11 @@ export default async function AdminLayout({
 }: {
   children: ReactNode;
 }) {
-  let { user } = await getServerAuthSession();
-  if (!user.admin) {
+  let session = await getServerAuthSession();
+  if (!session?.user.admin) {
     redirect("/");
   }
-  if (user.admin.permissions === 0) {
+  if (session?.user.admin.permissions === 0) {
     return (
       <Container className="h-full flex flex-col items-center justify-center py-4">
         <Typography variant="h4">Waiting for approval...</Typography>
