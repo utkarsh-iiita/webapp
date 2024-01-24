@@ -202,6 +202,7 @@ export const authOptions: NextAuthOptions = {
 
             const eligibleSessions = allSessions.filter((session) => {
               let eligible = false;
+              // @ts-ignore
               session.targets?.groups.forEach((group) => {
                 if (
                   group.program === userData.program &&

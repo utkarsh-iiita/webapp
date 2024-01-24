@@ -40,7 +40,7 @@ export default function Navbar({
   let sideMenuRef = useRef(null);
   let menuRef = useRef(null);
   let { data: session, status } = useSession();
-  console.log(status);
+
   const isStudent = useMemo(() => {
     return session?.user.userGroup === "student";
   }, [session?.user]);
@@ -52,7 +52,7 @@ export default function Navbar({
   return (
     <AppBar
       position="sticky"
-      className="sticky w-full top bg-none shadow-none"
+      className="sticky top-0 bg-none shadow-none"
       sx={{
         borderBottom: "1px solid",
         borderColor: "divider",

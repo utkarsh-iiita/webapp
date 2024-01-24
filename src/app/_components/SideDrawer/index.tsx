@@ -1,6 +1,8 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -9,13 +11,19 @@ import {
   Box,
   Divider,
   Drawer,
+  List,
+  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  ListSubheader,
   SwipeableDrawer,
   Toolbar,
   Typography,
 } from "@mui/material";
+
+import { ADMIN_SIDEBAR } from "./AdminDrawer/constants";
+import { USER_SIDEBAR } from "./UserDrawer/constants";
 
 interface ResponsiveDrawerProps {
   open: boolean;
@@ -31,6 +39,8 @@ export default function ResponsiveDrawer({
   isAdmin,
 }: ResponsiveDrawerProps) {
   const { data: session } = useSession();
+  const pathname = usePathname();
+
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
@@ -50,7 +60,50 @@ export default function ResponsiveDrawer({
         </Typography>
       </Toolbar>
       <Divider />
-      {/* All Routes will go here */}
+      {(isAdmin ? ADMIN_SIDEBAR : USER_SIDEBAR).map((list, index) => {
+        return (
+          <Fragment key={index}>
+            <List>
+              {list.title && (
+                <ListSubheader disableSticky>{list.title}</ListSubheader>
+              )}
+              {list.links.map((item) => (
+                <Link
+                  key={item.label}
+                  href={list.base + item.path}
+                  onClick={() => setOpen(false)}
+                >
+                  <ListItem disablePadding>
+                    <ListItemButton
+                      selected={pathname === list.base + item.path}
+                    >
+                      <ListItemIcon>
+                        <item.icon
+                          color={
+                            pathname === list.base + item.path
+                              ? "primary"
+                              : undefined
+                          }
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          color:
+                            pathname === list.base + item.path
+                              ? "primary"
+                              : undefined,
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </Link>
+              ))}
+            </List>
+            <Divider />
+          </Fragment>
+        );
+      })}
       {user?.admin &&
         (!isAdmin ? (
           <Link href="/admin" onClick={() => setOpen(false)}>
@@ -77,7 +130,7 @@ export default function ResponsiveDrawer({
   return (
     <Box
       component="nav"
-      className={`w-0 md:w-[${DRAWER_WIDTH}px] flex-shrink md:flex-shrink-0 h-dvh`}
+      className={`w-0 md:w-[240px] flex-shrink md:flex-shrink-0 h-dvh`}
       aria-label="mailbox folders"
     >
       <SwipeableDrawer

@@ -32,9 +32,7 @@ export default function PageLayout({
       )}
       <div className="flex flex-col w-full">
         <Navbar setIsDrawerOpen={setIsDrawerOpen} noSidebar={noSidebar} />
-        <Container component="main" maxWidth="xl" className="flex-grow">
-          {children}
-        </Container>
+        <main className="flex-grow p-0">{children}</main>
       </div>
     </div>
   );

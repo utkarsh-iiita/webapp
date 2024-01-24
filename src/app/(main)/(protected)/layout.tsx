@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 
+import { Container } from "@mui/material";
+
 import { getServerAuthSession } from "~/server/auth";
 export default async function ProtectedPagesLayout({
   children,
@@ -10,5 +12,9 @@ export default async function ProtectedPagesLayout({
   if (!session) {
     redirect("/login");
   }
-  return <>{children}</>;
+  return (
+    <Container component="div" maxWidth="xl">
+      {children}
+    </Container>
+  );
 }

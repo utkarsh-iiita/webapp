@@ -1,20 +1,14 @@
-import { type Metadata } from "next";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { Button, Container, Typography } from "@mui/material";
 
-import seo from "~/app/_components/SEO";
 import vector from "~/assets/vectors/home.svg";
 
-// site meta
-export const metadata: Metadata = seo({
-  title: "Home",
-  desc: "Home page of the IIIT Allahabad Placement Portal",
-});
-
-export default async function Home() {
+export default function Home() {
   return (
     <>
       <div

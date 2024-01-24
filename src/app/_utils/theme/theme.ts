@@ -22,10 +22,10 @@ export function getTheme(mode: "light" | "dark") {
             main: "#3399FF",
           },
           background: {
-            default: "#fefeff",
-            paper: "#fefeff",
+            default: "#F3F7F8",
+            paper: "#F3F7F8",
           },
-          bgclear: "#fefeffcc",
+          bgclear: "#F3F7F8CC",
           text: {
             disabled: "rgba(0, 0, 0, 0.7)",
           },

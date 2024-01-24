@@ -10,9 +10,9 @@ export const userRouter = createTRPCRouter({
     });
 
     let result = {};
-    data.forEach((item) => {
-      result[item] = item.programs;
-    });
+    // data.forEach((item) => {
+    //   result[item] = item.programs;
+    // });
     return result;
   }),
 });

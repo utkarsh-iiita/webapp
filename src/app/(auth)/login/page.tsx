@@ -52,7 +52,7 @@ export default function Login() {
       });
   };
   return (
-    <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 relative">
+    <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 absolute top-0">
       <Container className="flex flex-col justify-center items-center">
         <Paper
           component="form"

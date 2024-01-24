@@ -9,13 +9,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npm run build && npm run start"
+    command: sh -c "npm run db:push && npm run db:seed && npm run build && npm run start"
     # command: sh -c "npm run dev" # <-- use this command for testing/db:push
     volumes:
       - app-node-cache:/root/.npm
       - ./src:/app/src
     ports:
-      - 44444:44444
+      - 3000:3000
+      - 5555:5555
     environment:
       # Mandatory variables
       - NEXTAUTH_URL=http://localhost # <-- provide the url of your app here

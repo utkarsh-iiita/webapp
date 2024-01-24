@@ -1,6 +1,8 @@
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
 
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+
 import { TRPCReactProvider } from "~/trpc/react";
 
 import PageLayout from "./_components/PageLayout";
@@ -24,7 +26,9 @@ export default function RootLayout({
       <body id="__next">
         <TRPCReactProvider cookies={cookies().toString()}>
           <ThemeRegistry options={{ key: "css", prepend: true }}>
-            <PageLayout>{children}</PageLayout>
+            <AppRouterCacheProvider>
+              <PageLayout>{children}</PageLayout>
+            </AppRouterCacheProvider>
           </ThemeRegistry>
         </TRPCReactProvider>
       </body>

@@ -9,15 +9,13 @@ services:
     command: npm run dev
     volumes:
       - webapp-node-cache:/root/.npm
-      - ./src:/app/src
+      - ./:/app/
     environment:
       - DATABASE_URL=mysql://utkarsh:utkarsh@db/utkarsh
       - REDIS_URL=redis://cache:6379
       - NODE_ENV=development
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=secret
-    env_file:
-      - .env.local
     ports:
       - 3000:3000
       - 5555:5555 # Prisma studio
