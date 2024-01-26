@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/index";
 
-declare module "@mui/material/index/styles" {
+declare module "@mui/material/styles" {
   interface Palette {
     title: string;
   }
