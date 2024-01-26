@@ -20,7 +20,7 @@ import {
   SwipeableDrawer,
   Toolbar,
   Typography,
-} from "@mui/material";
+} from "@mui/material/index";
 
 import { ADMIN_SIDEBAR } from "./AdminDrawer/constants";
 import { USER_SIDEBAR } from "./UserDrawer/constants";

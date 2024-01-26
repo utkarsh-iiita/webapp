@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 //not working yet need some dummy data.
 export const userRouter = createTRPCRouter({
-  getUserGroups: adminProcedure.input(z.object({})).query(async ({ ctx }) => {
+  getUserGroups: adminProcedure.query(async ({ ctx }) => {
     const data = await ctx.db.students.groupBy({
       by: ["admissionYear", "program"],
     });
@@ -14,5 +14,25 @@ export const userRouter = createTRPCRouter({
     //   result[item] = item.programs;
     // });
     return result;
+  }),
+
+  searchUser: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const data = await ctx.db.user.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: input,
+            },
+          },
+          {
+            username: {
+              contains: input,
+            },
+          }
+        ],
+      },
+    });
+    return data;
   }),
 });

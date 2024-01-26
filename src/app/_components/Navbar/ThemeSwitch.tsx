@@ -1,7 +1,7 @@
-import { Switch } from "@mui/material";
+import { Switch } from "@mui/material/index";
 import { styled } from "@mui/material/styles";
 
-const ThemeSwitch = styled(Switch)<{ small?: boolean }>(({ theme, small }) => ({
+const ThemeSwitch = styled(Switch)<{ small?: string }>(({ theme, small }) => ({
   width: small ? 41.3 : 62,
   height: small ? 22.6 : 34,
   padding: small ? 4.6 : 7,

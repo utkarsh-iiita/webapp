@@ -18,7 +18,7 @@ import {
   MenuItem,
   Toolbar,
   Typography,
-} from "@mui/material";
+} from "@mui/material/index";
 
 import useThemeContext from "~/app/_utils/theme/ThemeContext";
 import Logo from "~/assets/logo.svg";
@@ -141,8 +141,10 @@ export default function Navbar({
                     {session.user.username}
                   </Button>
                   <Menu
-                    PaperProps={{
-                      id: "menu-list",
+                    slotProps={{
+                      paper: {
+                        id: "menu-list",
+                      },
                     }}
                     anchorEl={menuRef.current}
                     open={menuOpen}
@@ -160,7 +162,7 @@ export default function Navbar({
                       Theme
                       <ThemeSwitch
                         sx={{ ml: 1 }}
-                        small
+                        small="true"
                         checked={themeMode === "dark"}
                         onClick={toggleTheme}
                       />
@@ -235,7 +237,7 @@ export default function Navbar({
               Theme
               <ThemeSwitch
                 sx={{ ml: 1 }}
-                small
+                small="true"
                 checked={themeMode === "dark"}
                 onClick={toggleTheme}
               />

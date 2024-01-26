@@ -15,7 +15,7 @@ import {
   OutlinedInput,
   Paper,
   Typography,
-} from "@mui/material";
+} from "@mui/material/index";
 
 import vector from "~/assets/vectors/login.svg";
 

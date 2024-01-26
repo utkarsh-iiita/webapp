@@ -1,6 +1,6 @@
 "use client";
 
-// refernce: https://github.com/mui/material-ui/issues/37935#issuecomment-1636817269
+// refernce: https://github.com/mui/material/index-ui/issues/37935#issuecomment-1636817269
 
 import * as React from "react";
 import { useServerInsertedHTML } from "next/navigation";

@@ -1,18 +1,16 @@
 import { Suspense } from "react";
 
-import AddModeratorIcon from "@mui/icons-material/AddModerator";
 import {
-  Button,
   CircularProgress,
   Container,
   Divider,
-  IconButton,
   Typography,
-} from "@mui/material";
+} from "@mui/material/index";
 
 import SearchFilter from "~/app/common/SearchFilter";
 
 import AdminList from "./AdminList";
+import NewAdminModal from "./NewAdminModal";
 
 export default async function ManageAdminsPage({
   searchParams,
@@ -28,16 +26,7 @@ export default async function ManageAdminsPage({
         <Typography variant="h5" color="primary" className="px-4">
           Manage Admins
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddModeratorIcon />}
-          className="hidden md:inline-flex"
-        >
-          New Admin
-        </Button>
-        <IconButton color="primary" className="inline-flex md:hidden">
-          <AddModeratorIcon />
-        </IconButton>
+        <NewAdminModal />
       </div>
       <Divider />
       <SearchFilter allowedFilters={{ textInput: true }} />

@@ -3,8 +3,6 @@
 import { useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 
-import { Container } from "@mui/material";
-
 import Navbar from "../Navbar";
 import ResponsiveDrawer from "../SideDrawer";
 

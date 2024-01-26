@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import { redirect } from "next/navigation";
 
-import { Container, Typography } from "@mui/material";
+import { Container, Typography } from "@mui/material/index";
 
 import { getServerAuthSession } from "~/server/auth";
 

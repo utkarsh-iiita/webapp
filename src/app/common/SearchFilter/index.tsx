@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { debounce, Paper } from "@mui/material";
+import { debounce, Paper } from "@mui/material/index";
 
 import SearchInput from "./SearchInput";
 
@@ -39,17 +39,11 @@ export default function SearchFilter({ allowedFilters }: SearchFilterProps) {
   return (
     <Paper
       elevation={2}
-      className="p-2 mb-4 flex md:flex-row flex-col gap-4 md:gap-2 md:items-center"
+      className="p-2 flex md:flex-row flex-col gap-4 md:gap-2 md:items-center"
     >
       {Object.keys(allowedFilters).map((key, index) => {
         const Filter = FilterTypeMappings[key];
-        return (
-          <Filter
-            key={index}
-            onChange={handleSearch}
-            defaultValue={searchParams}
-          />
-        );
+        return <Filter key={index} onChange={handleSearch} />;
       })}
     </Paper>
   );

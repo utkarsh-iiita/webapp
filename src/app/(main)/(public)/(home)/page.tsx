@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
-import { Button, Container, Typography } from "@mui/material";
+import { Button, Container, Typography } from "@mui/material/index";
 
 import vector from "~/assets/vectors/home.svg";
 

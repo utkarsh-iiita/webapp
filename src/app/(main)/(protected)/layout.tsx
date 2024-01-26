@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { Container } from "@mui/material";
+import { Container } from "@mui/material/index";
 
 import { getServerAuthSession } from "~/server/auth";
 export default async function ProtectedPagesLayout({
