@@ -6,6 +6,9 @@ services:
       context: .
       dockerfile: ./Dockerfile
     working_dir: /app
+    depends_on:
+      db:
+        condition: service_healthy
     command: sh -c "npm run db:push && npm run db:seed && npm run build && npm run start"
     # command: sh -c "npm run dev" # <-- use this command for testing/db:push
     volumes:
@@ -18,14 +21,32 @@ services:
       # Mandatory variables
       - NEXTAUTH_URL=http://localhost # <-- provide the url of your app here
       - NEXTAUTH_SECRET=your-secret
-      - DATABASE_URL=mysql://utkarsh:utkarsh@db/utkarsh
 
       # Optional variables
+      - DATABASE_URL=mysql://utkarsh:utkarsh@db/utkarsh
       - REDIS_URL=redis://cache:6379
       - NODE_ENV=production
       - NEXT_PUBLIC_CLIENTVAR=clientvar
     networks:
       internal:
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: utkarsh
+      MYSQL_DATABASE: utkarsh
+      MYSQL_USER: utkarsh
+      MYSQL_PASSWORD: utkarsh
+    volumes:
+      - mysql-prod:/var/lib/mysql
+    networks:
+      internal:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uutkarsh", "-putkarsh"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   cache:
     image: redis:4
@@ -51,7 +72,31 @@ services:
       default:
       internal:
 
+  db-backup:
+    image: fradelg/mysql-cron-backup
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./prod_backup:/backup
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=utkarsh
+      - MYSQL_PASS=utkarsh
+      - MAX_BACKUPS=15
+      - INIT_BACKUP=0
+      # Every day at 03:00
+      - CRON_TIME=0 3 * * *
+      # Make it small
+      - GZIP_LEVEL=9
+      # As of MySQL 8.0.21 this is needed
+      - MYSQLDUMP_OPTS=--no-tablespaces
+    networks:
+      internal:
+    restart: unless-stopped
+
 volumes:
+  mysql-prod:
   app-node-cache:
   redis-prod:
 
