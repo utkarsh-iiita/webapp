@@ -3,6 +3,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
 
 import { adminRouter } from "./routers/admin";
 import { placementSessionRouter } from "./routers/session";
+import { studentRouter } from "./routers/student";
 import { userRouter } from "./routers/users";
 
 /**
@@ -14,7 +15,8 @@ export const appRouter = createTRPCRouter({
   post: postRouter,
   user: userRouter,
   placementSessions: placementSessionRouter,
-  admin: adminRouter
+  admin: adminRouter,
+  student: studentRouter,
 });
 
 // export type definition of API

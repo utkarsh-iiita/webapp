@@ -35,28 +35,4 @@ export const userRouter = createTRPCRouter({
     });
     return data;
   }),
-
-  getUserProfile: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.students.findUnique({
-      where: {
-        userId: ctx.session.user.id
-      },
-      select: {
-        admissionYear: true,
-        cgpa: true,
-        currentSemester: true,
-        totalCredits: true,
-        completedCredits: true,
-        program: true,
-        email: true,
-        phone: true,
-        user: {
-          select: {
-            name: true,
-            username: true,
-          }
-        }
-      }
-    })
-  })
 });
