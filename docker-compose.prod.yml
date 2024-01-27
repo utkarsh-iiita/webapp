@@ -44,7 +44,7 @@ services:
       internal:
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uutkarsh", "-putkarsh"]
-      interval: 2s
+      interval: 5s
       timeout: 5s
       retries: 5
 

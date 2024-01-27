@@ -7,8 +7,9 @@ generator client {
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
 // Necessary for Next auth
@@ -28,6 +29,7 @@ model Account {
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
@@ -36,6 +38,8 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model User {
@@ -79,6 +83,8 @@ model Students {
 
     resume            StudentResume[]
     placementSessions PlacementSessionParticipants[]
+
+    @@index([userId])
 }
 
 model StudentResume {
@@ -92,6 +98,9 @@ model StudentResume {
 
     placementSession PlacementSession @relation(fields: [placementSessionId], references: [id], onDelete: Cascade)
     student          Students         @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+    @@index([placementSessionId])
+    @@index([userId])
 }
 
 model PlacementSession {
@@ -113,6 +122,8 @@ model PlacementSessionParticipants {
     student          Students         @relation(fields: [studentId], references: [userId], onDelete: Cascade)
 
     @@id([placementSessionId, studentId])
+    @@index([placementSessionId])
+    @@index([studentId])
 }
 
 model Admin {
@@ -121,6 +132,8 @@ model Admin {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
     user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model Config {
