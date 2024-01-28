@@ -1,10 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
+import LoadingButton from "@mui/lab/LoadingButton";
 import { Button, TableCell, TableRow } from "@mui/material/index";
 
-import { type api } from "~/trpc/server";
+import { api } from "~/trpc/react";
+import { type api as API } from "~/trpc/server";
 
-type admins = ReturnType<typeof api.admin.getAdmins.query> extends Promise<
+type admins = ReturnType<typeof API.admin.getAdmins.query> extends Promise<
   infer T
 >
   ? T
@@ -16,6 +20,12 @@ interface AdminListItemProps {
 }
 
 export default function AdminListItem({ admin, index }: AdminListItemProps) {
+  const router = useRouter();
+  const removeAdminMutation = api.admin.removeAdmin.useMutation({
+    onSuccess: () => {
+      router.refresh();
+    },
+  });
   return (
     <TableRow key={index} hover>
       <TableCell
@@ -35,9 +45,16 @@ export default function AdminListItem({ admin, index }: AdminListItemProps) {
         {admin.user.userGroup}
       </TableCell>
       <TableCell className="text-center whitespace-nowrap">
-        <Button color="error" variant="outlined">
+        <LoadingButton
+          color="error"
+          variant="outlined"
+          onClick={() => {
+            removeAdminMutation.mutate(admin.user.id);
+          }}
+          loading={removeAdminMutation.isLoading}
+        >
           Remove
-        </Button>
+        </LoadingButton>
       </TableCell>
     </TableRow>
   );

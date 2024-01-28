@@ -11,9 +11,9 @@ export const adminRouter = createTRPCRouter({
       where: {
         user: {
           AND: [{
-            // NOT: {
-            //   id: ctx.session.user.id
-            // }
+            NOT: {
+              id: ctx.session.user.id
+            }
           },
           {
             ...input && {
@@ -63,6 +63,17 @@ export const adminRouter = createTRPCRouter({
             id: input.id
           }
         }
+      }
+    })
+  }),
+
+  removeAdmin: adminProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    if (ctx.session.user.id === input) {
+      throw new Error("You can't remove yourself from admin.")
+    }
+    return await ctx.db.admin.delete({
+      where: {
+        userId: input
       }
     })
   }),
