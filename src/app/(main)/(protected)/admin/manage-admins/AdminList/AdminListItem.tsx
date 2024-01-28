@@ -1,9 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Button, TableCell, TableRow } from "@mui/material/index";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TableCell,
+  TableRow,
+} from "@mui/material/index";
 
 import { api } from "~/trpc/react";
 import { type api as API } from "~/trpc/server";
@@ -20,6 +29,7 @@ interface AdminListItemProps {
 }
 
 export default function AdminListItem({ admin, index }: AdminListItemProps) {
+  const [open, setOpen] = useState(false);
   const router = useRouter();
   const removeAdminMutation = api.admin.removeAdmin.useMutation({
     onSuccess: () => {
@@ -45,16 +55,42 @@ export default function AdminListItem({ admin, index }: AdminListItemProps) {
         {admin.user.userGroup}
       </TableCell>
       <TableCell className="text-center whitespace-nowrap">
-        <LoadingButton
-          color="error"
-          variant="outlined"
-          onClick={() => {
-            removeAdminMutation.mutate(admin.user.id);
-          }}
-          loading={removeAdminMutation.isLoading}
-        >
+        <Button color="error" variant="outlined" onClick={() => setOpen(true)}>
           Remove
-        </LoadingButton>
+        </Button>
+        <Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          PaperProps={{
+            component: "form",
+            onSubmit: (e) => {
+              e.preventDefault();
+              removeAdminMutation.mutate(admin.user.id);
+            },
+          }}
+        >
+          <DialogTitle>Are you sure?</DialogTitle>
+          <DialogContent>
+            You will be removing admin privileges from{" "}
+            <strong>
+              {admin.user.name + " (" + admin.user.username.toUpperCase() + ")"}
+            </strong>
+            .
+          </DialogContent>
+          <DialogActions className="p-4">
+            <Button onClick={() => setOpen(false)} variant="contained">
+              Cancel
+            </Button>
+            <LoadingButton
+              type="submit"
+              color="error"
+              variant="outlined"
+              loading={removeAdminMutation.isLoading}
+            >
+              Remove
+            </LoadingButton>
+          </DialogActions>
+        </Dialog>
       </TableCell>
     </TableRow>
   );
