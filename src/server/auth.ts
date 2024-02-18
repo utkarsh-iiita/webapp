@@ -192,40 +192,38 @@ export const authOptions: NextAuthOptions = {
                 },
               },
             });
-
-            const allSessions = await db.placementSession.findMany({
+          } else if (authenticatedUserGroup === "faculty") {
+            let userData = await getStudentAviralData(
+              credentials.username,
+              credentials.password,
+            );
+            if (!userData) throw new Error("User Not Found");
+            user = await db.user.create({
+              data: {
+                userGroup: authenticatedUserGroup,
+                username: credentials.username,
+                name: userData.name,
+                email: credentials.username + "@iiita.ac.in",
+                admin: {
+                  create: {
+                    permissions: 0,
+                  }
+                }
+              },
               select: {
                 id: true,
-                targets: true,
+                name: true,
+                username: true,
+                userGroup: true,
+                admin: {
+                  select: {
+                    permissions: true,
+                  },
+                },
               },
             });
-
-            const eligibleSessions = allSessions.filter((session) => {
-              let eligible = false;
-              // @ts-ignore
-              session.targets?.groups.forEach((group) => {
-                if (
-                  group.program === userData.program &&
-                  group.year === userData.admissionYear &&
-                  group.minCredits <= userData.completedCredits &&
-                  group.minCGPA <= userData.cgpa
-                ) {
-                  eligible = true;
-                }
-              });
-              return eligible;
-            });
-
-            db.placementSessionParticipants.createMany({
-              data: eligibleSessions.map((session) => {
-                return {
-                  placementSessionId: session.id,
-                  studentId: user.id,
-                };
-              }),
-            });
           } else {
-            throw new Error("Only students supported");
+            throw new Error("Only students and faculties supported");
           }
         }
         return {

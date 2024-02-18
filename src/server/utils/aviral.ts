@@ -4,7 +4,8 @@ import { db } from "~/server/db";
 
 const BASE_URL = 'https://aviral.iiita.ac.in/api/';
 
-type AviralData = Promise<{
+type StudentAviralData = Promise<{
+  username: string;
   name: string;
   currentSem: string;
   rollNumber: string;
@@ -17,9 +18,14 @@ type AviralData = Promise<{
   admissionYear: number;
 } | null>;
 
+type FacultyAviralData = Promise<{
+  username: string;
+  name: string;
+  interest: string;
+} | null>;
 
 
-export const getStudentAviralData = async (username: string, password: string): AviralData => {
+export const getStudentAviralData = async (username: string, password: string): StudentAviralData => {
   try {
     const aviralSession = await db.config.findFirst({
       where: {
@@ -64,6 +70,51 @@ export const getStudentAviralData = async (username: string, password: string): 
       program: res.data['program'],
       admissionYear: res.data['admission_year'],
       duration: res.data['duration']
+    };
+
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getFacultyAviralData = async (username: string, password: string): FacultyAviralData => {
+  try {
+    const aviralSession = await db.config.findFirst({
+      where: {
+        key: 'AVIRAL_SESSION',
+      },
+    });
+    let res = await axios.post(BASE_URL + 'login/', {
+      username: username?.toLowerCase(),
+      password,
+    });
+
+    if (res.status !== 200) {
+      throw new Error('Invalid Credentials');
+    }
+
+    res = await axios.get(BASE_URL + 'faculty/dashboard/', {
+      headers: {
+        Authorization: res.data['jwt_token'],
+        Session: aviralSession.value,
+      },
+    });
+
+    if (res.status !== 200) {
+      throw new Error('Invalid Credentials');
+    }
+
+    const data = {
+      username: username,
+      name:
+        (res.data['first_name'] +
+          ' ' +
+          res.data['middle_name'] +
+          ' ' +
+          res.data['last_name']).trim(),
+      interest: res.data['interest'],
     };
 
     return data;
