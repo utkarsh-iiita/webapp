@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import CloseIcon from '@mui/icons-material/Close';
+import DoneIcon from '@mui/icons-material/Done';
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
     Button,
@@ -60,8 +62,8 @@ export default function AdminRequests({ admin, index }: AdminRequestsItem) {
                 {admin.user.userGroup}
             </TableCell>
             <TableCell className="text-center whitespace-nowrap">
-                <Button color="error" variant="outlined" onClick={() => setOpen(true)}>
-                    Remove
+                <Button color="error" variant="outlined" onClick={() => setOpen(true)} className="p-2 min-w-0 mr-2">
+                    <CloseIcon sx={{ fontSize: 16 }} />
                 </Button>
                 <Dialog
                     open={open}
@@ -96,8 +98,8 @@ export default function AdminRequests({ admin, index }: AdminRequestsItem) {
                         </LoadingButton>
                     </DialogActions>
                 </Dialog>
-                <Button color="success" variant="outlined" onClick={() => setOpen(true)}>
-                    Accept
+                <Button color="success" variant="outlined" onClick={() => setOpen(true)} className="p-2 min-w-0">
+                    <DoneIcon sx={{ fontSize: 16 }} />
                 </Button>
                 <Dialog
                     open={open}

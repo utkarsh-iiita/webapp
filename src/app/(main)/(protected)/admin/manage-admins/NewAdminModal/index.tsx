@@ -12,7 +12,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton,
+  Tooltip,
 } from "@mui/material";
 
 import SearchUserInput from "~/app/common/components/SearchUserClient";
@@ -44,21 +44,16 @@ export default function NewAdminModal() {
 
   return (
     <>
-      <Button
-        variant="contained"
-        startIcon={<AddModeratorIcon />}
-        className="hidden md:inline-flex"
-        onClick={() => setOpen(true)}
-      >
-        New Admin
-      </Button>
-      <IconButton
-        color="primary"
-        className="inline-flex md:hidden"
-        onClick={() => setOpen(true)}
-      >
-        <AddModeratorIcon />
-      </IconButton>
+      <Tooltip title="Add new admin">
+        <Button
+          color="primary"
+          variant="outlined"
+          className="inline-flex p-2 min-w-0"
+          onClick={() => setOpen(true)}
+        >
+          <AddModeratorIcon />
+        </Button>
+      </Tooltip>
       <Dialog
         open={open}
         onClose={handleClose}
