@@ -11,6 +11,7 @@ import SearchFilter from "~/app/common/SearchFilter";
 
 import AdminList from "./AdminList";
 import NewAdminModal from "./NewAdminModal";
+import RequestModal from "./RequestModal";
 
 export default async function ManageAdminsPage({
   searchParams,
@@ -27,6 +28,7 @@ export default async function ManageAdminsPage({
           Manage Admins
         </Typography>
         <NewAdminModal />
+        <RequestModal />
       </div>
       <Divider />
       <SearchFilter allowedFilters={{ textInput: true }} />

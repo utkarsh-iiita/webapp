@@ -6,31 +6,40 @@ import {
 } from "~/server/api/trpc";
 
 export const adminRouter = createTRPCRouter({
-  getAdmins: adminProcedure.input(z.string().optional()).query(async ({ ctx, input }) => {
+  getAdmins: adminProcedure.input(z.object({
+    permissions: z.number(),
+    query: z.string().optional(),
+  })).query(async ({ ctx, input }) => {
     return await ctx.db.admin.findMany({
       where: {
         user: {
-          AND: [{
-            NOT: {
-              id: ctx.session.user.id
+          AND: [
+            {
+              NOT: {
+                id: ctx.session.user.id
+              }
+            },
+            {
+              ...input.query && {
+                OR: [
+                  {
+                    name: {
+                      contains: input.query,
+                    }
+                  },
+                  {
+                    username: {
+                      contains: input.query,
+                    }
+                  },
+                ],
+              }
+            },
+            {
+              admin: {
+                permissions: input.permissions
+              }
             }
-          },
-          {
-            ...input && {
-              OR: [
-                {
-                  name: {
-                    contains: input,
-                  }
-                },
-                {
-                  username: {
-                    contains: input,
-                  }
-                },
-              ],
-            }
-          }
           ]
         },
       }, select: {
@@ -77,4 +86,22 @@ export const adminRouter = createTRPCRouter({
       }
     })
   }),
+
+  updateAdminPermission: adminProcedure.input(z.object({
+    id: z.string(),
+    permissions: z.number(),
+  })).mutation(async ({ ctx, input }) => {
+    if (ctx.session.user.id == input.id) {
+      throw new Error("You cannot make yourself admin.")
+    }
+    return await ctx.db.admin.update({
+      where: {
+        userId: input.id
+      },
+      data: {
+        permissions: input.permissions,
+      }
+    })
+  })
+
 });

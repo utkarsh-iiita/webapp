@@ -18,7 +18,7 @@ interface AdminListProps {
 }
 
 export default async function AdminList({ query }: AdminListProps) {
-  const admins = await api.admin.getAdmins.query(query);
+  const admins = await api.admin.getAdmins.query({ query, permissions: 1 });
   if (!admins.length)
     return (
       <Typography variant="body1" className="text-center">
