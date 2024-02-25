@@ -1,20 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-import AddModeratorIcon from "@mui/icons-material/AddModerator";
-import LoadingButton from "@mui/lab/LoadingButton";
+import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 import {
+    Badge,
     Button,
     Dialog,
-    DialogActions,
     DialogContent,
     DialogTitle,
-    IconButton,
+    Tooltip,
 } from "@mui/material";
 
-import { api } from "~/trpc/react";
 import { type api as API } from "~/trpc/server";
 
 import RequestsTable from "./RequestsTable";
@@ -30,14 +27,7 @@ interface RequestModalProps {
 };
 
 export default function RequestModalClient({ requests }: RequestModalProps) {
-    const router = useRouter();
     const [open, setOpen] = useState<boolean>(false);
-    const updateAdminPermission = api.admin.updateAdminPermission.useMutation({
-        onSuccess: () => {
-            handleClose();
-            router.refresh();
-        },
-    });
 
     const handleClose = () => {
         setOpen(false);
@@ -45,29 +35,23 @@ export default function RequestModalClient({ requests }: RequestModalProps) {
 
     return (
         <>
-            <Button
-                variant="contained"
-                startIcon={<AddModeratorIcon />}
-                className="hidden md:inline-flex"
-                onClick={() => {
-                    setOpen(true)
-                    console.log('open')
-                }}
-            >
-                Admin Request
-            </Button>
-            <IconButton
-                color="primary"
-                className="inline-flex md:hidden"
-                onClick={() => setOpen(true)}
-            >
-                <AddModeratorIcon />
-            </IconButton>
+            <Tooltip title="Admin access requests">
+                <Button
+                    color="primary"
+                    variant="outlined"
+                    className="inline-flex p-2 min-w-0"
+                    onClick={() => setOpen(true)}
+                >
+                    <Badge color="error" variant="dot" invisible={requests.length === 0}>
+                        <NotificationAddIcon />
+                    </Badge>
+                </Button>
+            </Tooltip>
             <Dialog
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>Add New Admin</DialogTitle>
+                <DialogTitle>Admin Requests</DialogTitle>
                 <DialogContent className="flex flex-col gap-4">
                     <RequestsTable requests={requests} />
                 </DialogContent>

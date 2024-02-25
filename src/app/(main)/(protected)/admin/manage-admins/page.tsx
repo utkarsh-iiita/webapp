@@ -27,8 +27,10 @@ export default async function ManageAdminsPage({
         <Typography variant="h5" color="primary" className="px-4">
           Manage Admins
         </Typography>
-        <NewAdminModal />
-        <RequestModal />
+        <div className="flex gap-2">
+          <NewAdminModal />
+          <RequestModal />
+        </div>
       </div>
       <Divider />
       <SearchFilter allowedFilters={{ textInput: true }} />
