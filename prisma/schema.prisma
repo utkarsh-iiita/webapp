@@ -99,16 +99,11 @@ model StudentResume {
     @@index([userId])
 }
 
-// existence of this table to be decided
-model PlacementYear {
-    year Int @id
-}
-
 model ParticipatingGroups {
     year            Int
     placementTypeId String
     admissionYear   Int
-    program         Int
+    program         String
 
     placementType PlacementType @relation(fields: [placementTypeId], references: [id])
 
