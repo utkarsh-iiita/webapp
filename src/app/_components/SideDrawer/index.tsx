@@ -115,14 +115,16 @@ export default function ResponsiveDrawer({
             </ListItemButton>
           </Link>
         ) : (
-          <Link href="/dashboard" onClick={() => setOpen(false)}>
-            <ListItemButton>
-              <ListItemIcon>
-                <AccountCircleIcon />
-              </ListItemIcon>
-              <ListItemText primary={"User Panel"} />
-            </ListItemButton>
-          </Link>
+          user?.userGroup === "student" && (
+            <Link href="/dashboard" onClick={() => setOpen(false)}>
+              <ListItemButton>
+                <ListItemIcon>
+                  <AccountCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary={"User Panel"} />
+              </ListItemButton>
+            </Link>
+          )
         ))}
     </div>
   );
