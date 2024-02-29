@@ -1,20 +1,18 @@
 import { z } from "zod";
 
 import {
+  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
-  adminProcedure
 } from "~/server/api/trpc";
 
+// export const participantGroupsRouter({
+//     createGroups: adminProcedure.input(z.object({
+//         year : z.number(),
 
-
-export const participantGroupsRouter({
-    createGroups: adminProcedure.input(z.object({
-        year : z.number(),
-        
-    }))
-})
+//     }))
+// })
 
 // export const postRouter = createTRPCRouter({
 //   hello: publicProcedure
