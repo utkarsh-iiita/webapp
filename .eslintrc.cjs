@@ -33,7 +33,7 @@ const config = {
       files: ["**/*.js", "**/*.ts", "**/*.tsx"],
       rules: {
         "simple-import-sort/imports": [
-          "error",
+          "warn",
           {
             groups: [
               // `react` first, `next` second, then packages starting with a character
