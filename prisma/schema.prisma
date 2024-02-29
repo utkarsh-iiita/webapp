@@ -132,7 +132,7 @@ model ParticipatingGroups {
 }
 
 model PlacementType {
-    id                  String                @id
+    id                  String                @id @default(cuid())
     name                String
     description         String
     ParticipatingGroups ParticipatingGroups[]
