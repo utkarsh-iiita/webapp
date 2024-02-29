@@ -20,6 +20,7 @@ declare module "next-auth" {
     admin?: {
       permissions: number;
     };
+    year?: number;
   }
 
   interface Session {
@@ -31,6 +32,7 @@ declare module "next-auth" {
       admin?: {
         permissions: number;
       };
+      year?: number;
     };
     error?: "RefreshAccessTokenError";
   }
@@ -106,6 +108,7 @@ export const authOptions: NextAuthOptions = {
           id: token.user.id,
           admin: token.user.admin,
           userGroup: token.user.userGroup,
+          year: token.user.year,
         };
       }
       session.error = token.error;
@@ -207,8 +210,8 @@ export const authOptions: NextAuthOptions = {
                 admin: {
                   create: {
                     permissions: 0,
-                  }
-                }
+                  },
+                },
               },
               select: {
                 id: true,
@@ -226,12 +229,23 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Only students and faculties supported");
           }
         }
+
+        const { year } = await db.participatingGroups.findFirst({
+          select: {
+            year: true,
+          },
+          orderBy: {
+            year: "desc",
+          },
+        });
+
         return {
           id: user.id,
           name: user.name,
           username: user.username,
           userGroup: user.userGroup,
           admin: user.admin,
+          year,
         } as DefaultSession["user"];
       },
     }),
