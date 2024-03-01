@@ -1,5 +1,6 @@
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
+import NextTopLoader from "nextjs-toploader";
 
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 
@@ -27,7 +28,10 @@ export default function RootLayout({
         <TRPCReactProvider cookies={cookies().toString()}>
           <ThemeRegistry options={{ key: "css", prepend: true }}>
             <AppRouterCacheProvider>
-              <PageLayout>{children}</PageLayout>
+              <PageLayout>
+                <NextTopLoader color="#3399FF" height={2} />
+                {children}
+              </PageLayout>
             </AppRouterCacheProvider>
           </ThemeRegistry>
         </TRPCReactProvider>

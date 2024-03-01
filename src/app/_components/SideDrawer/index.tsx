@@ -60,50 +60,51 @@ export default function ResponsiveDrawer({
         </Typography>
       </Toolbar>
       <Divider />
-      {(isAdmin ? ADMIN_SIDEBAR : USER_SIDEBAR).map((list, index) => {
-        return (
-          <Fragment key={index}>
-            <List>
-              {list.title && (
-                <ListSubheader disableSticky>{list.title}</ListSubheader>
-              )}
-              {list.links.map((item) => (
-                <Link
-                  key={item.label}
-                  href={list.base + item.path}
-                  onClick={() => setOpen(false)}
-                >
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      selected={pathname === list.base + item.path}
-                    >
-                      <ListItemIcon>
-                        <item.icon
-                          color={
-                            pathname === list.base + item.path
-                              ? "primary"
-                              : undefined
-                          }
+      {!(isAdmin && user.admin?.permissions === 0) &&
+        (isAdmin ? ADMIN_SIDEBAR : USER_SIDEBAR).map((list, index) => {
+          return (
+            <Fragment key={index}>
+              <List>
+                {list.title && (
+                  <ListSubheader disableSticky>{list.title}</ListSubheader>
+                )}
+                {list.links.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={list.base + item.path}
+                    onClick={() => setOpen(false)}
+                  >
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        selected={pathname === list.base + item.path}
+                      >
+                        <ListItemIcon>
+                          <item.icon
+                            color={
+                              pathname === list.base + item.path
+                                ? "primary"
+                                : undefined
+                            }
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={item.label}
+                          primaryTypographyProps={{
+                            color:
+                              pathname === list.base + item.path
+                                ? "primary"
+                                : undefined,
+                          }}
                         />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={item.label}
-                        primaryTypographyProps={{
-                          color:
-                            pathname === list.base + item.path
-                              ? "primary"
-                              : undefined,
-                        }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                </Link>
-              ))}
-            </List>
-            <Divider />
-          </Fragment>
-        );
-      })}
+                      </ListItemButton>
+                    </ListItem>
+                  </Link>
+                ))}
+              </List>
+              <Divider />
+            </Fragment>
+          );
+        })}
       {user?.admin &&
         (!isAdmin ? (
           <Link href="/admin" onClick={() => setOpen(false)}>

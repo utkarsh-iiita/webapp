@@ -13,7 +13,7 @@ export default async function ProtectedPagesLayout({
     redirect("/login");
   }
   return (
-    <Container component="div" maxWidth="xl">
+    <Container component="div" maxWidth="xl" className="h-full">
       {children}
     </Container>
   );
