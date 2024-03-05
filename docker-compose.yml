@@ -9,7 +9,9 @@ services:
     command: npm run dev
     volumes:
       - webapp-node-cache:/root/.npm
-      - ./:/app/
+      - ./src/:/app/src/
+      - ./prisma:/app/prisma
+      - ./public:/app/public
     environment:
       - DATABASE_URL=mysql://utkarsh:utkarsh@db/utkarsh
       - REDIS_URL=redis://cache:6379
