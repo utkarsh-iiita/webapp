@@ -3,48 +3,76 @@ import { z } from "zod";
 import {
   adminProcedure,
   createTRPCRouter,
-  protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 
-// export const participantGroupsRouter({
-//     createGroups: adminProcedure.input(z.object({
-//         year : z.number(),
+export const placementConfigRouter = createTRPCRouter({
+  getPlacementYears: publicProcedure.query(async ({ ctx }) => {
+    const data = await ctx.db.participatingGroups.groupBy({
+      by: ["year"],
+    });
+    return data.map((el) => el.year);
+  }),
+  getPlacementTypes: adminProcedure.query(async ({ ctx }) => {
+    const data = await ctx.db.placementType.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return data;
+  }),
+  getYearwisePrograms: adminProcedure.query(async ({ ctx }) => {
+    const data = await ctx.db.students.groupBy({
+      by: ["admissionYear", "program"],
+    });
 
-//     }))
-// })
+    const yearWisePrograms: {
+      [key: number]: string[];
+    } = {};
 
-// export const postRouter = createTRPCRouter({
-//   hello: publicProcedure
-//     .input(z.object({ text: z.string() }))
-//     .query(({ input }) => {
-//       return {
-//         greeting: `Hello ${input.text}`,
-//       };
-//     }),
+    data.forEach((el) => {
+      if (!yearWisePrograms[el.admissionYear]) {
+        yearWisePrograms[el.admissionYear] = [];
+      }
+      yearWisePrograms[el.admissionYear].push(el.program);
+    });
 
-//   // create: protectedProcedure
-//   //   .input(z.object({ name: z.string().min(1) }))
-//   //   .mutation(async ({ ctx, input }) => {
-//   //     // simulate a slow db call
-//   //     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-//   //     return ctx.db.post.create({
-//   //       data: {
-//   //         name: input.name,
-//   //         createdBy: { connect: { id: ctx.session.user.id } },
-//   //       },
-//   //     });
-//   //   }),
-
-//   // getLatest: protectedProcedure.query(({ ctx }) => {
-//   //   return ctx.db.post.findFirst({
-//   //     orderBy: { createdAt: "desc" },
-//   //     where: { createdBy: { id: ctx.session.user.id } },
-//   //   });
-//   // }),
-
-//   getSecretMessage: protectedProcedure.query(() => {
-//     return "you can now see this secret message!";
-//   }),
-// });
+    return yearWisePrograms;
+  }),
+  createParticipatingGroups: adminProcedure
+    .input(
+      z.object({
+        year: z.number(),
+        placementConfigs: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+            batches: z.array(
+              z.object({
+                program: z.string(),
+                admissionYear: z.number(),
+              }),
+            ),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const allGroups = [];
+      for (const config of input.placementConfigs) {
+        for (const batch of config.batches) {
+          allGroups.push({
+            year: input.year,
+            placementTypeId: config.id,
+            program: batch.program,
+            admissionYear: batch.admissionYear,
+          });
+        }
+      }
+      await ctx.db.participatingGroups.createMany({
+        data: allGroups,
+      });
+      return true;
+    }),
+});

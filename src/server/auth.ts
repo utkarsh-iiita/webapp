@@ -230,7 +230,7 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
-        const { year } = await db.participatingGroups.findFirst({
+        const latestYear = await db.participatingGroups.findFirst({
           select: {
             year: true,
           },
@@ -245,7 +245,7 @@ export const authOptions: NextAuthOptions = {
           username: user.username,
           userGroup: user.userGroup,
           admin: user.admin,
-          year,
+          year: latestYear?.year,
         } as DefaultSession["user"];
       },
     }),

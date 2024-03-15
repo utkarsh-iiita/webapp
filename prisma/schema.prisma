@@ -134,7 +134,7 @@ model ParticipatingGroups {
 model PlacementType {
     id                  String                @id @default(cuid())
     name                String
-    description         String
+    description         String?               @db.Text
     ParticipatingGroups ParticipatingGroups[]
 }
 

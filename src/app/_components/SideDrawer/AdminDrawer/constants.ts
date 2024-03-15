@@ -1,15 +1,21 @@
-import PeopleIcon from '@mui/icons-material/People';
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import PeopleIcon from "@mui/icons-material/People";
 
 export const ADMIN_SIDEBAR = [
   {
-    base: '/admin',
-    title: 'Others',
+    base: "/admin",
+    title: "",
     links: [
       {
-        label: 'Manage Admins',
-        path: '/manage-admins',
-        icon: PeopleIcon
-      }
-    ]
-  }
-]
+        label: "Admin Access",
+        path: "/manage-admins",
+        icon: PeopleIcon,
+      },
+      {
+        label: "Placement Years",
+        path: "/placement-years",
+        icon: CalendarMonthIcon,
+      },
+    ],
+  },
+];

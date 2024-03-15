@@ -5,6 +5,8 @@ import { SessionProvider } from "next-auth/react";
 
 import CssBaseline from "@mui/material/CssBaseline";
 import { StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import { storeLS } from "../localStorage";
 
@@ -32,8 +34,10 @@ export default function ThemeRegistry(props) {
         <StyledEngineProvider injectFirst>
           <ThemeContext.Provider value={{ themeMode, toggleTheme }}>
             <ThemeProvider theme={theme}>
-              <CssBaseline />
-              {children}
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <CssBaseline />
+                {children}
+              </LocalizationProvider>
             </ThemeProvider>
           </ThemeContext.Provider>
         </StyledEngineProvider>

@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { Container } from "@mui/material/index";
-
 import { getServerAuthSession } from "~/server/auth";
 export default async function ProtectedPagesLayout({
   children,
@@ -9,12 +7,8 @@ export default async function ProtectedPagesLayout({
   children: React.ReactNode;
 }) {
   let session = await getServerAuthSession();
-  if (!session) {
+  if (!session || !session.user) {
     redirect("/login");
   }
-  return (
-    <Container component="div" maxWidth="xl" className="h-full">
-      {children}
-    </Container>
-  );
+  return <div className="h-full">{children}</div>;
 }
