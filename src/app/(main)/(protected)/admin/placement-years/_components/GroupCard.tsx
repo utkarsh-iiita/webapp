@@ -14,16 +14,18 @@ export default function GroupCard(props: GroupCardProps) {
     <Paper elevation={4} className="group flex flex-col p-4 gap-3">
       <Typography variant="subtitle2" className="relative">
         <em>Group # {props.index + 1}</em>
-        <IconButton
-          onClick={props.onDelete}
-          className="absolute top-0 right-0 mt-[-4px]"
-          color="error"
-          size="small"
-        >
-          <CloseIcon />
-        </IconButton>
+        {!props.disabled && (
+          <IconButton
+            onClick={props.onDelete}
+            className="absolute top-0 right-0 mt-[-4px]"
+            color="error"
+            size="small"
+          >
+            <CloseIcon />
+          </IconButton>
+        )}
       </Typography>
-      <FormControl size="small" required>
+      <FormControl size="small" required disabled={props.disabled}>
         <InputLabel>Admission Year</InputLabel>
         <Select
           value={props.group.admissionYear || ""}
@@ -42,7 +44,11 @@ export default function GroupCard(props: GroupCardProps) {
           ))}
         </Select>
       </FormControl>
-      <FormControl size="small" required disabled={!props.group.admissionYear}>
+      <FormControl
+        size="small"
+        required
+        disabled={props.disabled || !props.group.admissionYear}
+      >
         <InputLabel>Program</InputLabel>
         <Select
           value={props.group.program || ""}

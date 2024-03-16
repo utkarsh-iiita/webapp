@@ -16,17 +16,24 @@ import GroupCard from "./GroupCard";
 export default function JobTypeConfiguration(props: JobTypeConfigurationProps) {
   return (
     <Paper elevation={2} className="p-4 flex flex-col gap-4 relative">
-      <IconButton
-        onClick={props.onDelete}
-        className="absolute top-1 right-1"
-        color="error"
-        size="small"
-      >
-        <CloseIcon />
-      </IconButton>
+      {!props.disabled && (
+        <IconButton
+          onClick={props.onDelete}
+          className="absolute top-1 right-1"
+          color="error"
+          size="small"
+        >
+          <CloseIcon />
+        </IconButton>
+      )}
       <div className="flex flex-row flex-wrap gap-3 items-center">
         <Typography variant="body2">Select Placement Type:</Typography>
-        <FormControl className="w-full max-w-60" size="small" required>
+        <FormControl
+          className="w-full max-w-60"
+          size="small"
+          required
+          disabled={props.disabled}
+        >
           <InputLabel>Placement Type</InputLabel>
           <Select
             value={props.placementConfig.id || ""}
@@ -59,6 +66,7 @@ export default function JobTypeConfiguration(props: JobTypeConfigurationProps) {
                 key={index}
                 index={index}
                 group={batch}
+                disabled={props.disabled}
                 allGroups={Object.fromEntries(
                   Object.keys(props.yearWisePrograms)
                     .filter((key) => {
@@ -98,39 +106,41 @@ export default function JobTypeConfiguration(props: JobTypeConfigurationProps) {
                 }}
               />
             )) || []}
-            {props.placementConfig.batches?.length !==
-              Object.keys(props.yearWisePrograms).reduce(
-                (totalLength, currVal) => {
-                  return (
-                    totalLength + props.yearWisePrograms[Number(currVal)].length
-                  );
-                },
-                0,
-              ) && (
-              <Button
-                variant="outlined"
-                className="border-dashed"
-                disabled={
-                  props.placementConfig.batches?.length > 0 &&
-                  (!props.placementConfig.batches.at(-1).admissionYear ||
-                    !props.placementConfig.batches.at(-1).program)
-                }
-                onClick={(_) => {
-                  props.setPlacementConfig({
-                    ...props.placementConfig,
-                    batches: [
-                      ...(props.placementConfig.batches || []),
-                      {
-                        program: "",
-                        admissionYear: 0,
-                      },
-                    ],
-                  });
-                }}
-              >
-                <AddIcon fontSize="large" />
-              </Button>
-            )}
+            {!props.disabled &&
+              props.placementConfig.batches?.length !==
+                Object.keys(props.yearWisePrograms).reduce(
+                  (totalLength, currVal) => {
+                    return (
+                      totalLength +
+                      props.yearWisePrograms[Number(currVal)].length
+                    );
+                  },
+                  0,
+                ) && (
+                <Button
+                  variant="outlined"
+                  className="border-dashed"
+                  disabled={
+                    props.placementConfig.batches?.length > 0 &&
+                    (!props.placementConfig.batches.at(-1).admissionYear ||
+                      !props.placementConfig.batches.at(-1).program)
+                  }
+                  onClick={(_) => {
+                    props.setPlacementConfig({
+                      ...props.placementConfig,
+                      batches: [
+                        ...(props.placementConfig.batches || []),
+                        {
+                          program: "",
+                          admissionYear: 0,
+                        },
+                      ],
+                    });
+                  }}
+                >
+                  <AddIcon fontSize="large" />
+                </Button>
+              )}
           </div>
         </>
       )}

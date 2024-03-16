@@ -10,6 +10,7 @@ export const placementConfigRouter = createTRPCRouter({
   getPlacementYears: publicProcedure.query(async ({ ctx }) => {
     const data = await ctx.db.participatingGroups.groupBy({
       by: ["year"],
+      orderBy: [{ year: "desc" }],
     });
     return data.map((el) => el.year);
   }),
@@ -40,6 +41,24 @@ export const placementConfigRouter = createTRPCRouter({
 
     return yearWisePrograms;
   }),
+  getParticipatingGroups: adminProcedure
+    .input(z.number())
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.db.participatingGroups.findMany({
+        where: {
+          year: input,
+        },
+        include: {
+          placementType: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+      return data;
+    }),
   createParticipatingGroups: adminProcedure
     .input(
       z.object({
@@ -59,6 +78,47 @@ export const placementConfigRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const allGroups = [];
+      for (const config of input.placementConfigs) {
+        for (const batch of config.batches) {
+          allGroups.push({
+            year: input.year,
+            placementTypeId: config.id,
+            program: batch.program,
+            admissionYear: batch.admissionYear,
+          });
+        }
+      }
+      await ctx.db.participatingGroups.createMany({
+        data: allGroups,
+      });
+      return true;
+    }),
+
+  editParticipatingGroups: adminProcedure
+    .input(
+      z.object({
+        year: z.number(),
+        placementConfigs: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+            batches: z.array(
+              z.object({
+                program: z.string(),
+                admissionYear: z.number(),
+              }),
+            ),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.participatingGroups.deleteMany({
+        where: {
+          year: input.year,
+        },
+      });
       const allGroups = [];
       for (const config of input.placementConfigs) {
         for (const batch of config.batches) {
