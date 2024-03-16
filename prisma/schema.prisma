@@ -124,8 +124,7 @@ model ParticipatingGroups {
     admissionYear   Int
     program         String
 
-    placementType               PlacementType                 @relation(fields: [placementTypeId], references: [id])
-    jobOpeningParticipantGroups JobOpeningParticipantGroups[]
+    placementType PlacementType @relation(fields: [placementTypeId], references: [id])
 
     @@unique([year, placementTypeId, admissionYear, program])
     @@index([placementTypeId])
@@ -136,6 +135,7 @@ model PlacementType {
     name                String
     description         String?               @db.Text
     ParticipatingGroups ParticipatingGroups[]
+    JobOpening          JobOpening[]
 }
 
 model Company {
@@ -164,6 +164,8 @@ model JobOpening {
     promisedPayTotal Int?
     empBenefits      String?
 
+    jobType String
+
     registrationStart      DateTime
     registrationEnd        DateTime
     extraApplicationFields Json?
@@ -176,24 +178,25 @@ model JobOpening {
     updatedAt DateTime @updatedAt
 
     company                     Company                       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    placementType               PlacementType                 @relation(fields: [jobType], references: [id])
     applications                Application[]
     events                      Event[]
     JobOpeningParticipantGroups JobOpeningParticipantGroups[]
 
     @@index([companyId])
+    @@index([jobType])
 }
 
 model JobOpeningParticipantGroups {
-    jobOpeningId         String
-    participatingGroupId String
-    minCgpa              Float  @default(0)
-    minCredits           Int    @default(0)
+    id            String @id @default(cuid())
+    jobOpeningId  String
+    admissionYear Int
+    program       String
+    minCgpa       Float  @default(0)
+    minCredits    Int    @default(0)
 
-    jobOpening         JobOpening          @relation(fields: [jobOpeningId], references: [id], onDelete: Cascade)
-    participatingGroup ParticipatingGroups @relation(fields: [participatingGroupId], references: [id], onDelete: Cascade)
+    jobOpening JobOpening @relation(fields: [jobOpeningId], references: [id], onDelete: Cascade)
 
-    @@id([jobOpeningId, participatingGroupId])
-    @@index([participatingGroupId])
     @@index([jobOpeningId])
 }
 

@@ -14,6 +14,7 @@ type JobTypeConfigurationProps = {
   };
   placementConfig: PlacementConfig;
   setPlacementConfig: (newConfig: PlacementConfig) => void;
+  disabled?: boolean;
   onDelete: () => void;
 };
 
@@ -25,4 +26,5 @@ type GroupCardProps = {
   allGroups: {
     [key: number]: string[];
   };
+  disabled?: boolean;
 };

@@ -12,7 +12,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import FullPageLoader from "~/app/common/components/FullPageLoader";
 import { api } from "~/trpc/react";
 
-import JobTypeConfiguration from "./_components/JobTypeConfiguration";
+import JobTypeConfiguration from "../_components/JobTypeConfiguration";
 
 export default function NewPlacementYear() {
   const router = useRouter();
@@ -122,7 +122,12 @@ export default function NewPlacementYear() {
               disabled={
                 !placementConfigs.length ||
                 placementConfigs.some(
-                  (config) => !config.id || !config.batches?.length,
+                  (config) =>
+                    !config.id ||
+                    !config.batches?.length ||
+                    config.batches.some(
+                      (group) => !group.program || !group.admissionYear,
+                    ),
                 )
               }
               loading={createYearMutation.isLoading}
