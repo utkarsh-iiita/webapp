@@ -2,6 +2,7 @@ import { postRouter } from "~/server/api/routers/post";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 import { adminRouter } from "./routers/admin";
+import { jobTypeRouter } from "./routers/jobType";
 import { placementConfigRouter } from "./routers/placementConfig";
 import { studentRouter } from "./routers/student";
 import { userRouter } from "./routers/users";
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   admin: adminRouter,
   student: studentRouter,
   placementConfig: placementConfigRouter,
+  jobType: jobTypeRouter,
 });
 
 // export type definition of API
