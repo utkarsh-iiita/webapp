@@ -6,7 +6,7 @@ import dayjs, { type Dayjs } from "dayjs";
 
 import AddIcon from "@mui/icons-material/Add";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Button, Container, Divider, Typography } from "@mui/material";
+import { Box, Button, Container, Divider, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 
 import FullPageLoader from "~/app/common/components/FullPageLoader";
@@ -59,7 +59,7 @@ export default function NewPlacementYear() {
           </Typography>
         </div>
         <Divider />
-        <div className=" flex-1 overflow-y-auto">
+        <div className=" flex-1 overflow-y-auto mb-20">
           <div className="flex flex-col gap-4 py-4">
             <Typography variant="body1">
               Select the year for the placement session
@@ -115,7 +115,12 @@ export default function NewPlacementYear() {
             )}
           </div>
         </div>
-        <div className="fixed bottom-0 w-full left-0 py-4 border-0 border-solid border-t border-white/15">
+        <Box
+          className="fixed bottom-0 w-full left-0 py-4 border-0 border-solid border-t border-white/15"
+          sx={{
+            backgroundColor: "bgclear",
+          }}
+        >
           <Container className="flex flex-row justify-end">
             <LoadingButton
               variant="contained"
@@ -141,7 +146,7 @@ export default function NewPlacementYear() {
               Create
             </LoadingButton>
           </Container>
-        </div>
+        </Box>
       </Container>
     </>
   );
