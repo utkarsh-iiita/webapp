@@ -1,6 +1,7 @@
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import FeedbackIcon from "@mui/icons-material/Feedback";
 import PeopleIcon from "@mui/icons-material/People";
-import WorkIcon from '@mui/icons-material/Work';
+import WorkIcon from "@mui/icons-material/Work";
 export const ADMIN_SIDEBAR = [
   {
     base: "/admin",
@@ -20,7 +21,12 @@ export const ADMIN_SIDEBAR = [
         label: "Job Types",
         path: "/job-types",
         icon: WorkIcon,
-      }
+      },
+      {
+        label: "Help Chat",
+        path: "/help-chat",
+        icon: FeedbackIcon,
+      },
     ],
   },
 ];
