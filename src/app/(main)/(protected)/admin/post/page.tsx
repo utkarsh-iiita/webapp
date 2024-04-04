@@ -3,6 +3,7 @@
 import { Box, CircularProgress, Container, Divider, TextField, Typography } from "@mui/material";
 
 import { api } from "~/trpc/react"
+import PostRow from "./_components/PostRow";
 
 
 function Page() {
@@ -48,23 +49,20 @@ function Page() {
         )}
         {
           <Box className="flex flex-col gap-2">
-            {/* {allPosts &&
+            {allPosts &&
               allPosts.map((post) => (
-                <Post
-                  key={post._id}
-                  id={post._id}
+                <PostRow
+
+                  id={post.id}
                   title={post.title}
-                  baseUrl={'post/'}
-                  description={post.description}
-                  company={post.company}
-                  status={post.status}
                   createdAt={post.createdAt}
                 />
-              ))} */
+              ))}
 
-            }
+
           </Box>
         }
+
       </Container>
     </>
 
