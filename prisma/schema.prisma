@@ -52,10 +52,12 @@ model User {
     username  String @unique
     userGroup String
 
-    accounts Account[]
-    sessions Session[]
-    student  Students?
-    admin    Admin?
+    accounts    Account[]
+    sessions    Session[]
+    student     Students?
+    admin       Admin?
+    Post        Post[]
+    PostComment PostComment[]
 }
 
 model Admin {
@@ -280,4 +282,35 @@ model Event {
 
     @@index([companyId])
     @@index([jobOpeningId])
+}
+
+model Post {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    title     String
+    published Boolean  @default(false)
+    authorId  String
+    content   String   @db.Text
+
+    author   User          @relation(fields: [authorId], references: [id])
+    comments PostComment[]
+
+    @@index([authorId])
+}
+
+model PostComment {
+    id            String   @id @default(cuid())
+    postId        String
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    content       String   @db.Text
+    authorId      String
+    isAuthorAdmin Boolean  @default(false)
+
+    author User @relation(fields: [authorId], references: [id])
+    post   Post @relation(fields: [postId], references: [id])
+
+    @@index([authorId])
+    @@index([postId])
 }

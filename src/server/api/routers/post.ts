@@ -1,42 +1,66 @@
 import { z } from "zod";
 
 import {
+  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 
+
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
+  getLatestPost: publicProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+        pageSize: z.number().max(100).default(10),
+      }),
+    ).query(async ({ ctx, input }) => {
+      const data = await ctx.db.post.findMany({
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+
+        },
+        where: {
+          published: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: input.pageSize,
+        skip: (input.page - 1) * input.pageSize,
+      });
+      return data;
     }),
-
-  // create: protectedProcedure
-  //   .input(z.object({ name: z.string().min(1) }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     // simulate a slow db call
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //     return ctx.db.post.create({
-  //       data: {
-  //         name: input.name,
-  //         createdBy: { connect: { id: ctx.session.user.id } },
-  //       },
-  //     });
-  //   }),
-
-  // getLatest: protectedProcedure.query(({ ctx }) => {
-  //   return ctx.db.post.findFirst({
-  //     orderBy: { createdAt: "desc" },
-  //     where: { createdBy: { id: ctx.session.user.id } },
-  //   });
-  // }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
+  getPost: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const data = await ctx.db.post.findUniqueOrThrow({
+      where: {
+        published: true,
+        id: input,
+      }
+    });
+    return data;
   }),
+  addNewPost: adminProcedure.input(z.object({
+    id: z.string(),
+    title: z.string(),
+    content: z.string(),
+  })).mutation(async ({ ctx, input }) => {
+    await ctx.db.post.create({
+      data: {
+        id: input.id,
+        title: input.title,
+        content: input.content,
+        authorId: ctx.session.user.id,
+        published: true,
+
+      }
+    });
+    return true;
+  }),
+
+
+
 });

@@ -1,3 +1,4 @@
+
 import { postRouter } from "~/server/api/routers/post";
 import { createTRPCRouter } from "~/server/api/trpc";
 
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
   student: studentRouter,
   placementConfig: placementConfigRouter,
   jobType: jobTypeRouter,
+
 });
 
 // export type definition of API
