@@ -7,19 +7,19 @@ import dayjs from "~/app/_utils/extendedDayjs";
 export default function ChatRow(props: {
   createdAt: Date;
   message: string;
-  user: {
+  participant: {
     id: string;
     name: string;
     username: string;
   };
 }) {
   return (
-    <Link href={"./help-chat/" + props.user.id}>
+    <Link href={"./help-chat/" + props.participant.id}>
       <Paper className="flex flex-col gap-2 py-2 px-4">
         <div className="flex flex-row justify-between">
           <Typography variant="body1">
-            <strong>{props.user.name}</strong> (
-            {props.user.username.toUpperCase()})
+            <strong>{props.participant.name}</strong> (
+            {props.participant.username.toUpperCase()})
           </Typography>
           <Typography variant="caption" className="whitespace-nowrap">
             {dayjs(props.createdAt).fromNow()}

@@ -18,6 +18,7 @@ import FullPageLoader from "~/app/common/components/FullPageLoader";
 import { api } from "~/trpc/react";
 import { type api as API } from "~/trpc/server";
 
+import AdminMessageBox from "./_components/AdminMessageBox";
 import UserMessageBox from "./_components/UserMessageBox";
 
 type message = ReturnType<
@@ -84,13 +85,17 @@ export default function HelpChatPage() {
             {allMessages.map((msg, index) => {
               return (
                 <React.Fragment key={index}>
-                  {msg.participantId === session?.user.id ? (
+                  {msg.user.id === session?.user.id ? (
                     <UserMessageBox
                       message={msg.message}
                       time={msg.createdAt}
                     />
                   ) : (
-                    <></>
+                    <AdminMessageBox
+                      message={msg.message}
+                      time={msg.createdAt}
+                      author={msg.user.name}
+                    />
                   )}
                   {(index === allMessages.length - 1 ||
                     dayjs(msg.createdAt).format("DD-MM-YYYY") !==

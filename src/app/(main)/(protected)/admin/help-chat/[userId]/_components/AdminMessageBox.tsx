@@ -12,10 +12,10 @@ export default function AdminMessageBox(props: {
 }) {
   return (
     <Paper
-      elevation={2}
-      className="flex flex-col max-w-[calc(min(75%,400px))] self-start p-2 pb-0 relative mt-5"
+      elevation={6}
+      className="flex flex-col max-w-[calc(min(75%,400px))] self-end p-2 pb-0 relative mt-5"
     >
-      <Typography variant="caption" className="absolute -top-5 left-1">
+      <Typography variant="caption" className="absolute -top-5 right-1">
         {props.author}
       </Typography>
       <Typography variant="body1">{props.message}</Typography>

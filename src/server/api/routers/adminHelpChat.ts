@@ -17,6 +17,19 @@ export const adminHelpChatRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           participantId: ctx.session.user.id,
         },
+        select: {
+          id: true,
+          message: true,
+          createdAt: true,
+          participantId: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+            },
+          },
+        },
       });
       return message;
     }),
@@ -37,6 +50,19 @@ export const adminHelpChatRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           participantId: input.participantId,
         },
+        select: {
+          id: true,
+          message: true,
+          createdAt: true,
+          participantId: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+            },
+          },
+        },
       });
       return message;
     }),
@@ -51,6 +77,19 @@ export const adminHelpChatRouter = createTRPCRouter({
       const messages = await ctx.db.adminHelpMessage.findMany({
         where: {
           participantId: ctx.session.user.id,
+        },
+        select: {
+          id: true,
+          message: true,
+          createdAt: true,
+          participantId: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+            },
+          },
         },
         orderBy: {
           createdAt: "desc",
@@ -72,6 +111,11 @@ export const adminHelpChatRouter = createTRPCRouter({
         by: ["participantId"],
         _max: {
           createdAt: true,
+        },
+        having: {
+          participantId: {
+            not: ctx.session.user.id,
+          },
         },
         orderBy: {
           _max: {
@@ -97,7 +141,8 @@ export const adminHelpChatRouter = createTRPCRouter({
         select: {
           createdAt: true,
           message: true,
-          user: {
+          participantId: true,
+          participant: {
             select: {
               id: true,
               name: true,
@@ -127,6 +172,19 @@ export const adminHelpChatRouter = createTRPCRouter({
       const messages = await ctx.db.adminHelpMessage.findMany({
         where: {
           participantId: input.participantId,
+        },
+        select: {
+          id: true,
+          message: true,
+          createdAt: true,
+          participantId: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+            },
+          },
         },
         orderBy: {
           createdAt: "desc",

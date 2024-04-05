@@ -5,19 +5,12 @@ import { Paper, Typography } from "@mui/material";
 dayjs.extend(require("dayjs/plugin/isToday"));
 dayjs.extend(require("dayjs/plugin/isYesterday"));
 
-export default function AdminMessageBox(props: {
-  message: string;
-  author: string;
-  time: Date;
-}) {
+export default function UserMessageBox(props: { message: string; time: Date }) {
   return (
     <Paper
       elevation={2}
-      className="flex flex-col max-w-[calc(min(75%,400px))] self-start p-2 pb-0 relative mt-5"
+      className="flex flex-col max-w-[calc(min(75%,400px))] self-start p-2 pb-0"
     >
-      <Typography variant="caption" className="absolute -top-5 left-1">
-        {props.author}
-      </Typography>
       <Typography variant="body1">{props.message}</Typography>
       <Typography
         variant="caption"
