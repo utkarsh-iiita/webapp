@@ -52,10 +52,14 @@ model User {
     username  String @unique
     userGroup String
 
-    accounts Account[]
-    sessions Session[]
-    student  Students?
-    admin    Admin?
+    accounts         Account[]
+    sessions         Session[]
+    student          Students?
+    admin            Admin?
+    Post             Post[]
+    PostComment      PostComment[]
+    AdminHelpMessage AdminHelpMessage[]
+    AdminHelpChat    AdminHelpMessage[] @relation("AdminHelpParticipant")
 }
 
 model Admin {
@@ -142,7 +146,7 @@ model Company {
     id          String   @id @default(cuid())
     name        String
     logo        String
-    website     String
+    website     String   @unique
     description String?  @db.Text
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
@@ -153,16 +157,15 @@ model Company {
 
 model JobOpening {
     // descriptive data
-    id               String  @id @default(cuid())
-    companyId        String
-    title            String
-    description      String?
-    location         String
-    paySplit         Json
-    payTotal         Int
-    promisedPaySplit Json?
-    promisedPayTotal Int?
-    empBenefits      String?
+    id          String  @id @default(cuid())
+    companyId   String
+    title       String
+    description String?
+    role        String
+    location    String
+    pay         String
+    payNumeric  Int
+    empBenefits String?
 
     jobType String
 
@@ -280,4 +283,50 @@ model Event {
 
     @@index([companyId])
     @@index([jobOpeningId])
+}
+
+model Post {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    title     String
+    published Boolean  @default(false)
+    authorId  String
+    content   String   @db.Text
+
+    author   User          @relation(fields: [authorId], references: [id])
+    comments PostComment[]
+
+    @@index([authorId])
+}
+
+model PostComment {
+    id            String   @id @default(cuid())
+    postId        String
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    content       String   @db.Text
+    authorId      String
+    isAuthorAdmin Boolean  @default(false)
+
+    author User @relation(fields: [authorId], references: [id])
+    post   Post @relation(fields: [postId], references: [id])
+
+    @@index([authorId])
+    @@index([postId])
+}
+
+model AdminHelpMessage {
+    id            String   @id @default(cuid())
+    participantId String
+    userId        String
+    message       String   @db.Text
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    participant User @relation("AdminHelpParticipant", fields: [participantId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([participantId])
 }
