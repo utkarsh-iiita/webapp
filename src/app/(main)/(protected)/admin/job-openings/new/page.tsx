@@ -230,9 +230,9 @@ export default function NewJobOpening() {
         <TextEditor
           height="40vmin"
           value={jobOpening.description}
-          onChange={(value) =>
-            setJobOpening({ ...jobOpening, description: value })
-          }
+          onChange={(value) => {
+            setJobOpening({ ...jobOpening, description: value });
+          }}
         />
       </form>
     </Container>
