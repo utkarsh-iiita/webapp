@@ -38,8 +38,11 @@ services:
       MYSQL_PASSWORD: utkarsh
     volumes:
       - mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
     networks:
       internal:
+      default:
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uutkarsh", "-putkarsh"]
       interval: 5s
