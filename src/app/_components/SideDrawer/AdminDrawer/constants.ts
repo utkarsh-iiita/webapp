@@ -1,4 +1,5 @@
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import EmailIcon from '@mui/icons-material/Email';
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import PeopleIcon from "@mui/icons-material/People";
 import WorkIcon from "@mui/icons-material/Work";
@@ -27,6 +28,12 @@ export const ADMIN_SIDEBAR = [
         path: "/help-chat",
         icon: FeedbackIcon,
       },
+      {
+        label: "Post",
+        path: "/post",
+        icon: EmailIcon,
+      },
+
     ],
   },
 ];
