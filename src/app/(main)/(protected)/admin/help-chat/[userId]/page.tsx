@@ -112,21 +112,21 @@ export default function HelpChatPage({
                   )}
                   {(index === allMessages.length - 1 ||
                     dayjs(msg.createdAt).format("DD-MM-YYYY") !==
-                      dayjs(allMessages[index + 1].createdAt).format(
-                        "DD-MM-YYYY",
-                      )) && (
-                    <Paper elevation={2} className="self-center py-1 px-2">
-                      <Typography variant="body2">
-                        {dayjs(msg.createdAt).format("DD-MM-YYYY") ===
-                        dayjs().format("DD-MM-YYYY")
-                          ? "Today"
-                          : dayjs(msg.createdAt).format("DD-MM-YYYY") ===
+                    dayjs(allMessages[index + 1].createdAt).format(
+                      "DD-MM-YYYY",
+                    )) && (
+                      <Paper elevation={2} className="self-center py-1 px-2">
+                        <Typography variant="body2">
+                          {dayjs(msg.createdAt).format("DD-MM-YYYY") ===
+                            dayjs().format("DD-MM-YYYY")
+                            ? "Today"
+                            : dayjs(msg.createdAt).format("DD-MM-YYYY") ===
                               dayjs().subtract(1, "day").format("DD-MM-YYYY")
-                            ? "Yesterday"
-                            : dayjs(msg.createdAt).format("DD-MM-YYYY")}
-                      </Typography>
-                    </Paper>
-                  )}
+                              ? "Yesterday"
+                              : dayjs(msg.createdAt).format("DD-MM-YYYY")}
+                        </Typography>
+                      </Paper>
+                    )}
                 </React.Fragment>
               );
             })}

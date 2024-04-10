@@ -39,6 +39,17 @@ export const postRouter = createTRPCRouter({
       where: {
         published: true,
         id: input,
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        title: true,
+        content: true,
+        author: {
+          select: {
+            name: true,
+          }
+        }
       }
     });
     return data;

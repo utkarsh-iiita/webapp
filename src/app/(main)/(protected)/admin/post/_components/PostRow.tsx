@@ -12,7 +12,7 @@ export default function PostRow(props: {
 
 }) {
     return (
-        <Link href={"./help-chat/" + props.id}>
+        <Link href={"./post/" + props.id}>
             <Paper className="flex flex-col gap-2 py-2 px-4">
                 <div className="flex flex-row justify-between">
                     <Typography variant="body1">
