@@ -20,6 +20,7 @@ import {
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { useQuery } from "@tanstack/react-query";
 
+import TextEditor from "~/app/common/components/TextEditor";
 import { api } from "~/trpc/react";
 
 import { DEFAULT_JOB_OPENING } from "./constants";
@@ -225,6 +226,13 @@ export default function NewJobOpening() {
             setJobOpening({ ...jobOpening, registrationEnd: date })
           }
           label="Registration End Date and Time"
+        />
+        <TextEditor
+          height="40vmin"
+          value={jobOpening.description}
+          onChange={(value) =>
+            setJobOpening({ ...jobOpening, description: value })
+          }
         />
       </form>
     </Container>

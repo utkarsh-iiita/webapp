@@ -1,12 +1,22 @@
 "use client";
 
+import { useRef } from "react";
+
 import { Editor } from "@tinymce/tinymce-react";
 
-export default function App() {
+interface TextEditorProps {
+  height?: string;
+  value: string;
+  onChange: (content: string) => void;
+}
+export default function TextEditor(props: TextEditorProps) {
   return (
     <Editor
+      value={props.value}
+      onChange={(e) => props.onChange(e.target.getContent())}
       apiKey="ah9w9dtmhnrt5yhzobg11p0jj9sdldd1x64lj89aipllnqn6"
       init={{
+        height: props.height ?? "90vmin",
         toolbar_sticky: true,
         toolbar_sticky_offset: 64,
         skin: "oxide-dark",
