@@ -55,13 +55,11 @@ export const postRouter = createTRPCRouter({
     return data;
   }),
   addNewPost: adminProcedure.input(z.object({
-    id: z.string(),
     title: z.string(),
     content: z.string(),
   })).mutation(async ({ ctx, input }) => {
     await ctx.db.post.create({
       data: {
-        id: input.id,
         title: input.title,
         content: input.content,
         authorId: ctx.session.user.id,

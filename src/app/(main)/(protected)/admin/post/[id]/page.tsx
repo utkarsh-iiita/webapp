@@ -25,14 +25,11 @@ export default function PostDisplayPage({
           <strong>{data.title}</strong>
         </Typography>
         <Typography variant="caption" className="whitespace-nowrap">
-          {dayjs(data.createdAt).fromNow()}
+          {data.author.name} · {dayjs(data.createdAt).fromNow()}
         </Typography>
-        <Typography variant="body1">
-          {data.content}
-        </Typography>
-        <Typography variant="body1">
-          <strong>{data.author.name}</strong>
-        </Typography>
+        <div dangerouslySetInnerHTML={{
+          __html: data.content
+        }}></div>
 
       </div>
     </Paper>

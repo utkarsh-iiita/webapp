@@ -1,11 +1,14 @@
 "use client";
 
+import Link from "next/link";
+
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import {
   Box,
   CircularProgress,
   Container,
   Divider,
-  TextField,
+  IconButton,
   Typography,
 } from "@mui/material";
 
@@ -19,9 +22,16 @@ function Page() {
   return (
     <>
       <Container className="flex flex-col gap-4 py-4">
-        <Typography variant="h5" color="primary" className="px-4">
-          All Posts
-        </Typography>
+        <div className="flex flex-row justify-between">
+          <Typography variant="h5" color="primary" className="px-4">
+            All Posts
+          </Typography>
+          <Link href="./post/new">
+            <IconButton>
+              <PostAddIcon />
+            </IconButton>
+          </Link>
+        </div>
         <Divider />
         {isLoading && (
           <Container className="h-96 w-full flex justify-center items-center">
