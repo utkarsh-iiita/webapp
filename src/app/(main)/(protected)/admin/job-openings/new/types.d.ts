@@ -14,7 +14,7 @@ interface NewJobOpening {
   jobType: string | null;
   registrationStart: Date | null;
   registrationEnd: Date | null;
-  extraApplicationFields: any | null;
+  extraApplicationFields: extraApplicationField[] | null;
   hidden: boolean;
   autoApprove: boolean;
   autoVisible: boolean;
@@ -25,3 +25,10 @@ interface NewJobOpening {
     minCredits?: number;
   }[];
 }
+
+type extraApplicationField = {
+  title: string;
+  description: string;
+  format: string;
+  required: boolean;
+};

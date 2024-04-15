@@ -21,6 +21,7 @@ export default function TextEditor(props: TextEditorProps) {
   return (
     <ClickAwayListener onClickAway={log}>
       <Editor
+        id="text-editor"
         onInit={(evt, editor) => (editorRef.current = editor)}
         initialValue={props.value}
         apiKey="ah9w9dtmhnrt5yhzobg11p0jj9sdldd1x64lj89aipllnqn6"

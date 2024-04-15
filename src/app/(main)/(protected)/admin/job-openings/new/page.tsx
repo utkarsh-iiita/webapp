@@ -1,15 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Autocomplete,
   Avatar,
+  Checkbox,
   CircularProgress,
   Container,
   Divider,
   FormControl,
+  FormControlLabel,
   FormHelperText,
   InputLabel,
   MenuItem,
@@ -23,14 +27,19 @@ import { useQuery } from "@tanstack/react-query";
 import TextEditor from "~/app/common/components/TextEditor";
 import { api } from "~/trpc/react";
 
+import AdditionalFieldSelector from "../_components/AdditionalFieldsSelector";
+import JobOpeningGroupSelector from "../_components/ParticipatingGroupsSelector";
+
 import { DEFAULT_JOB_OPENING } from "./constants";
 
 export default function NewJobOpening() {
   const [companyQuery, setCompanyQuery] = useState("");
   const [jobOpening, setJobOpening] = useState(DEFAULT_JOB_OPENING);
+  const router = useRouter();
 
   const { data: jobTypes, isLoading: isJobTypesLoading } =
     api.jobType.getPlacementTypes.useQuery();
+
   const { data: companyOptions, isLoading: isCompaniesLoading } = useQuery({
     queryKey: ["companies", companyQuery],
     queryFn: async () => {
@@ -46,6 +55,49 @@ export default function NewJobOpening() {
       }
     },
   });
+
+  const createJobOpeningMutation = api.jobOpenings.createJobOpening.useMutation(
+    {
+      onSuccess: () => {
+        router.replace("/admin/job-openings");
+        router.refresh();
+      },
+    },
+  );
+
+  const isCreationDisabled = useMemo(() => {
+    if (
+      !jobOpening.title ||
+      !jobOpening.company ||
+      !jobOpening.jobType ||
+      !jobOpening.location ||
+      !jobOpening.role ||
+      !jobOpening.pay ||
+      !jobOpening.payNumeric ||
+      !jobOpening.registrationStart ||
+      !jobOpening.registrationEnd ||
+      !jobOpening.participatingGroups.length
+    )
+      return true;
+
+    if (jobOpening.registrationStart > jobOpening.registrationEnd) return true;
+
+    if (
+      jobOpening.extraApplicationFields.some(
+        (field) => !field.title || !field.format,
+      )
+    )
+      return true;
+
+    if (
+      jobOpening.participatingGroups.some(
+        (group) => !group.admissionYear || !group.program,
+      )
+    )
+      return true;
+
+    return false;
+  }, [jobOpening]);
 
   return (
     <Container className="flex flex-col gap-4 py-4">
@@ -146,8 +198,8 @@ export default function NewJobOpening() {
             }
             required
           >
-            {jobTypes?.map((jobType) => (
-              <MenuItem key={jobType.id} value={jobType.id}>
+            {jobTypes?.map((jobType, index) => (
+              <MenuItem key={index} value={jobType.id}>
                 {jobType.name}
               </MenuItem>
             ))}
@@ -227,13 +279,102 @@ export default function NewJobOpening() {
           }
           label="Registration End Date and Time"
         />
+
+        <JobOpeningGroupSelector
+          jobTypeId={jobOpening.jobType}
+          value={jobOpening.participatingGroups}
+          onChange={(value) =>
+            setJobOpening({ ...jobOpening, participatingGroups: value })
+          }
+        />
+
+        <Typography variant="body1" color="text.disabled">
+          Detailed Job Description:
+        </Typography>
         <TextEditor
-          height="40vmin"
+          height="60vmin"
           value={jobOpening.description}
           onChange={(value) => {
             setJobOpening({ ...jobOpening, description: value });
           }}
         />
+        <AdditionalFieldSelector
+          value={jobOpening.extraApplicationFields}
+          onChange={(value) =>
+            setJobOpening({ ...jobOpening, extraApplicationFields: value })
+          }
+        />
+        <div className="flex flex-row gap-4 justify-end flex-wrap">
+          <FormControlLabel
+            label="Create Hidden"
+            control={
+              <Checkbox
+                size="small"
+                checked={jobOpening.hidden}
+                onChange={(e) => {
+                  setJobOpening({ ...jobOpening, hidden: e.target.checked });
+                }}
+              />
+            }
+          />
+          <FormControlLabel
+            label="Auto Approve"
+            control={
+              <Checkbox
+                size="small"
+                checked={jobOpening.autoApprove}
+                onChange={(e) => {
+                  setJobOpening({
+                    ...jobOpening,
+                    autoApprove: e.target.checked,
+                  });
+                }}
+              />
+            }
+          />
+          <FormControlLabel
+            label="Auto Visible"
+            control={
+              <Checkbox
+                size="small"
+                checked={jobOpening.autoVisible}
+                onChange={(e) => {
+                  setJobOpening({
+                    ...jobOpening,
+                    autoVisible: e.target.checked,
+                  });
+                }}
+              />
+            }
+          />
+        </div>
+
+        <Divider className="mt-12" />
+        <Container className="flex flex-row justify-end">
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            disabled={isCreationDisabled}
+            onClick={() => {
+              const reqData: any = jobOpening;
+              reqData.registrationStart = new Date(
+                reqData.registrationStart.toISOString(),
+              );
+              reqData.registrationEnd = new Date(
+                reqData.registrationEnd.toISOString(),
+              );
+              reqData.participatingGroups = reqData.participatingGroups.map(
+                (group) => ({
+                  admissionYear: parseInt(group.admissionYear),
+                  program: group.program,
+                }),
+              );
+              createJobOpeningMutation.mutate(reqData);
+            }}
+          >
+            Create
+          </LoadingButton>
+        </Container>
       </form>
     </Container>
   );

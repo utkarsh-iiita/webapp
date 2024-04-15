@@ -135,4 +135,26 @@ export const placementConfigRouter = createTRPCRouter({
       });
       return true;
     }),
+  getParticipatingGroupsForPlacementType: adminProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.db.participatingGroups.groupBy({
+        by: ["admissionYear", "program"],
+        where: {
+          placementTypeId: input,
+          year: ctx.session.user.year,
+        },
+      });
+      const yearWisePrograms: {
+        [key: number]: string[];
+      } = {};
+
+      data.forEach((el) => {
+        if (!yearWisePrograms[el.admissionYear]) {
+          yearWisePrograms[el.admissionYear] = [];
+        }
+        yearWisePrograms[el.admissionYear].push(el.program);
+      });
+      return yearWisePrograms;
+    }),
 });
