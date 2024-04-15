@@ -60,6 +60,7 @@ model User {
     PostComment      PostComment[]
     AdminHelpMessage AdminHelpMessage[]
     AdminHelpChat    AdminHelpMessage[] @relation("AdminHelpParticipant")
+    Faq              Faq[]
 }
 
 model Admin {
@@ -329,4 +330,16 @@ model AdminHelpMessage {
 
     @@index([userId])
     @@index([participantId])
+}
+
+model Faq {
+    id        String   @id @default(cuid())
+    question  String
+    answer    String   @db.Text
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    authorId  String
+    author    User     @relation(fields: [authorId], references: [id])
+
+    @@index([authorId])
 }

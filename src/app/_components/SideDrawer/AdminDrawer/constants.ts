@@ -4,6 +4,7 @@ import ClassIcon from "@mui/icons-material/Class";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import PeopleIcon from "@mui/icons-material/People";
 import WorkIcon from "@mui/icons-material/Work";
+import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 export const ADMIN_SIDEBAR = [
   {
     base: "/admin",
@@ -39,6 +40,12 @@ export const ADMIN_SIDEBAR = [
         path: "/post",
         icon: EmailIcon,
       },
+      {
+        label: "FAQs",
+        path: "/faq",
+        icon: LiveHelpIcon,
+      },
+
 
     ],
   },
