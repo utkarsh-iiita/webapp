@@ -105,7 +105,26 @@ export default function NewJobOpening() {
         New Job Opening
       </Typography>
       <Divider />
-      <form className="flex flex-col gap-3">
+      <form
+        className="flex flex-col gap-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const reqData: any = jobOpening;
+          reqData.registrationStart = new Date(
+            reqData.registrationStart.toISOString(),
+          );
+          reqData.registrationEnd = new Date(
+            reqData.registrationEnd.toISOString(),
+          );
+          reqData.participatingGroups = reqData.participatingGroups.map(
+            (group) => ({
+              admissionYear: parseInt(group.admissionYear),
+              program: group.program,
+            }),
+          );
+          createJobOpeningMutation.mutate(reqData);
+        }}
+      >
         <FormControl variant="standard">
           <TextField
             label="Title"
@@ -355,22 +374,6 @@ export default function NewJobOpening() {
             type="submit"
             variant="contained"
             disabled={isCreationDisabled}
-            onClick={() => {
-              const reqData: any = jobOpening;
-              reqData.registrationStart = new Date(
-                reqData.registrationStart.toISOString(),
-              );
-              reqData.registrationEnd = new Date(
-                reqData.registrationEnd.toISOString(),
-              );
-              reqData.participatingGroups = reqData.participatingGroups.map(
-                (group) => ({
-                  admissionYear: parseInt(group.admissionYear),
-                  program: group.program,
-                }),
-              );
-              createJobOpeningMutation.mutate(reqData);
-            }}
           >
             Create
           </LoadingButton>
