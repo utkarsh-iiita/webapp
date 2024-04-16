@@ -8,12 +8,13 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0 -p 3000",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.554.0",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.3",
     "@emotion/server": "^11.11.0",
@@ -29,8 +30,8 @@
     "@prisma/client": "^5.6.0",
     "@t3-oss/env-nextjs": "^0.7.1",
     "@tanstack/react-query": "^4.36.1",
-    "@tinymce/tinymce-react": "^4.3.2",
     "@tanstack/react-virtual": "^3.2.0",
+    "@tinymce/tinymce-react": "^4.3.2",
     "@trpc/client": "^10.43.6",
     "@trpc/next": "^10.43.6",
     "@trpc/react-query": "^10.43.6",
@@ -40,6 +41,8 @@
     "next": "^14.0.3",
     "next-auth": "^4.24.5",
     "nextjs-toploader": "^1.6.6",
+    "react-drag-drop-files": "^2.3.10",
+    "react-pdf": "^7.7.1",
     "superjson": "^2.2.1",
     "tinymce": "^5.10.9",
     "zod": "^3.22.4"

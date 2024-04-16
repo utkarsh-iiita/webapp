@@ -1,6 +1,8 @@
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
-import QuizIcon from '@mui/icons-material/Quiz';
+import QuizIcon from "@mui/icons-material/Quiz";
+
 export const USER_SIDEBAR = [
   {
     base: "/dashboard",
@@ -10,6 +12,11 @@ export const USER_SIDEBAR = [
         label: "Profile",
         path: "/profile",
         icon: AccountCircleIcon,
+      },
+      {
+        label: "Resumes",
+        path: "/resume",
+        icon: InsertDriveFileIcon,
       },
       {
         label: "Help",

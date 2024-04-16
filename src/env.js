@@ -20,9 +20,7 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     NEXTAUTH_SECRET:
-      process.env.NODE_ENV === "production"
-        ? z.string()
-        : z.string(),
+      process.env.NODE_ENV === "production" ? z.string() : z.string(),
     NEXTAUTH_URL: z.preprocess(
       // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
       // Since NextAuth.js automatically uses the VERCEL_URL if present.
@@ -32,6 +30,11 @@ export const env = createEnv({
     ),
     AVIRAL_SESSION: z.string().optional(),
     USE_AVIRAL: z.string().optional(),
+    S3_ENDPOINT: z.string().optional(),
+    S3_BUCKET_NAME: z.string().optional(),
+    S3_ACCESS_KEY: z.string().optional(),
+    S3_SECRET_KEY: z.string().optional(),
+    S3_PUBLIC_URL: z.string().optional(),
   },
 
   /**
@@ -55,6 +58,11 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     AVIRAL_SESSION: process.env.AVIRAL_SESSION,
     USE_AVIRAL: process.env.USE_AVIRAL,
+    S3_ENDPOINT: process.env.S3_ENDPOINT,
+    S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
+    S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
+    S3_SECRET_KEY: process.env.S3_SECRET_KEY,
+    S3_PUBLIC_URL: process.env.S3_PUBLIC_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

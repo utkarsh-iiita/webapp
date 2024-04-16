@@ -1,14 +1,15 @@
 import { postRouter } from "~/server/api/routers/post";
 import { createTRPCRouter } from "~/server/api/trpc";
+
 import { adminRouter } from "./routers/admin";
 import { adminHelpChatRouter } from "./routers/adminHelpChat";
+import { faqRouter } from "./routers/faq";
 import { jobOpeningRouter } from "./routers/jobOpenings";
 import { jobTypeRouter } from "./routers/jobType";
 import { placementConfigRouter } from "./routers/placementConfig";
+import { studentResumeRouter } from "./routers/resume";
 import { studentRouter } from "./routers/student";
 import { userRouter } from "./routers/users";
-import { faqRouter } from "./routers/faq";
-
 
 /**
  * This is the primary router for your server.
@@ -25,6 +26,7 @@ export const appRouter = createTRPCRouter({
   helpChat: adminHelpChatRouter,
   jobOpenings: jobOpeningRouter,
   faq: faqRouter,
+  studentResume: studentResumeRouter,
 });
 
 // export type definition of API

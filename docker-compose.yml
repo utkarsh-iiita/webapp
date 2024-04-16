@@ -18,6 +18,10 @@ services:
       - NODE_ENV=development
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=secret
+    
+    env_file:
+      - .env
+
     ports:
       - 3000:3000
       - 5555:5555 # Prisma studio
