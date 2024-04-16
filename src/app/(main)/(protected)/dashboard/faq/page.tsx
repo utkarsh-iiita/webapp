@@ -17,7 +17,7 @@ import FaqRow from "./components/FaqRow";
 
 
 function Page() {
-    const { data: allFaqs, isLoading } = api.faq.getFaqs.useQuery({});
+    const { data: allFaqs, isLoading } = api.faq.getFaqs.useQuery();
 
     return (
         <>

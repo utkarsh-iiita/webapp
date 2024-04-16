@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 
-import { Container, Divider, Typography } from "@mui/material";
+import { Box, CircularProgress, Container, Divider, Typography } from "@mui/material";
 
 import { api } from "~/trpc/react";
+
+import JobRow from "./jobRow/JobRow";
 
 export default function JobOpeningsPage() {
   const { data: openings, isLoading } =
@@ -23,6 +25,25 @@ export default function JobOpeningsPage() {
         </div>
       </div>
       <Divider />
+
+      {isLoading && (
+        <Container className="h-96 w-full flex justify-center items-center">
+          <CircularProgress />
+        </Container>
+      )}
+      {
+        <Box className="flex flex-col gap-2">
+          {openings &&
+            openings.data.map((jobs) => (
+              <JobRow
+                key={jobs.id}
+                {...jobs}
+              />
+
+            ))}
+        </Box>
+      }
+
     </Container>
   );
 }
