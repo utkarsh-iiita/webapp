@@ -59,6 +59,7 @@ export const jobOpeningRouter = createTRPCRouter({
 
       await ctx.db.jobOpening.create({
         data: {
+          year: ctx.session.user.year,
           title: input.title,
           description: input.description,
           location: input.location,
@@ -424,6 +425,9 @@ export const jobOpeningRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const jobOpenings = await ctx.db.jobOpening.findMany({
+        where: {
+          year: ctx.session.user.year,
+        },
         select: {
           id: true,
           title: true,

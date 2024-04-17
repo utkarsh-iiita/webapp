@@ -2,17 +2,23 @@
 
 import Link from "next/link";
 
-import { Box, CircularProgress, Container, Divider, Typography } from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Divider,
+  Typography,
+} from "@mui/material";
 
 import { api } from "~/trpc/react";
 
-import JobRow from "./jobRow/JobRow";
+import JobRow from "./_components/jobRow/JobRow";
 
 export default function JobOpeningsPage() {
   const { data: openings, isLoading } =
     api.jobOpenings.adminGetJobOpenings.useQuery({});
-
-  console.log(openings);
 
   return (
     <Container className="flex flex-col gap-4 py-4">
@@ -21,7 +27,15 @@ export default function JobOpeningsPage() {
           Job Openings
         </Typography>
         <div className="flex gap-2">
-          <Link href="./job-openings/new">New</Link>
+          <Link href="./job-openings/new">
+            <Button
+              variant="outlined"
+              color="primary"
+              className="inline-flex p-2 min-w-0"
+            >
+              <AddCircleIcon />
+            </Button>
+          </Link>
         </div>
       </div>
       <Divider />
@@ -34,16 +48,9 @@ export default function JobOpeningsPage() {
       {
         <Box className="flex flex-col gap-2">
           {openings &&
-            openings.data.map((jobs) => (
-              <JobRow
-                key={jobs.id}
-                {...jobs}
-              />
-
-            ))}
+            openings.data.map((jobs) => <JobRow key={jobs.id} {...jobs} />)}
         </Box>
       }
-
     </Container>
   );
 }

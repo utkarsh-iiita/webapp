@@ -21,7 +21,7 @@ export default function NewPlacementYear() {
     [],
   );
   const { data: existingYears, isLoading: isExistingYearsLoading } =
-    api.placementConfig.getPlacementYears.useQuery();
+    api.placementConfig.getAdminPlacementYears.useQuery();
 
   const { data: placementTypes, isLoading: isPlacementTypesLoading } =
     api.placementConfig.getPlacementTypes.useQuery();

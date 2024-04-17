@@ -159,6 +159,7 @@ model Company {
 model JobOpening {
     // descriptive data
     id          String  @id @default(cuid())
+    year        Int
     companyId   String
     title       String
     description String?

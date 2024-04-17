@@ -24,6 +24,7 @@ import useThemeContext from "~/app/_utils/theme/ThemeContext";
 import Logo from "~/assets/logo.svg";
 
 import ThemeSwitch from "./ThemeSwitch";
+import YearSelector from "./YearSelector";
 
 export default function Navbar({
   setIsDrawerOpen,
@@ -128,6 +129,7 @@ export default function Navbar({
             {status !== "loading" &&
               (session ? (
                 <>
+                  <YearSelector />
                   <Button
                     color="primary"
                     className="text-lg"

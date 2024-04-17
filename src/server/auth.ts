@@ -51,7 +51,7 @@ declare module "next-auth/jwt" {
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       // credentials provider:  Save the access token and refresh token in the JWT on the initial login
       if (user) {
         const authUser = { ...user };
@@ -94,6 +94,30 @@ export const authOptions: NextAuthOptions = {
 
             return { ...token, error: "RefreshAccessTokenError" };
           }
+        }
+      }
+
+      if (trigger === "update") {
+        const user = await db.user.findFirst({
+          where: {
+            id: token.user.id,
+          },
+          select: {
+            admin: {
+              select: {
+                permissions: true,
+              },
+            },
+          },
+        });
+        if (!!user.admin) {
+          console.log(session.info);
+          const newUser = { ...token.user };
+          newUser.year = session.info;
+          return {
+            ...token,
+            user: newUser,
+          };
         }
       }
 
@@ -153,6 +177,12 @@ export const authOptions: NextAuthOptions = {
                 permissions: true,
               },
             },
+            student: {
+              select: {
+                admissionYear: true,
+                program: true,
+              },
+            },
           },
         });
 
@@ -193,6 +223,12 @@ export const authOptions: NextAuthOptions = {
                     permissions: true,
                   },
                 },
+                student: {
+                  select: {
+                    admissionYear: true,
+                    program: true,
+                  },
+                },
               },
             });
           } else if (authenticatedUserGroup === "faculty") {
@@ -223,6 +259,12 @@ export const authOptions: NextAuthOptions = {
                     permissions: true,
                   },
                 },
+                student: {
+                  select: {
+                    admissionYear: true,
+                    program: true,
+                  },
+                },
               },
             });
           } else {
@@ -233,6 +275,12 @@ export const authOptions: NextAuthOptions = {
         const latestYear = await db.participatingGroups.findFirst({
           select: {
             year: true,
+          },
+          where: {
+            ...(user.student && {
+              admissionYear: user.student?.admissionYear,
+              program: user.student?.program,
+            }),
           },
           orderBy: {
             year: "desc",

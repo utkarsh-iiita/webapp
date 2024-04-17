@@ -1,10 +1,10 @@
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import EmailIcon from '@mui/icons-material/Email';
 import ClassIcon from "@mui/icons-material/Class";
+import EmailIcon from "@mui/icons-material/Email";
 import FeedbackIcon from "@mui/icons-material/Feedback";
+import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import PeopleIcon from "@mui/icons-material/People";
 import WorkIcon from "@mui/icons-material/Work";
-import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 export const ADMIN_SIDEBAR = [
   {
     base: "/admin",
@@ -16,10 +16,16 @@ export const ADMIN_SIDEBAR = [
         icon: WorkIcon,
       },
       {
-        label: "Admin Access",
-        path: "/manage-admins",
-        icon: PeopleIcon,
+        label: "Post",
+        path: "/post",
+        icon: EmailIcon,
       },
+    ],
+  },
+  {
+    base: "/admin",
+    title: "",
+    links: [
       {
         label: "Placement Years",
         path: "/placement-years",
@@ -36,17 +42,15 @@ export const ADMIN_SIDEBAR = [
         icon: FeedbackIcon,
       },
       {
-        label: "Post",
-        path: "/post",
-        icon: EmailIcon,
-      },
-      {
         label: "FAQs",
         path: "/faq",
         icon: LiveHelpIcon,
       },
-
-
+      {
+        label: "Admin Access",
+        path: "/manage-admins",
+        icon: PeopleIcon,
+      },
     ],
   },
 ];
