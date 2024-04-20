@@ -36,6 +36,8 @@ if echo "$changes" | grep -q "^scripts/$"; then
   ## Run the deploy script
   ./scripts/deploy.sh
   exit 0
+else
+  echo "Scripts folder has not been changed"
 fi
 
 ## Check if there are changes in the database schema
@@ -48,7 +50,13 @@ if echo "$changes" | grep -q "^prisma/schema.prisma$"; then
 
   # Check the exit status of the command
   if [ $? -ne 0 ]; then
-      echo "Error: Please manually migrate the Database by logging into the server"
-      exit 1
+    echo "Error: Please manually migrate the Database by logging into the server"
+    exit 1
+  else 
+    echo "Database schema has been migrated successfully"
   fi
+else
+  echo "Database schema has not been changed"
 fi
+
+echo "Deployment completed successfully 🚀"
