@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -35,6 +35,7 @@ import { DEFAULT_JOB_OPENING } from "./constants";
 export default function NewJobOpening() {
   const [companyQuery, setCompanyQuery] = useState("");
   const [jobOpening, setJobOpening] = useState(DEFAULT_JOB_OPENING);
+  const descEditorRef = useRef<any>();
   const router = useRouter();
 
   const { data: jobTypes, isLoading: isJobTypesLoading } =
@@ -116,6 +117,7 @@ export default function NewJobOpening() {
           reqData.registrationEnd = new Date(
             reqData.registrationEnd.toISOString(),
           );
+          reqData.description = descEditorRef.current.getContent();
           reqData.participatingGroups = reqData.participatingGroups.map(
             (group) => ({
               admissionYear: parseInt(group.admissionYear),
@@ -313,9 +315,7 @@ export default function NewJobOpening() {
         <TextEditor
           height="60vmin"
           value={jobOpening.description}
-          onChange={(value) => {
-            setJobOpening({ ...jobOpening, description: value });
-          }}
+          ref={descEditorRef}
         />
         <AdditionalFieldSelector
           value={jobOpening.extraApplicationFields}

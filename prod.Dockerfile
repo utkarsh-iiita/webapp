@@ -21,4 +21,3 @@ COPY . ./
 RUN npm run postinstall
 
 RUN npm run build
-RUN npm run db:seed
