@@ -26,3 +26,47 @@ a {
     /* Firefox */
   }
 }
+
+/* Resetting margins for first and last text elements inside .text-content */
+.text-content h1:first-child,
+.text-content h2:first-child,
+.text-content h3:first-child,
+.text-content h4:first-child,
+.text-content h5:first-child,
+.text-content h6:first-child,
+.text-content p:first-child {
+  margin-top: 0;
+}
+
+.text-content h1:last-child,
+.text-content h2:last-child,
+.text-content h3:last-child,
+.text-content h4:last-child,
+.text-content h5:last-child,
+.text-content h6:last-child,
+.text-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Adding 4px top and bottom margins for all text elements inside .text-content except first and last */
+.text-content h1,
+.text-content h2,
+.text-content h3,
+.text-content h4,
+.text-content h5,
+.text-content h6,
+.text-content p {
+  margin: 4px 0;
+}
+
+/* Adjusting margins for text elements inside .text-content appearing between other text elements */
+.text-content h1~h1,
+.text-content h2~h2,
+.text-content h3~h3,
+.text-content h4~h4,
+.text-content h5~h5,
+.text-content h6~h6,
+.text-content p~p {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}

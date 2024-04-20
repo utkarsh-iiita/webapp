@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -16,10 +16,13 @@ import {
   Typography,
 } from "@mui/material";
 
+import FullPageLoader from "~/app/common/components/FullPageLoader";
 import TextEditor from "~/app/common/components/TextEditor";
 import { api } from "~/trpc/react";
 
-export default function NewPost() {
+export default function NewPost({ params }: { params: { id: string } }) {
+  const { data, isLoading } = api.post.getPost.useQuery(params.id);
+
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [open, setOpen] = useState<boolean>(false);
@@ -27,7 +30,7 @@ export default function NewPost() {
   const handleClose = () => {
     setOpen(false);
   };
-  const createPostMutation = api.post.addNewPost.useMutation({
+  const updatePostMutation = api.post.updatePost.useMutation({
     onSuccess: () => {
       handleClose();
       router.replace("./");
@@ -37,17 +40,28 @@ export default function NewPost() {
     e.preventDefault();
     const content = contentRef.current?.getContent();
     if (!content) return;
-    createPostMutation.mutate({
+    updatePostMutation.mutate({
+      id: params.id,
       title,
       content,
     });
   };
+
+  useEffect(() => {
+    if (data?.title) {
+      setTitle(data.title);
+    }
+  }, [data]);
+
+  if (isLoading) {
+    return <FullPageLoader />;
+  }
   return (
     <>
       <Container className="flex flex-col h-full relative">
         <div className="flex flex-row justify-between items-center py-4">
           <Typography variant="h5" color="primary" className="px-4">
-            New Post
+            Edit Post
           </Typography>
         </div>
         <Divider />
@@ -60,14 +74,14 @@ export default function NewPost() {
               variant="outlined"
             />
 
-            <TextEditor height="40vmin" value="" ref={contentRef} />
+            <TextEditor height="40vmin" value={data.content} ref={contentRef} />
             <div>
               <Button
                 variant="contained"
                 disabled={!title}
                 onClick={() => setOpen(true)}
               >
-                Create
+                Save Changes
               </Button>
               <Dialog
                 open={open}
@@ -77,9 +91,9 @@ export default function NewPost() {
                   onSubmit: handleSubmit,
                 }}
               >
-                <DialogTitle>Create new Post?</DialogTitle>
+                <DialogTitle>Save Changes?</DialogTitle>
                 <DialogContent>
-                  Do you really want to create this post?
+                  Do you really want to update this post?
                 </DialogContent>
                 <DialogActions className="p-4">
                   <Button onClick={() => setOpen(false)} variant="outlined">
@@ -89,9 +103,9 @@ export default function NewPost() {
                     type="submit"
                     color="success"
                     variant="contained"
-                    loading={createPostMutation.isLoading}
+                    loading={updatePostMutation.isLoading}
                   >
-                    Create
+                    Save Changes
                   </LoadingButton>
                 </DialogActions>
               </Dialog>

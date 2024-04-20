@@ -27,7 +27,9 @@ export default function YearSelector() {
     (year: number) => {
       async function updateYear() {
         await update({
-          info: year,
+          info: {
+            year,
+          },
         });
 
         utils.jobOpenings.invalidate();

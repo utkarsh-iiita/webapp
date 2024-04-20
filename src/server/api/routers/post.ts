@@ -7,7 +7,6 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-
 export const postRouter = createTRPCRouter({
   getLatestPost: publicProcedure
     .input(
@@ -15,13 +14,13 @@ export const postRouter = createTRPCRouter({
         page: z.number().min(1).default(1),
         pageSize: z.number().max(100).default(10),
       }),
-    ).query(async ({ ctx, input }) => {
+    )
+    .query(async ({ ctx, input }) => {
       const data = await ctx.db.post.findMany({
         select: {
           id: true,
           title: true,
           createdAt: true,
-
         },
         where: {
           published: true,
@@ -48,28 +47,60 @@ export const postRouter = createTRPCRouter({
         author: {
           select: {
             name: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
     return data;
   }),
-  addNewPost: adminProcedure.input(z.object({
-    title: z.string(),
-    content: z.string(),
-  })).mutation(async ({ ctx, input }) => {
-    await ctx.db.post.create({
-      data: {
-        title: input.title,
-        content: input.content,
-        authorId: ctx.session.user.id,
-        published: true,
+  addNewPost: adminProcedure
+    .input(
+      z.object({
+        title: z.string(),
+        content: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.post.create({
+        data: {
+          title: input.title,
+          content: input.content,
+          authorId: ctx.session.user.id,
+          published: true,
+        },
+      });
+      return true;
+    }),
+  updatePost: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        content: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.post.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          title: input.title,
+          content: input.content,
+          published: true,
+        },
+      });
+      return true;
+    }),
+  deletePost: adminProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.post.delete({
+        where: {
+          id: input,
+        },
+      });
 
-      }
-    });
-    return true;
-  }),
-
-
-
+      return true;
+    }),
 });

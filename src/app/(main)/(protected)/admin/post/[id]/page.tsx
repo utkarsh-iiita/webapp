@@ -1,9 +1,26 @@
-"use client"
+"use client";
 
-import dayjs from "dayjs";
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import { Paper, Typography } from "@mui/material";
+import CreateIcon from "@mui/icons-material/Create";
+import DeleteIcon from "@mui/icons-material/Delete";
+import LoadingButton from "@mui/lab/LoadingButton";
+import {
+  Button,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  Paper,
+  Typography,
+} from "@mui/material";
 
+import dayjs from "~/app/_utils/extendedDayjs";
 import FullPageLoader from "~/app/common/components/FullPageLoader";
 import { api } from "~/trpc/react";
 
@@ -12,26 +29,84 @@ export default function PostDisplayPage({
 }: {
   params: { id: string };
 }) {
+  const router = useRouter();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const deletePostMutation = api.post.deletePost.useMutation({
+    onSuccess: () => {
+      router.replace("/admin/post");
+    },
+  });
   const { data, isLoading } = api.post.getPost.useQuery(params.id);
   if (isLoading) {
-    return (
-      <FullPageLoader />
-    )
+    return <FullPageLoader />;
   }
   return (
-    <Paper className="flex flex-col gap-2 py-2 px-4">
-      <div className="flex flex-col justify-between">
-        <Typography variant="body1">
-          <strong>{data.title}</strong>
-        </Typography>
-        <Typography variant="caption" className="whitespace-nowrap">
-          {data.author.name} · {dayjs(data.createdAt).fromNow()}
-        </Typography>
-        <div dangerouslySetInnerHTML={{
-          __html: data.content
-        }}></div>
-
+    <Container>
+      <div className="flex flex-row justify-between items-center">
+        <div className="p-2">
+          <Typography variant="h5">
+            <strong>{data.title}</strong>
+          </Typography>
+          <Typography variant="subtitle1" className="whitespace-nowrap">
+            {data.author.name} · {dayjs(data.createdAt).fromNow()}
+          </Typography>
+        </div>
+        <div className="flex flex-row gap-2">
+          <Link href={"./" + data.id + "/edit"}>
+            <IconButton size="small" color="success">
+              <CreateIcon />
+            </IconButton>
+          </Link>
+          <IconButton
+            size="small"
+            color="error"
+            onClick={() => setIsDeleteDialogOpen(true)}
+          >
+            <DeleteIcon />
+          </IconButton>
+          <Dialog
+            open={isDeleteDialogOpen}
+            onClose={() => setIsDeleteDialogOpen(false)}
+            PaperProps={{
+              component: "form",
+              onSubmit: (e) => {
+                e.preventDefault();
+                deletePostMutation.mutate(data.id);
+              },
+            }}
+          >
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogContent>
+              Do you really want to delete this post?
+            </DialogContent>
+            <DialogActions className="p-4">
+              <Button
+                onClick={() => setIsDeleteDialogOpen(false)}
+                variant="contained"
+              >
+                Cancel
+              </Button>
+              <LoadingButton
+                type="submit"
+                color="error"
+                variant="outlined"
+                loading={deletePostMutation.isLoading}
+              >
+                Remove
+              </LoadingButton>
+            </DialogActions>
+          </Dialog>
+        </div>
       </div>
-    </Paper>
-  )
+      <Divider />
+      <Paper className="flex flex-col gap-2 p-2 mt-2">
+        <div
+          className="text-content"
+          dangerouslySetInnerHTML={{
+            __html: data.content,
+          }}
+        ></div>
+      </Paper>
+    </Container>
+  );
 }

@@ -7,7 +7,7 @@ export default async function ProtectedPagesLayout({
   children: React.ReactNode;
 }) {
   let session = await getServerAuthSession();
-  if (session.user.userGroup !== "student") {
+  if (session?.user?.userGroup !== "student") {
     redirect("/admin");
   }
   return <>{children}</>;
