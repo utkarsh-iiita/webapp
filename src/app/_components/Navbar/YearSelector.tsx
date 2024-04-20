@@ -39,8 +39,12 @@ export default function YearSelector() {
     [update],
   );
 
+  if (data && data.length == 0) {
+    return <></>
+  }
+
   if (!session?.user?.admin || (!pathname.includes("/admin") && !isLoading)) {
-    if (!data.includes(session?.user?.year)) {
+    if (data && !data.includes(session?.user?.year)) {
       changeYear(data[0]);
     }
   }
@@ -72,15 +76,15 @@ export default function YearSelector() {
         >
           {!!session?.user?.admin && pathname.includes("/admin")
             ? adminYears.map((el) => (
-                <MenuItem key={el} value={el}>
-                  {el}
-                </MenuItem>
-              ))
+              <MenuItem key={el} value={el}>
+                {el}
+              </MenuItem>
+            ))
             : data.map((el) => (
-                <MenuItem key={el} value={el}>
-                  {el}
-                </MenuItem>
-              ))}
+              <MenuItem key={el} value={el}>
+                {el}
+              </MenuItem>
+            ))}
         </Select>
       </FormControl>
     </>

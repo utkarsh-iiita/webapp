@@ -1,31 +1,21 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import axios from "axios";
+import dayjs from "dayjs";
 
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
-    Autocomplete,
-    Avatar,
-    Checkbox,
-    CircularProgress,
     Container,
     Divider,
     FormControl,
-    FormControlLabel,
     FormHelperText,
-    InputLabel,
-    MenuItem,
-    Select,
     TextField,
     Typography,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { useQuery } from "@tanstack/react-query";
 
-import TextEditor from "~/app/common/components/TextEditor";
 import { api } from "~/trpc/react";
 
 import { DEFAULT_ONBOARDING } from "./constants";
@@ -45,7 +35,7 @@ export default function NewJobOpening() {
                         onboardingComplete: true,
                     },
                 });
-                router.refresh();
+                router.refresh()
             },
         },
     );
@@ -60,8 +50,8 @@ export default function NewJobOpening() {
                 onSubmit={(e) => {
                     e.preventDefault();
                     const reqData: any = onboarding;
+                    reqData.dob = new Date(onboarding.dob.toISOString())
                     createOnboardingMutation.mutate(reqData)
-
                 }}
             >
                 <FormControl variant="standard">
@@ -83,7 +73,7 @@ export default function NewJobOpening() {
 
                 <DateTimePicker
                     name="dob"
-                    value={onboarding.dob}
+                    value={dayjs(onboarding.dob)}
                     onChange={(date) =>
                         setOnboarding({ ...onboarding, dob: date })
                     }
@@ -246,7 +236,7 @@ export default function NewJobOpening() {
                     <LoadingButton
                         type="submit"
                         variant="contained"
-                    // disabled={isCreationDisabled}
+                        loading={createOnboardingMutation.isLoading}
                     >
                         Submit
                     </LoadingButton>
