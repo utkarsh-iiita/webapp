@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main # Adjust the branch as needed
+      - prod # Adjust the branch as needed
 
 jobs:
   build-and-push:
@@ -27,3 +27,21 @@ jobs:
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/utkarsh-webapp:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    needs: build-and-push
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy to production
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USERNAME }}
+          key: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+          script_stop: true
+          script: cd utkarsh && ./scripts/deploy.sh

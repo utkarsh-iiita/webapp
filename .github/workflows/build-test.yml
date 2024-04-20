@@ -1,0 +1,21 @@
+name: Build Test the code
+
+on:
+  push:
+    branches:
+      - "*"
+      - "!prod"
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build web-app
+        run: npm run build
