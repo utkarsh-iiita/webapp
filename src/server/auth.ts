@@ -236,6 +236,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) {
+          const userCount = await db.user.count();
           if (authenticatedUserGroup === "student") {
             let userData = await getStudentAviralData(
               credentials.username,
@@ -249,6 +250,13 @@ export const authOptions: NextAuthOptions = {
                 username: credentials.username,
                 name: userData.name,
                 email: credentials.username + "@iiita.ac.in",
+                ...(userCount === 0 && {
+                  admin: {
+                    create: {
+                      permissions: 1,
+                    },
+                  },
+                }),
                 student: {
                   create: {
                     program: userData.program,
@@ -295,7 +303,7 @@ export const authOptions: NextAuthOptions = {
                 email: credentials.username + "@iiita.ac.in",
                 admin: {
                   create: {
-                    permissions: 0,
+                    permissions: userCount === 0 ? 1 : 0,
                   },
                 },
               },
