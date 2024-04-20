@@ -1,7 +1,8 @@
-version: "3.9"
+version: "3.8"
 services:
   app:
     image: buddylonglegs/utkarsh-webapp:latest
+    restart: always
     depends_on:
       db:
         condition: service_healthy
@@ -25,6 +26,11 @@ services:
     networks:
       default:
       internal:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.8'
+          memory: 600M
 
   db:
     image: mysql:8.0

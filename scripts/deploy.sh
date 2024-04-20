@@ -1,4 +1,6 @@
 ## Getting file changes from git
+git checkout prod
+
 changes=$(git diff --name-only HEAD @{u})
 
 ## Pull the latest changes
@@ -46,7 +48,7 @@ if echo "$changes" | grep -q "^prisma/schema.prisma$"; then
   
   ## Run the database migration script
   # Execute the command and redirect stdin from /dev/null to prevent it from waiting for user input
-  timeout 10s docker compose exwc app sh -c "npm run db:push" < /dev/null
+  timeout 60s docker compose exwc app sh -c "npm run db:push" < /dev/null
 
   # Check the exit status of the command
   if [ $? -ne 0 ]; then
