@@ -100,26 +100,71 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (trigger === "update") {
-        const user = await db.user.findFirst({
-          where: {
-            id: token.user.id,
-          },
-          select: {
-            admin: {
-              select: {
-                permissions: true,
+        if (session.info.year) {
+          const user = await db.user.findFirst({
+            where: {
+              id: token.user.id,
+            },
+            select: {
+              userGroup: true,
+              admin: {
+                select: {
+                  permissions: true,
+                },
+              },
+              student: {
+                select: {
+                  admissionYear: true,
+                  program: true,
+                },
               },
             },
-          },
-        });
-        if (!!user.admin) {
-          console.log(session.info);
-          const newUser = { ...token.user };
-          newUser.year = session.info;
-          return {
-            ...token,
-            user: newUser,
-          };
+          });
+          if (!!user.admin) {
+            const newUser = { ...token.user };
+            newUser.year = session.info.year;
+            return {
+              ...token,
+              user: newUser,
+            };
+          } else if (user.userGroup === "student") {
+            const yearExists = await db.participatingGroups.findFirst({
+              where: {
+                year: session.info.year,
+                admissionYear: user.student?.admissionYear || null,
+                program: user.student?.program || null,
+              },
+            });
+            if (yearExists) {
+              const newUser = { ...token.user };
+              newUser.year = session.info.year;
+              return {
+                ...token,
+                user: newUser,
+              };
+            }
+          }
+        } else if (session.info.onboardingComplete) {
+          const user = await db.user.findFirst({
+            where: {
+              id: token.user.id,
+            },
+            select: {
+              student: {
+                select: {
+                  isOnboardingComplete: true,
+                },
+              },
+            },
+          });
+          if (user.student && user.student.isOnboardingComplete) {
+            const newUser = { ...token.user };
+            newUser.isOnboardingComplete = true;
+            return {
+              ...token,
+              user: newUser,
+            };
+          }
         }
       }
 
@@ -135,7 +180,7 @@ export const authOptions: NextAuthOptions = {
           admin: token.user.admin,
           userGroup: token.user.userGroup,
           year: token.user.year,
-          isOnboardingComplete: token.user.isOnboardingComplete
+          isOnboardingComplete: token.user.isOnboardingComplete,
         };
       }
       session.error = token.error;
@@ -299,7 +344,9 @@ export const authOptions: NextAuthOptions = {
           username: user.username,
           userGroup: user.userGroup,
           admin: user.admin,
-          isOnboardingComplete: user.student ? user.student.isOnboardingComplete : true,
+          isOnboardingComplete: user.student
+            ? user.student.isOnboardingComplete
+            : true,
           year: latestYear?.year,
         } as DefaultSession["user"];
       },
