@@ -20,9 +20,7 @@ declare module "next-auth" {
     admin?: {
       permissions: number;
     };
-    student?: {
-      isOnboardingComplete: boolean;
-    };
+    isOnboardingComplete: boolean;
     year?: number;
   }
 
@@ -35,9 +33,7 @@ declare module "next-auth" {
       admin?: {
         permissions: number;
       };
-      student?: {
-        isOnboardingComplete: boolean;
-      };
+      isOnboardingComplete: boolean;
       year?: number;
     };
     error?: "RefreshAccessTokenError";
@@ -139,6 +135,7 @@ export const authOptions: NextAuthOptions = {
           admin: token.user.admin,
           userGroup: token.user.userGroup,
           year: token.user.year,
+          isOnboardingComplete: token.user.isOnboardingComplete
         };
       }
       session.error = token.error;
@@ -187,6 +184,7 @@ export const authOptions: NextAuthOptions = {
               select: {
                 admissionYear: true,
                 program: true,
+                isOnboardingComplete: true,
               },
             },
           },
@@ -233,6 +231,7 @@ export const authOptions: NextAuthOptions = {
                   select: {
                     admissionYear: true,
                     program: true,
+                    isOnboardingComplete: true,
                   },
                 },
               },
@@ -269,6 +268,7 @@ export const authOptions: NextAuthOptions = {
                   select: {
                     admissionYear: true,
                     program: true,
+                    isOnboardingComplete: true,
                   },
                 },
               },
@@ -299,6 +299,7 @@ export const authOptions: NextAuthOptions = {
           username: user.username,
           userGroup: user.userGroup,
           admin: user.admin,
+          isOnboardingComplete: user.student ? user.student.isOnboardingComplete : true,
           year: latestYear?.year,
         } as DefaultSession["user"];
       },
