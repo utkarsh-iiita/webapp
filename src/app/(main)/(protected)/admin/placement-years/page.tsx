@@ -14,7 +14,7 @@ import {
 import { api } from "~/trpc/server";
 
 export default async function ManageAdminsPage() {
-  const years = await api.placementConfig.getPlacementYears.query();
+  const years = await api.placementConfig.getAdminPlacementYears.query();
 
   return (
     <Container className="flex flex-col gap-4 py-4">

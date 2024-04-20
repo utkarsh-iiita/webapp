@@ -3,11 +3,26 @@ import { z } from "zod";
 import {
   adminProcedure,
   createTRPCRouter,
-  publicProcedure,
+  protectedProcedure,
 } from "~/server/api/trpc";
 
 export const placementConfigRouter = createTRPCRouter({
-  getPlacementYears: publicProcedure.query(async ({ ctx }) => {
+  getStudentPlacementYears: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.db.students.findUnique({
+      where: {
+        userId: ctx.session.user.id,
+      },
+    });
+    const data = await ctx.db.participatingGroups.groupBy({
+      by: ["year", "admissionYear", "program"],
+      having: {
+        program: user.program,
+        admissionYear: user.admissionYear,
+      },
+    });
+    return data.map((el) => el.year);
+  }),
+  getAdminPlacementYears: adminProcedure.query(async ({ ctx }) => {
     const data = await ctx.db.participatingGroups.groupBy({
       by: ["year"],
       orderBy: [{ year: "desc" }],
