@@ -4,12 +4,12 @@ services:
     platform: "linux/amd64"
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./prod.Dockerfile
     working_dir: /app
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npm run db:push && npm run db:seed && npm run build && npm run start"
+    command: sh -c "npm run start"
     # command: sh -c "npm run dev" # <-- use this command for testing/db:push
     volumes:
       - app-node-cache:/root/.npm
