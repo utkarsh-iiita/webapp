@@ -10,6 +10,7 @@ import { placementConfigRouter } from "./routers/placementConfig";
 import { studentResumeRouter } from "./routers/resume";
 import { studentRouter } from "./routers/student";
 import { userRouter } from "./routers/users";
+import { onboardingRouter } from "./routers/onboarding";
 
 /**
  * This is the primary router for your server.
@@ -27,6 +28,7 @@ export const appRouter = createTRPCRouter({
   jobOpenings: jobOpeningRouter,
   faq: faqRouter,
   studentResume: studentResumeRouter,
+  onboarding: onboardingRouter,
 });
 
 // export type definition of API

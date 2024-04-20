@@ -10,5 +10,8 @@ export default async function ProtectedPagesLayout({
   if (session?.user?.userGroup !== "student") {
     redirect("/admin");
   }
+  if (session?.user?.isOnboardingComplete === false) {
+    redirect("/onboarding");
+  }
   return <>{children}</>;
 }
