@@ -20,6 +20,9 @@ declare module "next-auth" {
     admin?: {
       permissions: number;
     };
+    student?: {
+      isOnboardingComplete: boolean;
+    };
     year?: number;
   }
 
@@ -31,6 +34,9 @@ declare module "next-auth" {
       userGroup?: string;
       admin?: {
         permissions: number;
+      };
+      student?: {
+        isOnboardingComplete: boolean;
       };
       year?: number;
     };
