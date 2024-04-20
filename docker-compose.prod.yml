@@ -12,10 +12,6 @@ services:
       - 3000:3000
       - 5555:5555
     environment:
-      # Mandatory variables
-      - NEXTAUTH_URL=http://localhost # <-- provide the url of your app here
-      - NEXTAUTH_SECRET=your-secret
-
       # Optional variables
       - DATABASE_URL=mysql://utkarsh:utkarsh@db/utkarsh
       - REDIS_URL=redis://cache:6379
