@@ -29,8 +29,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.8'
-          memory: 600M
+          cpus: '0.6'
+          memory: 200M
 
   db:
     image: mysql:8.0
