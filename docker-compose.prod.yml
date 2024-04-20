@@ -1,19 +1,12 @@
 version: "3.9"
 services:
   app:
-    platform: "linux/amd64"
-    build:
-      context: .
-      dockerfile: ./prod.Dockerfile
-    working_dir: /app
+    image: buddylonglegs/utkarsh-webapp:latest
     depends_on:
       db:
         condition: service_healthy
     command: sh -c "npm run start"
     # command: sh -c "npm run dev" # <-- use this command for testing/db:push
-    volumes:
-      - app-node-cache:/root/.npm
-      - ./src:/app/src
     ports:
       - 3000:3000
       - 5555:5555
