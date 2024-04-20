@@ -22,7 +22,7 @@ fi
 
 
 ## Restart the services
-docker compose -f docker-compose.prod.yml up --compatibility -d
+docker compose -f docker-compose.prod.yml up -d
 
 if [ $? -ne 0 ]; then
     echo "Error: Docker Compose run failed"
