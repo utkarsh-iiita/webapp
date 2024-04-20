@@ -6,7 +6,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npm run start"
+    command: sh -c "npm run db:seed && npm run start"
     # command: sh -c "npm run dev" # <-- use this command for testing/db:push
     ports:
       - 3000:3000
@@ -30,7 +30,7 @@ services:
       resources:
         limits:
           cpus: '0.6'
-          memory: 200M
+          memory: 400M
 
   db:
     image: mysql:8.0
