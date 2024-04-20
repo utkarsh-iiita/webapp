@@ -8,6 +8,8 @@ import { StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
+import dayjs from "~/app/_utils/extendedDayjs";
+
 import { storeLS } from "../localStorage";
 
 import { getTheme } from "./theme";
@@ -34,7 +36,7 @@ export default function ThemeRegistry(props) {
         <StyledEngineProvider injectFirst>
           <ThemeContext.Provider value={{ themeMode, toggleTheme }}>
             <ThemeProvider theme={theme}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDayjs} dateLibInstance={dayjs}>
                 <CssBaseline />
                 {children}
               </LocalizationProvider>

@@ -1,6 +1,8 @@
+import type dayjs from "dayjs";
+
 interface NewOnboarding {
     gender: String;
-    dob: Date;
+    dob: dayjs.Dayjs;
     tenthMarks: String;
     twelvethMarks: String;
     addressLine1: String;
@@ -12,8 +14,5 @@ interface NewOnboarding {
     isOnboarding: Boolean;
     email: String;
     phone: String;
-
-
-
 }
 

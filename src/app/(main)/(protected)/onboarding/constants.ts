@@ -1,7 +1,10 @@
-export const DEFAULT_ONBOARDING: NewOnboarding = {
+import dayjs from "dayjs";
 
+import { type NewOnboarding } from "./types";
+
+export const DEFAULT_ONBOARDING: NewOnboarding = {
     gender: "",
-    dob: new Date(),
+    dob: dayjs(),
     tenthMarks: "",
     twelvethMarks: "",
     addressLine1: "",
@@ -13,5 +16,4 @@ export const DEFAULT_ONBOARDING: NewOnboarding = {
     isOnboarding: false,
     email: "",
     phone: "",
-
 };

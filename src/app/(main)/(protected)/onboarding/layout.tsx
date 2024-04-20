@@ -8,10 +8,10 @@ export default async function ProtectedPagesLayout({
 }) {
     let session = await getServerAuthSession();
     if (session?.user?.userGroup !== "student") {
-        redirect("/admin");
+        return redirect("/admin");
     }
     if (session?.user?.isOnboardingComplete === true) {
-        redirect("/dashboard");
+        return redirect("/dashboard");
     }
     return <>{children}</>;
 }
