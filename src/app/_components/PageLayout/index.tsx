@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import Navbar from "../Navbar";
 import ResponsiveDrawer from "../SideDrawer";
 
-const NO_DRAWER_PAGES = ["/", "/login"];
+const NO_DRAWER_PAGES = ["/", "/login", "/onboarding"];
 
 export default function PageLayout({
   children,

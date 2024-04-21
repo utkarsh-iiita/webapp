@@ -89,8 +89,8 @@ model Students {
     currentSemester      String
     gender               String?
     dob                  DateTime?
-    tenthMarks           String?
-    twelvethMarks        String?
+    tenthMarks           Float?    @default(0)
+    twelvethMarks        Float?    @default(0)
     addressLine1         String?
     addressLine2         String?
     pincode              Int?
