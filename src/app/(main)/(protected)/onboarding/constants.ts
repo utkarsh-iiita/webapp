@@ -7,7 +7,7 @@ export const DEFAULT_ONBOARDING: NewOnboarding = {
   twelvethMarks: null,
   addressLine1: "",
   addressLine2: "",
-  pincode: "",
+  pincode: null,
   city: "",
   state: "",
   country: "",
