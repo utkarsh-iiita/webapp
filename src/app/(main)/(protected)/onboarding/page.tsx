@@ -1,248 +1,125 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import dayjs from "dayjs";
 
-import LoadingButton from "@mui/lab/LoadingButton";
 import {
-    Container,
-    Divider,
-    FormControl,
-    FormHelperText,
-    TextField,
-    Typography,
+  Container,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
 } from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers";
 
+import vector from "~/assets/vectors/login.svg";
 import { api } from "~/trpc/react";
 
+import Section1 from "./_sections/Section1";
+import Section2 from "./_sections/Section2";
+import Section3 from "./_sections/Section3";
+import Section4 from "./_sections/Section4";
 import { DEFAULT_ONBOARDING } from "./constants";
 
-
-
-
 export default function NewJobOpening() {
-    const { update } = useSession();
-    const [onboarding, setOnboarding] = useState(DEFAULT_ONBOARDING);
-    const router = useRouter();
-    const createOnboardingMutation = api.onboarding.createOnboarding.useMutation(
-        {
-            onSuccess: async () => {
-                await update({
-                    info: {
-                        onboardingComplete: true,
-                    },
-                });
-                router.refresh()
-            },
+  const { update } = useSession();
+  const [onboarding, setOnboarding] = useState(DEFAULT_ONBOARDING);
+  const router = useRouter();
+  const [activeStep, setActiveStep] = useState(0);
+
+  const steps = useMemo(
+    () => [
+      {
+        label: "Basic Details",
+        Section: Section1,
+      },
+      {
+        label: "Contact Details",
+        Section: Section2,
+      },
+      {
+        label: "Academic Details",
+        Section: Section3,
+      },
+      {
+        label: "Terms and Conditions",
+        Section: Section4,
+      },
+    ],
+    [],
+  );
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const createOnboardingMutation = api.onboarding.createOnboarding.useMutation({
+    onSuccess: async () => {
+      await update({
+        info: {
+          onboardingComplete: true,
         },
-    );
-    return (
-        <Container className="flex flex-col gap-4 py-4">
-            <Typography variant="h5" color="primary" className="px-4">
-                Onboarding
-            </Typography>
-            <Divider />
-            <form
-                className="flex flex-col gap-3"
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    const reqData: any = onboarding;
-                    reqData.dob = new Date(onboarding.dob.toISOString())
-                    createOnboardingMutation.mutate(reqData)
-                }}
-            >
-                <FormControl variant="standard">
-                    <TextField
-                        label="Gender"
-                        name="gender"
-                        value={onboarding.gender}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, gender: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.gender.length}/180
-                    </FormHelperText>
-                </FormControl>
+      });
+      router.refresh();
+    },
+  });
 
-
-                <DateTimePicker
-                    name="dob"
-                    value={dayjs(onboarding.dob)}
-                    onChange={(date) =>
-                        setOnboarding({ ...onboarding, dob: date })
+  return (
+    <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 absolute top-0">
+      <Container
+        className="hidden md:flex flex-col justify-center items-center max-h-svh"
+        sx={{ bgcolor: "primary.main" }}
+      >
+        <Image src={vector} alt="Login" className="max-w-full max-h-min" />
+      </Container>
+      <Container className="flex flex-col justify-center items-center max-h-svg overflow-y-hidden">
+        <Container className="flex flex-col w-full max-w-sm px-6 py-12 mt-16 mb-4 overflow-y-auto no-scrollbar">
+          <Stepper activeStep={activeStep} orientation="vertical">
+            {steps.map((step, index) => (
+              <Step key={step.label}>
+                <StepLabel>{step.label}</StepLabel>
+                <StepContent>
+                  <step.Section
+                    onboarding={onboarding}
+                    setOnboarding={setOnboarding}
+                    onPrevious={index > 0 && handleBack}
+                    onNext={index < steps.length - 1 && handleNext}
+                    onFinish={
+                      index === steps.length - 1 &&
+                      (() => {
+                        const reqData: any = onboarding;
+                        reqData.dob = new Date(onboarding.dob.toISOString());
+                        createOnboardingMutation.mutate(reqData);
+                      })
                     }
-                    label="Date Of Birth"
-                />
-                <FormControl variant="standard">
-                    <TextField
-                        label="TenthMarks"
-                        name="tenthMraks"
-                        value={onboarding.tenthMarks}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, tenthMarks: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.tenthMarks.length}/180
-                    </FormHelperText>
-                </FormControl>
-                <FormControl variant="standard">
-                    <TextField
-                        label="TwelvethMarks"
-                        name="twelvethMarks"
-                        value={onboarding.twelvethMarks}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, twelvethMarks: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.twelvethMarks.length}/180
-                    </FormHelperText>
-                </FormControl>
-                <FormControl variant="standard">
-                    <TextField
-                        label="AddressLine1"
-                        name="addressLine1"
-                        value={onboarding.addressLine1}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, addressLine1: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.addressLine1.length}/180
-                    </FormHelperText>
-                </FormControl>
-                <FormControl variant="standard">
-                    <TextField
-                        label="AddressLine2"
-                        name="addressLine2"
-                        value={onboarding.addressLine2}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, addressLine2: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.addressLine2.length}/180
-                    </FormHelperText>
-                </FormControl>
-                <FormControl variant="standard">
-                    <TextField
-                        label="Pincode"
-                        name="pincode"
-                        type="number"
-                        value={onboarding.pincode}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, pincode: Number(e.target.value) })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.pincode.length}/180
-                    </FormHelperText>
-                </FormControl>
-
-                <FormControl variant="standard">
-                    <TextField
-                        label="City"
-                        name="city"
-                        value={onboarding.city}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, city: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.city.length}/180
-                    </FormHelperText>
-                </FormControl>
-                <FormControl variant="standard">
-                    <TextField
-                        label="State"
-                        name="state"
-                        value={onboarding.state}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, state: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.state.length}/180
-                    </FormHelperText>
-                </FormControl>
-                <FormControl variant="standard">
-                    <TextField
-                        label="Country"
-                        name="country"
-                        value={onboarding.country}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, country: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.country.length}/180
-                    </FormHelperText>
-                </FormControl>
-                <FormControl variant="standard">
-                    <TextField
-                        label="Email"
-                        name="email"
-                        value={onboarding.email}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, email: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.email.length}/180
-                    </FormHelperText>
-                </FormControl>
-                <FormControl variant="standard">
-                    <TextField
-                        label="Phone"
-                        name="phone"
-                        value={onboarding.phone}
-                        onChange={(e) =>
-                            setOnboarding({ ...onboarding, phone: e.target.value })
-                        }
-                        inputProps={{ maxLength: 180 }}
-                        required
-                    />
-                    <FormHelperText className="text-right">
-                        {onboarding.phone.length}/180
-                    </FormHelperText>
-                </FormControl>
-                <Divider className="mt-12" />
-                <Container className="flex flex-row justify-end">
-                    <LoadingButton
-                        type="submit"
-                        variant="contained"
-                        loading={createOnboardingMutation.isLoading}
-                    >
-                        Submit
-                    </LoadingButton>
-                </Container>
-
-            </form>
-        </Container >
-    );
+                    isLoading={createOnboardingMutation.isLoading}
+                  />
+                </StepContent>
+              </Step>
+            ))}
+          </Stepper>
+        </Container>
+      </Container>
+      <Container
+        className="z-10 w-full h-5 absolute bottom-0"
+        maxWidth={false}
+        sx={{
+          borderTop: "1px solid",
+          borderColor: "divider",
+          textAlign: "center",
+          color: "text.disabled",
+          fontSize: "0.8rem",
+          backgroundColor: "bgclear",
+          backdropFilter: "blur(10px)",
+        }}
+      >
+        Created by Team GeekHaven
+      </Container>
+    </div>
+  );
 }

@@ -1,19 +1,17 @@
-import dayjs from "dayjs";
-
 import { type NewOnboarding } from "./types";
 
 export const DEFAULT_ONBOARDING: NewOnboarding = {
-    gender: "",
-    dob: dayjs(),
-    tenthMarks: "",
-    twelvethMarks: "",
-    addressLine1: "",
-    addressLine2: "",
-    pincode: 0,
-    city: "",
-    state: "",
-    country: "",
-    isOnboarding: false,
-    email: "",
-    phone: "",
+  gender: "",
+  dob: null,
+  tenthMarks: null,
+  twelvethMarks: null,
+  addressLine1: "",
+  addressLine2: "",
+  pincode: "",
+  city: "",
+  state: "",
+  country: "",
+  email: "",
+  phone: "",
 };
+2003;
