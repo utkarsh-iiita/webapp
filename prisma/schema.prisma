@@ -121,7 +121,8 @@ model StudentResume {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    student Students @relation(fields: [userId], references: [userId], onDelete: Cascade)
+    student     Students      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+    Application Application[]
 
     @@index([userId])
 }
@@ -185,6 +186,7 @@ model JobOpening {
     registrationStart      DateTime
     registrationEnd        DateTime
     extraApplicationFields Json?
+    noResumes              Boolean  @default(false)
 
     hidden      Boolean @default(false)
     autoApprove Boolean @default(false)
@@ -224,9 +226,11 @@ model Application {
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
     latestStatusId String?
+    resumeId       String?
 
     statuses     ApplicationStatus[] @relation("ApplicationStatuses")
     latestStatus ApplicationStatus?  @relation("LatestStatus", fields: [latestStatusId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    resume       StudentResume?      @relation(fields: [resumeId], references: [id], onDelete: SetNull)
 
     student           Students            @relation(fields: [userId], references: [userId], onDelete: Cascade)
     jobOpening        JobOpening          @relation(fields: [jobId], references: [id], onDelete: Cascade)
@@ -235,6 +239,7 @@ model Application {
     @@index([userId])
     @@index([jobId])
     @@index([latestStatusId])
+    @@index([resumeId])
 }
 
 enum ApplicationStatusEnum {

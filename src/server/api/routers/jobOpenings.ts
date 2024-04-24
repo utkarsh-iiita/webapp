@@ -26,6 +26,7 @@ export const jobOpeningRouter = createTRPCRouter({
         registrationStart: z.date(),
         registrationEnd: z.date(),
         extraApplicationFields: z.any(),
+        noResumes: z.boolean().optional().default(false),
         hidden: z.boolean().optional().default(false),
         autoApprove: z.boolean().optional().default(false),
         autoVisible: z.boolean().optional().default(false),
@@ -81,6 +82,7 @@ export const jobOpeningRouter = createTRPCRouter({
             typeof input.extraApplicationFields === "object"
               ? input.extraApplicationFields
               : undefined,
+          noResumes: input.noResumes,
           hidden: input.hidden,
           autoApprove: input.autoApprove,
           autoVisible: input.autoVisible,
@@ -120,6 +122,7 @@ export const jobOpeningRouter = createTRPCRouter({
         registrationStart: z.date(),
         registrationEnd: z.date(),
         extraApplicationFields: z.any(),
+        noResumes: z.boolean().optional().default(false),
         hidden: z.boolean().optional().default(false),
         autoApprove: z.boolean().optional().default(false),
         autoVisible: z.boolean().optional().default(false),
@@ -212,6 +215,7 @@ export const jobOpeningRouter = createTRPCRouter({
               typeof input.extraApplicationFields === "object"
                 ? input.extraApplicationFields
                 : undefined,
+            noResumes: input.noResumes,
             hidden: input.hidden,
             autoApprove: input.autoApprove,
             autoVisible: input.autoVisible,
@@ -234,6 +238,7 @@ export const jobOpeningRouter = createTRPCRouter({
       await Promise.all(tasks);
       return true;
     }),
+
   deleteJobOpening: adminProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
@@ -244,6 +249,7 @@ export const jobOpeningRouter = createTRPCRouter({
       });
       return true;
     }),
+
   getLatestJobOpenings: protectedProcedure
     .input(
       z.object({
@@ -253,7 +259,7 @@ export const jobOpeningRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      if (ctx.session.user.userGroup === "student") {
+      if (ctx.session.user.userGroup !== "student") {
         throw new Error("Only students can view job openings");
       }
       const userDetails = await ctx.db.user.findUnique({
@@ -271,83 +277,96 @@ export const jobOpeningRouter = createTRPCRouter({
           },
         },
       });
-      const jobOpenings = await ctx.db.jobOpeningParticipantGroups.findMany({
-        where: {
-          ...(input.onlyApplicable && {
-            admissionYear: userDetails.student.admissionYear,
-            program: userDetails.student.program,
-            minCgpa: {
-              lte: userDetails.student.cgpa,
+      const query = {
+        admissionYear: userDetails.student.admissionYear,
+        program: userDetails.student.program,
+        ...(input.onlyApplicable && {
+          minCgpa: {
+            lte: userDetails.student.cgpa,
+          },
+          minCredits: {
+            lte: userDetails.student.completedCredits,
+          },
+        }),
+        jobOpening: {
+          year: ctx.session.user.year,
+          OR: [
+            {
+              hidden: false,
             },
-            minCredits: {
-              lte: userDetails.student.completedCredits,
+            {
+              AND: [
+                {
+                  registrationStart: {
+                    lte: new Date(),
+                  },
+                },
+                {
+                  autoVisible: true,
+                },
+              ],
             },
-          }),
-          jobOpening: {
-            OR: [
-              {
-                hidden: false,
-              },
-              {
-                AND: [
-                  {
-                    registrationStart: {
-                      lte: new Date(),
+          ],
+        },
+      };
+      const [total, jobOpenings] = await ctx.db.$transaction([
+        ctx.db.jobOpeningParticipantGroups.count({
+          where: query,
+        }),
+        ctx.db.jobOpeningParticipantGroups.findMany({
+          where: query,
+          select: {
+            admissionYear: true,
+            program: true,
+            minCgpa: true,
+            minCredits: true,
+            jobOpening: {
+              select: {
+                id: true,
+                title: true,
+                location: true,
+                role: true,
+                pay: true,
+                company: {
+                  select: {
+                    name: true,
+                    website: true,
+                    logo: true,
+                  },
+                },
+                placementType: {
+                  select: {
+                    name: true,
+                  },
+                },
+                applications: {
+                  where: {
+                    userId: ctx.session.user.id,
+                  },
+                  select: {
+                    id: true,
+                    latestStatus: {
+                      select: {
+                        status: true,
+                      },
                     },
                   },
-                  {
-                    autoVisible: true,
-                  },
-                ],
-              },
-            ],
-          },
-        },
-        select: {
-          admissionYear: true,
-          program: true,
-          minCgpa: true,
-          minCredits: true,
-          jobOpening: {
-            select: {
-              id: true,
-              title: true,
-              location: true,
-              role: true,
-              pay: true,
-              company: {
-                select: {
-                  name: true,
-                  website: true,
-                  logo: true,
                 },
+                registrationStart: true,
+                registrationEnd: true,
+                createdAt: true,
               },
-              placementType: {
-                select: {
-                  name: true,
-                },
-              },
-              applications: {
-                where: {
-                  userId: ctx.session.user.id,
-                },
-                select: {
-                  id: true,
-                },
-              },
-              registrationStart: true,
-              registrationEnd: true,
             },
           },
-        },
-        orderBy: {
-          jobOpening: {
-            registrationStart: "desc",
+          orderBy: {
+            jobOpening: {
+              registrationStart: "desc",
+            },
           },
-        },
-        take: input.limit + 1,
-        skip: (input.page - 1) * input.limit,
-      });
+          take: input.limit + 1,
+          skip: (input.page - 1) * input.limit,
+        }),
+      ]);
 
       const data = jobOpenings.map((jobOpening) => ({
         ...jobOpening.jobOpening,
@@ -356,20 +375,42 @@ export const jobOpeningRouter = createTRPCRouter({
           jobOpening.program === userDetails.student.program &&
           jobOpening.minCgpa <= userDetails.student.cgpa &&
           jobOpening.minCredits <= userDetails.student.completedCredits,
+        alreadyRegistered: jobOpening.jobOpening.applications.length > 0,
       }));
 
       return {
         data: data.slice(0, input.limit),
+        total,
         hasMore: data.length > input.limit,
       };
     }),
+
   getJobOpening: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
+      if (ctx.session.user.userGroup !== "student") {
+        throw new Error("Only students can view job openings");
+      }
+      const userDetails = await ctx.db.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          student: {
+            select: {
+              admissionYear: true,
+              program: true,
+              cgpa: true,
+              completedCredits: true,
+            },
+          },
+        },
+      });
       const jobOpening = await ctx.db.jobOpening.findUnique({
         where: {
           id: input,
           hidden: false,
+          year: ctx.session.user.year,
         },
         select: {
           id: true,
@@ -397,11 +438,15 @@ export const jobOpeningRouter = createTRPCRouter({
             },
             select: {
               id: true,
+              latestStatus: {
+                select: {
+                  status: true,
+                },
+              },
             },
           },
           registrationStart: true,
           registrationEnd: true,
-          extraApplicationFields: true,
           JobOpeningParticipantGroups: {
             select: {
               id: true,
@@ -411,11 +456,39 @@ export const jobOpeningRouter = createTRPCRouter({
               minCredits: true,
             },
           },
+          createdAt: true,
         },
       });
 
+      type JobOpening = typeof jobOpening;
+      type Data = {
+        canRegister: boolean;
+        alreadyRegistered: boolean;
+      };
+
+      const data: JobOpening & Data = {
+        ...jobOpening,
+        canRegister: false,
+        alreadyRegistered: false,
+      };
+
+      delete data.JobOpeningParticipantGroups;
+
+      if (jobOpening) {
+        data.canRegister = jobOpening.JobOpeningParticipantGroups.some(
+          (group) =>
+            group.admissionYear === userDetails.student.admissionYear &&
+            group.program === userDetails.student.program &&
+            group.minCgpa <= userDetails.student.cgpa &&
+            group.minCredits <= userDetails.student.completedCredits,
+        );
+
+        data.alreadyRegistered = jobOpening.applications.length > 0;
+      }
+
       return jobOpening;
     }),
+
   adminGetJobOpenings: adminProcedure
     .input(
       z.object({
@@ -424,43 +497,52 @@ export const jobOpeningRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const jobOpenings = await ctx.db.jobOpening.findMany({
-        where: {
-          year: ctx.session.user.year,
-        },
-        select: {
-          id: true,
-          title: true,
-          location: true,
-          role: true,
-          pay: true,
-          company: {
-            select: {
-              name: true,
-              website: true,
-              logo: true,
-            },
+      const [count, jobOpenings] = await ctx.db.$transaction([
+        ctx.db.jobOpening.count({
+          where: {
+            year: ctx.session.user.year,
           },
-          placementType: {
-            select: {
-              name: true,
-            },
+        }),
+        ctx.db.jobOpening.findMany({
+          where: {
+            year: ctx.session.user.year,
           },
-          registrationStart: true,
-          registrationEnd: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: input.limit + 1,
-        skip: (input.page - 1) * input.limit,
-      });
+          select: {
+            id: true,
+            title: true,
+            location: true,
+            role: true,
+            pay: true,
+            company: {
+              select: {
+                name: true,
+                website: true,
+                logo: true,
+              },
+            },
+            placementType: {
+              select: {
+                name: true,
+              },
+            },
+            registrationStart: true,
+            registrationEnd: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: input.limit + 1,
+          skip: (input.page - 1) * input.limit,
+        }),
+      ]);
 
       return {
         data: jobOpenings.slice(0, input.limit),
+        total: count,
         hasMore: jobOpenings.length > input.limit,
       };
     }),
+
   adminGetJobOpening: adminProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
@@ -491,6 +573,7 @@ export const jobOpeningRouter = createTRPCRouter({
           registrationStart: true,
           registrationEnd: true,
           extraApplicationFields: true,
+          noResumes: true,
           hidden: true,
           autoApprove: true,
           autoVisible: true,
