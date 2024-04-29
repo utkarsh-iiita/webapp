@@ -49,8 +49,8 @@ export default function JobOpeningsPage() {
         <Box className="flex flex-col gap-2">
           {openings &&
             openings.data.map((jobs) => (
-              <Link href={"./job-openings/" + jobs.id}>
-                <JobRow key={jobs.id} {...jobs} />
+              <Link key={jobs.id} href={"./job-openings/" + jobs.id}>
+                <JobRow {...jobs} />
               </Link>
             ))}
         </Box>

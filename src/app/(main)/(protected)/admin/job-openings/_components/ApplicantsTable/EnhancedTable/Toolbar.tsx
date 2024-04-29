@@ -1,10 +1,20 @@
-import { useState } from "react";
+"use client";
+
+import { useCallback, useMemo, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
+import SwipeLeftAltIcon from "@mui/icons-material/SwipeLeftAlt";
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   alpha,
+  Button,
   Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   ListItemIcon,
   Menu,
@@ -14,16 +24,23 @@ import {
   Typography,
 } from "@mui/material";
 
-import { type DataColumn } from "./types";
+import { api } from "~/trpc/react";
+
+import { STATUS_ORDER } from "./constants";
+import { type BasicStudentDetails, type DataColumn } from "./types";
 interface EnhancedTableToolbarProps {
-  numSelected: number;
+  selected: BasicStudentDetails[];
   columns: string[];
   allColumns: DataColumn[];
   setColumns: (cols: string[]) => void;
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected } = props;
+  const numSelected = props.selected.length;
+  const utils = api.useUtils();
+
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  const [isRejectOpen, setIsRejectOpen] = useState(false);
 
   const [columnSelectAnchorEl, setColumnSelectAnchorEl] =
     useState<null | HTMLElement>(null);
@@ -31,6 +48,68 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const handleOpenColumnSelect = (event: React.MouseEvent<HTMLElement>) => {
     setColumnSelectAnchorEl(event.currentTarget);
   };
+
+  const upgradeStatusMutation = api.jobApplication.upgradeStatus.useMutation({
+    onSuccess: () => {
+      utils.jobApplication.getJobApplicants.invalidate();
+      setIsUpgradeOpen(false);
+      setIsRejectOpen(false);
+    },
+  });
+
+  const canUpgradeStatus = useMemo(() => {
+    const uniqStatuses = new Set(props.selected.map((s) => s.status));
+    return (
+      uniqStatuses.size === 1 &&
+      !uniqStatuses.has("SELECTED") &&
+      !uniqStatuses.has("REJECTED")
+    );
+  }, [props.selected]);
+
+  const nextStatus = useMemo(() => {
+    const uniqStatuses = new Set(props.selected.map((s) => s.status));
+    if (
+      uniqStatuses.size !== 1 ||
+      uniqStatuses.has("SELECTED") ||
+      uniqStatuses.has("REJECTED")
+    )
+      return "";
+    const currStatus = Array.from(uniqStatuses)[0];
+    return STATUS_ORDER[STATUS_ORDER.indexOf(currStatus) + 1];
+  }, [props.selected]);
+
+  const handleUpgradeStatus = useCallback(() => {
+    const uniqStatuses = new Set(props.selected.map((s) => s.status));
+    if (
+      uniqStatuses.size !== 1 ||
+      uniqStatuses.has("SELECTED") ||
+      uniqStatuses.has("REJECTED")
+    )
+      return;
+    const currStatus = Array.from(uniqStatuses)[0];
+    const nextStatus = STATUS_ORDER[STATUS_ORDER.indexOf(currStatus) + 1];
+    if (nextStatus === "REGISTERED") return;
+    upgradeStatusMutation.mutate({
+      applicationId: props.selected.map((s) => s.id),
+      status: nextStatus,
+    });
+  }, [props.selected]);
+
+  const canReject = useMemo(() => {
+    const uniqStatuses = new Set(props.selected.map((s) => s.status));
+    return !uniqStatuses.has("SELECTED") && !uniqStatuses.has("REJECTED");
+  }, [props.selected]);
+
+  const handleReject = useCallback(() => {
+    const uniqStatuses = new Set(props.selected.map((s) => s.status));
+    console.log(uniqStatuses);
+    if (uniqStatuses.has("SELECTED") || uniqStatuses.has("REJECTED")) return;
+
+    upgradeStatusMutation.mutate({
+      applicationId: props.selected.map((s) => s.id),
+      status: "REJECTED",
+    });
+  }, [props.selected]);
 
   const handleClose = () => {
     setColumnSelectAnchorEl(null);
@@ -81,11 +160,98 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       )}
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        <>
+          {canReject && (
+            <>
+              <Tooltip title="Reject">
+                <IconButton onClick={() => setIsRejectOpen(true)}>
+                  <SwipeLeftAltIcon />
+                </IconButton>
+              </Tooltip>
+              <Dialog
+                open={isRejectOpen}
+                onClose={() => setIsRejectOpen(false)}
+                PaperProps={{
+                  component: "form",
+                  onSubmit: (e) => {
+                    e.preventDefault();
+                    handleReject();
+                  },
+                }}
+              >
+                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogContent>
+                  You will be <strong>REJECTING</strong> applications of
+                  <strong> {props.selected.length}</strong> students
+                </DialogContent>
+                <DialogActions className="p-4">
+                  <Button
+                    onClick={() => setIsRejectOpen(false)}
+                    variant="contained"
+                  >
+                    Cancel
+                  </Button>
+                  <LoadingButton
+                    type="submit"
+                    color="error"
+                    variant="outlined"
+                    loading={upgradeStatusMutation.isLoading}
+                  >
+                    Confirm
+                  </LoadingButton>
+                </DialogActions>
+              </Dialog>
+            </>
+          )}
+          {canUpgradeStatus && (
+            <>
+              <Tooltip title="Upgrade Status">
+                <IconButton onClick={() => setIsUpgradeOpen(true)}>
+                  <KeyboardDoubleArrowUpIcon />
+                </IconButton>
+              </Tooltip>
+              <Dialog
+                open={isUpgradeOpen}
+                onClose={() => setIsUpgradeOpen(false)}
+                PaperProps={{
+                  component: "form",
+                  onSubmit: (e) => {
+                    e.preventDefault();
+                    handleUpgradeStatus();
+                  },
+                }}
+              >
+                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogContent>
+                  You will be upgrading application status of
+                  <strong> {props.selected.length}</strong> to{" "}
+                  <strong>{nextStatus}</strong>
+                </DialogContent>
+                <DialogActions className="p-4">
+                  <Button
+                    onClick={() => setIsUpgradeOpen(false)}
+                    variant="contained"
+                  >
+                    Cancel
+                  </Button>
+                  <LoadingButton
+                    type="submit"
+                    color="success"
+                    variant="outlined"
+                    loading={upgradeStatusMutation.isLoading}
+                  >
+                    Confirm
+                  </LoadingButton>
+                </DialogActions>
+              </Dialog>
+            </>
+          )}
+          <Tooltip title="Delete">
+            <IconButton>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </>
       ) : (
         <>
           <Tooltip title="Filter list">

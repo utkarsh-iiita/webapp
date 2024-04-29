@@ -33,7 +33,6 @@ export default function ApplicantsTable(props: ApplicantsTableProps) {
 
   const allColumns = useMemo(() => {
     const cols: DataColumn[] = [...BASE_COLUMNS];
-    console.log(props.extraApplicationFields);
     if (props.extraApplicationFields) {
       props.extraApplicationFields.forEach((field) => {
         const newCol = {

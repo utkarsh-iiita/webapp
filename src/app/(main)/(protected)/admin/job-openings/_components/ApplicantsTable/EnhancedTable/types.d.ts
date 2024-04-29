@@ -1,5 +1,7 @@
 import { type api as API } from "~/trpc/server";
 
+import { type STATUS_ORDER } from "./constants";
+
 type Applications = ReturnType<
   typeof API.jobApplication.getJobApplicants.query
 > extends Promise<infer T>
@@ -10,6 +12,7 @@ interface BasicStudentDetails {
   id: string;
   name: string;
   username: string;
+  status: STATUS_ORDER[number] | "REJECTED";
 }
 
 interface DataColumn {

@@ -275,4 +275,66 @@ export const jobApplication = createTRPCRouter({
         hasMore,
       };
     }),
+  upgradeStatus: adminProcedure
+    .input(
+      z.object({
+        applicationId: z.array(z.string()),
+        status: z.enum(["APPROVED", "REJECTED", "SHORTLISTED", "SELECTED"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.$transaction(
+        input.applicationId.map((id) =>
+          ctx.db.application.update({
+            where: { id },
+            data: {
+              latestStatus: {
+                create: {
+                  status: input.status,
+                  Application: {
+                    connect: { id },
+                  },
+                  application: {
+                    connect: { id },
+                  },
+                },
+              },
+            },
+          }),
+        ),
+      );
+
+      if (input.status === "SELECTED") {
+        const selectedStudents = await ctx.db.application.findMany({
+          where: {
+            id: {
+              in: input.applicationId,
+            },
+          },
+          select: {
+            student: {
+              select: {
+                userId: true,
+              },
+            },
+            jobOpening: {
+              select: {
+                companyId: true,
+                jobType: true,
+                year: true,
+              },
+            },
+          },
+        });
+        await ctx.db.selectedStudents.createMany({
+          data: selectedStudents.map(({ student, jobOpening }) => ({
+            userId: student.userId,
+            companyId: jobOpening.companyId,
+            jobType: jobOpening.jobType,
+            year: jobOpening.year,
+          })),
+        });
+      }
+      return true;
+    }),
 });

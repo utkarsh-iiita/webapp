@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
 
-import { BASE_COLUMNS } from "./constants";
 import { type DataColumn } from "./types";
 
 interface EnhancedTableHeaderProps {

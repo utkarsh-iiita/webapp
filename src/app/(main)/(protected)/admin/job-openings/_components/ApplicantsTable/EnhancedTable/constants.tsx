@@ -1,5 +1,9 @@
 import Link from "next/link";
 
+import ApplicationStatusChip from "~/app/common/components/ApplicationStatusChip";
+
+import { type Applications } from "./types";
+
 export const BASE_COLUMNS = [
   {
     id: "name",
@@ -22,6 +26,9 @@ export const BASE_COLUMNS = [
     disablePadding: false,
     label: "Status",
     disableSort: false,
+    format: (value: Applications["data"][number]["status"]) => (
+      <ApplicationStatusChip status={value} />
+    ),
   },
   {
     id: "createdAt",
@@ -99,3 +106,10 @@ export const BASE_COLUMNS = [
     disableSort: true,
   },
 ];
+
+export const STATUS_ORDER = [
+  "REGISTERED",
+  "APPROVED",
+  "SHORTLISTED",
+  "SELECTED",
+] as const;

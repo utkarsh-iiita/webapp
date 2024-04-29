@@ -2,6 +2,7 @@ import React from "react";
 
 import {
   Checkbox,
+  CircularProgress,
   Paper,
   Table,
   TableBody,
@@ -27,15 +28,17 @@ export default function EnhancedTable(props: EnhancedTableProps) {
 
   const isSelected = (id: string) => !!props.selected.find((s) => s.id === id);
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectAllClick = () => {
     const newSelected: BasicStudentDetails[] = [...props.selected];
-    if (event.target.checked) {
+    const allCurrSelected = props.data.data.every((n) => isSelected(n.id));
+    if (!allCurrSelected) {
       props.data.data.forEach((n) => {
         if (isSelected(n.id)) return;
         newSelected.push({
           id: n.id,
           name: n.name,
           username: n.username,
+          status: n.status,
         });
       });
     } else {
@@ -58,6 +61,7 @@ export default function EnhancedTable(props: EnhancedTableProps) {
         id: n.id,
         name: n.name,
         username: n.username,
+        status: n.status,
       });
     } else {
       newSelected.splice(index, 1);
@@ -85,88 +89,96 @@ export default function EnhancedTable(props: EnhancedTableProps) {
   return (
     <Paper sx={{ width: "100%", mb: 2 }}>
       <EnhancedTableToolbar
-        numSelected={props.selected.length}
+        selected={props.selected}
         columns={props.columns}
         allColumns={props.allColumns}
         setColumns={props.setColumns}
       />
-      <TableContainer>
-        <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
-          <EnhancedTableHead
-            numSelected={props.selected.length}
-            order={props.sort}
-            orderBy={props.orderBy}
-            onSelectAllClick={handleSelectAllClick}
-            onRequestSort={handleRequestSort}
-            rowCount={props.data?.total}
-            columns={props.columns}
-            allColumns={props.allColumns}
-          />
-          <TableBody>
-            {props.data?.data.map((row, index) => {
-              const isItemSelected = isSelected(row.id);
-              const labelId = `enhanced-table-checkbox-${index}`;
+      {!props.data ? (
+        <div className="flex items-center justify-center py-24">
+          <CircularProgress />
+        </div>
+      ) : (
+        <>
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+              <EnhancedTableHead
+                numSelected={props.selected.length}
+                order={props.sort}
+                orderBy={props.orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={props.data?.total}
+                columns={props.columns}
+                allColumns={props.allColumns}
+              />
+              <TableBody>
+                {props.data?.data.map((row, index) => {
+                  const isItemSelected = isSelected(row.id);
+                  const labelId = `enhanced-table-checkbox-${index}`;
 
-              return (
-                <TableRow
-                  hover
-                  onClick={() => handleClick(row.id)}
-                  role="checkbox"
-                  aria-checked={isItemSelected}
-                  tabIndex={-1}
-                  key={row.id}
-                  selected={isItemSelected}
-                  sx={{ cursor: "pointer" }}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      color="primary"
-                      checked={isItemSelected}
-                      inputProps={{
-                        "aria-labelledby": labelId,
-                      }}
-                    />
-                  </TableCell>
-                  {props.columns.map((col) => {
-                    const headCell = props.allColumns.find(
-                      (column) => column.id === col,
-                    );
-                    const value = headCell?.isExtraData
-                      ? row.additionalInfo[col]
-                      : row[col];
-                    return (
-                      <TableCell
-                        key={col}
-                        align={headCell.numeric ? "right" : "left"}
-                      >
-                        {headCell.format
-                          ? headCell.format(value)
-                          : value instanceof Date
-                            ? value.toLocaleString()
-                            : value}
+                  return (
+                    <TableRow
+                      hover
+                      onClick={() => handleClick(row.id)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          color="primary"
+                          checked={isItemSelected}
+                          inputProps={{
+                            "aria-labelledby": labelId,
+                          }}
+                        />
                       </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-            {emptyRows > 0 && (
-              <TableRow>
-                <TableCell colSpan={6} className="p-[26px]" />
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={props.data?.total || 0}
-        rowsPerPage={props.pageSize}
-        page={props.page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+                      {props.columns.map((col) => {
+                        const headCell = props.allColumns.find(
+                          (column) => column.id === col,
+                        );
+                        const value = headCell?.isExtraData
+                          ? row.additionalInfo[col]
+                          : row[col];
+                        return (
+                          <TableCell
+                            key={col}
+                            align={headCell.numeric ? "right" : "left"}
+                          >
+                            {headCell.format
+                              ? headCell.format(value)
+                              : value instanceof Date
+                                ? value.toLocaleString()
+                                : value}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+                {emptyRows > 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="p-[26px]" />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={props.data?.total || 0}
+            rowsPerPage={props.pageSize}
+            page={props.page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </>
+      )}
     </Paper>
   );
 }
