@@ -153,6 +153,7 @@ model PlacementType {
     description         String?               @db.Text
     ParticipatingGroups ParticipatingGroups[]
     JobOpening          JobOpening[]
+    SelectedStudents    SelectedStudents[]
 }
 
 model Company {
@@ -164,8 +165,9 @@ model Company {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 
-    jobOpenings JobOpening[]
-    events      Event[]
+    jobOpenings      JobOpening[]
+    events           Event[]
+    SelectedStudents SelectedStudents[]
 }
 
 model JobOpening {
@@ -243,10 +245,10 @@ model Application {
 }
 
 enum ApplicationStatusEnum {
+    REJECTED
     REGISTERED
     APPROVED
     SHORTLISTED
-    REJECTED
     SELECTED
 }
 
@@ -265,6 +267,23 @@ model ApplicationStatus {
 
     @@index([applicationId, createdAt], name: "latest_status_index")
     @@map(name: "application_status_applicationId_fkey")
+}
+
+model SelectedStudents {
+    id        String  @id @default(cuid())
+    userId    String
+    year      Int
+    jobType   String
+    companyId String?
+
+    placementType PlacementType @relation(fields: [jobType], references: [id])
+    company       Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([jobType])
+    @@index([companyId])
 }
 
 enum EventType {

@@ -24,6 +24,7 @@ const config = {
     config.externals.push({ canvas: "commonjs canvas" });
     return config;
   },
+  transpilePackages: ["@mui/x-charts"],
 };
 
 export default config;

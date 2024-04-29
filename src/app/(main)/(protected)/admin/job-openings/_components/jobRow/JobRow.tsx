@@ -1,3 +1,5 @@
+"use client";
+
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";

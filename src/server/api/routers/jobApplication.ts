@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
+
+import { getFilterQuery, getOrderQuery } from "./utils/jobApplications";
 
 export const jobApplication = createTRPCRouter({
   getRegistrationDetails: protectedProcedure
@@ -16,7 +18,7 @@ export const jobApplication = createTRPCRouter({
               admissionYear: true,
               program: true,
               cgpa: true,
-              totalCredits: true,
+              completedCredits: true,
             },
           },
         },
@@ -34,7 +36,7 @@ export const jobApplication = createTRPCRouter({
                 lte: userDetails.student.cgpa,
               },
               minCredits: {
-                lte: userDetails.student.totalCredits,
+                lte: userDetails.student.completedCredits,
               },
             },
           },
@@ -95,7 +97,7 @@ export const jobApplication = createTRPCRouter({
               admissionYear: true,
               program: true,
               cgpa: true,
-              totalCredits: true,
+              completedCredits: true,
             },
           },
         },
@@ -125,7 +127,7 @@ export const jobApplication = createTRPCRouter({
                 lte: userDetails.student.cgpa,
               },
               minCredits: {
-                lte: userDetails.student.totalCredits,
+                lte: userDetails.student.completedCredits,
               },
             },
           },
@@ -201,5 +203,138 @@ export const jobApplication = createTRPCRouter({
       });
 
       return application;
+    }),
+  getJobApplicants: adminProcedure
+    .input(
+      z.object({
+        jobId: z.string(),
+        filterColumn: z.string().optional(),
+        filterValue: z.string().optional(),
+        page: z.number().optional(),
+        pageSize: z.number().optional(),
+        orderBy: z.string().optional(),
+        sort: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const filters = getFilterQuery(input.filterColumn, input.filterValue);
+      const [total, data] = await ctx.db.$transaction([
+        ctx.db.application.count({
+          where: {
+            jobId: input.jobId,
+            ...filters,
+          },
+        }),
+        ctx.db.application.findMany({
+          where: {
+            jobId: input.jobId,
+            ...filters,
+          },
+          include: {
+            student: {
+              include: {
+                user: {
+                  select: {
+                    name: true,
+                    username: true,
+                  },
+                },
+              },
+            },
+            latestStatus: {
+              select: {
+                status: true,
+              },
+            },
+            resume: {
+              select: {
+                src: true,
+              },
+            },
+          },
+          orderBy: [getOrderQuery(input.orderBy, input.sort)],
+          skip: input.page * input.pageSize,
+          take: input.pageSize + 1,
+        }),
+      ]);
+      const hasMore = data.length > input.pageSize;
+      if (hasMore) {
+        data.pop();
+      }
+      return {
+        total,
+        data: data.map((application) => ({
+          ...application.student.user,
+          ...application.student,
+          resume: application.resume.src,
+          status: application.latestStatus.status,
+          additionalInfo: application.additionalInfo,
+          createdAt: application.createdAt,
+          id: application.id,
+        })),
+        hasMore,
+      };
+    }),
+  upgradeStatus: adminProcedure
+    .input(
+      z.object({
+        applicationId: z.array(z.string()),
+        status: z.enum(["APPROVED", "REJECTED", "SHORTLISTED", "SELECTED"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.$transaction(
+        input.applicationId.map((id) =>
+          ctx.db.application.update({
+            where: { id },
+            data: {
+              latestStatus: {
+                create: {
+                  status: input.status,
+                  Application: {
+                    connect: { id },
+                  },
+                  application: {
+                    connect: { id },
+                  },
+                },
+              },
+            },
+          }),
+        ),
+      );
+
+      if (input.status === "SELECTED") {
+        const selectedStudents = await ctx.db.application.findMany({
+          where: {
+            id: {
+              in: input.applicationId,
+            },
+          },
+          select: {
+            student: {
+              select: {
+                userId: true,
+              },
+            },
+            jobOpening: {
+              select: {
+                companyId: true,
+                jobType: true,
+                year: true,
+              },
+            },
+          },
+        });
+        await ctx.db.selectedStudents.createMany({
+          data: selectedStudents.map(({ student, jobOpening }) => ({
+            userId: student.userId,
+            companyId: jobOpening.companyId,
+            jobType: jobOpening.jobType,
+            year: jobOpening.year,
+          })),
+        });
+      }
+      return true;
     }),
 });

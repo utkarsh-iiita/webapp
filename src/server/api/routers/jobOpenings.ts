@@ -586,11 +586,24 @@ export const jobOpeningRouter = createTRPCRouter({
               minCredits: true,
             },
           },
-          _count: {
-            select: {
-              applications: true,
+        },
+      });
+    }),
+
+  adminGetRegDetails: adminProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.students.groupBy({
+        by: ["admissionYear", "program"],
+        where: {
+          applications: {
+            some: {
+              jobId: input,
             },
           },
+        },
+        _count: {
+          _all: true,
         },
       });
     }),
