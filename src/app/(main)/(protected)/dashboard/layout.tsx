@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
+import FullPageLoader from "~/app/common/components/FullPageLoader";
 import { getServerAuthSession } from "~/server/auth";
 export default async function ProtectedPagesLayout({
   children,
@@ -13,5 +15,5 @@ export default async function ProtectedPagesLayout({
   if (session?.user?.isOnboardingComplete === false) {
     return redirect("/onboarding");
   }
-  return <>{children}</>;
+  return <Suspense fallback={<FullPageLoader />}>{children}</Suspense>;
 }

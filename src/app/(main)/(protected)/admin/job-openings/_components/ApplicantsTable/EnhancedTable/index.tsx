@@ -90,6 +90,7 @@ export default function EnhancedTable(props: EnhancedTableProps) {
     <Paper sx={{ width: "100%", mb: 2 }}>
       <EnhancedTableToolbar
         selected={props.selected}
+        setSelected={props.setSelected}
         columns={props.columns}
         allColumns={props.allColumns}
         setColumns={props.setColumns}
