@@ -30,6 +30,7 @@ import { STATUS_ORDER } from "./constants";
 import { type BasicStudentDetails, type DataColumn } from "./types";
 interface EnhancedTableToolbarProps {
   selected: BasicStudentDetails[];
+  setSelected: (newSelected: BasicStudentDetails[]) => void;
   columns: string[];
   allColumns: DataColumn[];
   setColumns: (cols: string[]) => void;
@@ -54,6 +55,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       utils.jobApplication.getJobApplicants.invalidate();
       setIsUpgradeOpen(false);
       setIsRejectOpen(false);
+      props.setSelected([]);
     },
   });
 

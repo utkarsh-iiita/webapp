@@ -20,6 +20,7 @@ export default function ApplicationStatusChip(
       label={props.status}
       color={statusColors[props.status]}
       size="small"
+      className="text-[10px] md:text-[12px]"
       icon={props.status === "SELECTED" ? <CheckIcon /> : undefined}
       variant={props.status === "SELECTED" ? "filled" : "outlined"}
     />

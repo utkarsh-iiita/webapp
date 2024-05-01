@@ -337,4 +337,82 @@ export const jobApplication = createTRPCRouter({
       }
       return true;
     }),
+  getStudentApplications: protectedProcedure.query(async ({ ctx }) => {
+    const applications = await ctx.db.application.findMany({
+      where: {
+        student: {
+          userId: ctx.session.user.id,
+        },
+        jobOpening: {
+          year: ctx.session.user.year,
+        },
+      },
+      include: {
+        jobOpening: {
+          select: {
+            id: true,
+            title: true,
+            company: {
+              select: {
+                name: true,
+                logo: true,
+              },
+            },
+          },
+        },
+        latestStatus: {
+          select: {
+            status: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return applications;
+  }),
+  getStudentApplication: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const application = await ctx.db.application.findUnique({
+        where: {
+          id: input,
+          student: {
+            userId: ctx.session.user.id,
+          },
+        },
+        include: {
+          jobOpening: {
+            select: {
+              id: true,
+              title: true,
+              company: {
+                select: {
+                  name: true,
+                  logo: true,
+                },
+              },
+            },
+          },
+          latestStatus: {
+            select: {
+              status: true,
+            },
+          },
+          applicationStatus: {
+            select: {
+              status: true,
+              createdAt: true,
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          },
+        },
+      });
+
+      return application;
+    }),
 });
