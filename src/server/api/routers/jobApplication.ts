@@ -19,6 +19,11 @@ export const jobApplication = createTRPCRouter({
               program: true,
               cgpa: true,
               completedCredits: true,
+              selections: {
+                where: {
+                  year: ctx.session.user.year,
+                },
+              },
             },
           },
         },
@@ -67,12 +72,17 @@ export const jobApplication = createTRPCRouter({
         },
       });
 
+      if (userDetails.student.selections.length > 0) {
+        throw new Error("You have already selected a job for this year");
+      }
+
       if (!job) {
         throw new Error("Job not found");
       }
 
       return job;
     }),
+
   createApplication: protectedProcedure
     .input(
       z.object({
@@ -98,6 +108,11 @@ export const jobApplication = createTRPCRouter({
               program: true,
               cgpa: true,
               completedCredits: true,
+              selections: {
+                where: {
+                  year: ctx.session.user.year,
+                },
+              },
             },
           },
         },
@@ -109,10 +124,6 @@ export const jobApplication = createTRPCRouter({
 
       if (!userDetails.student) {
         throw new Error("Student not found");
-      }
-
-      if (!userDetails.student.resume) {
-        throw new Error("Resume not found");
       }
 
       const job = await ctx.db.jobOpening.findUnique({
@@ -147,8 +158,18 @@ export const jobApplication = createTRPCRouter({
         },
         select: {
           autoApprove: true,
+          noResumes: true,
         },
       });
+
+      if (userDetails.student.selections.length > 0) {
+        throw new Error("You have already selected a job for this year");
+      }
+      0;
+
+      if (!job.noResumes && !userDetails.student.resume) {
+        throw new Error("Resume not found");
+      }
 
       if (!job) {
         throw new Error("Job not found");
@@ -239,6 +260,11 @@ export const jobApplication = createTRPCRouter({
                     username: true,
                   },
                 },
+                selections: {
+                  where: {
+                    year: ctx.session.user.year,
+                  },
+                },
               },
             },
             latestStatus: {
@@ -266,6 +292,7 @@ export const jobApplication = createTRPCRouter({
         data: data.map((application) => ({
           ...application.student.user,
           ...application.student,
+          alreadySelected: application.student.selections.length > 0,
           resume: application.resume.src,
           status: application.latestStatus.status,
           additionalInfo: application.additionalInfo,
@@ -283,6 +310,53 @@ export const jobApplication = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (input.status === "SELECTED") {
+        const selectedStudents = await ctx.db.application.findMany({
+          where: {
+            id: {
+              in: input.applicationId,
+            },
+          },
+          select: {
+            student: {
+              select: {
+                userId: true,
+                selections: {
+                  where: {
+                    year: ctx.session.user.year,
+                  },
+                },
+              },
+            },
+            jobOpening: {
+              select: {
+                companyId: true,
+                jobType: true,
+                year: true,
+                payNumeric: true,
+                basePay: true,
+                stipend: true,
+              },
+            },
+          },
+        });
+        if (
+          selectedStudents.some(
+            (student) => student.student.selections.length > 0,
+          )
+        ) {
+          throw new Error("One or more students have already been selected");
+        }
+        await ctx.db.selectedStudents.createMany({
+          data: selectedStudents.map(({ student, jobOpening }) => ({
+            userId: student.userId,
+            companyId: jobOpening.companyId,
+            jobType: jobOpening.jobType,
+            year: jobOpening.year,
+          })),
+        });
+      }
+
       await ctx.db.$transaction(
         input.applicationId.map((id) =>
           ctx.db.application.update({
@@ -303,38 +377,6 @@ export const jobApplication = createTRPCRouter({
           }),
         ),
       );
-
-      if (input.status === "SELECTED") {
-        const selectedStudents = await ctx.db.application.findMany({
-          where: {
-            id: {
-              in: input.applicationId,
-            },
-          },
-          select: {
-            student: {
-              select: {
-                userId: true,
-              },
-            },
-            jobOpening: {
-              select: {
-                companyId: true,
-                jobType: true,
-                year: true,
-              },
-            },
-          },
-        });
-        await ctx.db.selectedStudents.createMany({
-          data: selectedStudents.map(({ student, jobOpening }) => ({
-            userId: student.userId,
-            companyId: jobOpening.companyId,
-            jobType: jobOpening.jobType,
-            year: jobOpening.year,
-          })),
-        });
-      }
       return true;
     }),
   getStudentApplications: protectedProcedure.query(async ({ ctx }) => {

@@ -39,6 +39,7 @@ export default function EnhancedTable(props: EnhancedTableProps) {
           name: n.name,
           username: n.username,
           status: n.status,
+          alreadySelected: n.alreadySelected,
         });
       });
     } else {
@@ -62,6 +63,7 @@ export default function EnhancedTable(props: EnhancedTableProps) {
         name: n.name,
         username: n.username,
         status: n.status,
+        alreadySelected: n.alreadySelected,
       });
     } else {
       newSelected.splice(index, 1);

@@ -13,6 +13,7 @@ interface BasicStudentDetails {
   name: string;
   username: string;
   status: STATUS_ORDER[number] | "REJECTED";
+  alreadySelected: boolean;
 }
 
 interface DataColumn {
@@ -22,7 +23,7 @@ interface DataColumn {
   disablePadding?: boolean;
   disableSort?: boolean;
   isExtraData?: boolean;
-  format?: (value: string) => string | JSX.Element;
+  format?: (value: string | boolean) => string | JSX.Element;
 }
 
 interface EnhancedTableProps {

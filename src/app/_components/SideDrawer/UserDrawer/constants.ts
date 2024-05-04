@@ -2,6 +2,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArticleIcon from "@mui/icons-material/Article";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
+import MailIcon from "@mui/icons-material/Mail";
 import QuizIcon from "@mui/icons-material/Quiz";
 import WorkIcon from "@mui/icons-material/Work";
 
@@ -10,6 +11,11 @@ export const USER_SIDEBAR = [
     base: "/dashboard",
     title: "",
     links: [
+      {
+        label: "Inbox",
+        path: "",
+        icon: MailIcon,
+      },
       {
         label: "Job Openings",
         path: "/job",

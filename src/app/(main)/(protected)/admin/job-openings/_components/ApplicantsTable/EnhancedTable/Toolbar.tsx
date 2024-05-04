@@ -63,6 +63,9 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     const uniqStatuses = new Set(props.selected.map((s) => s.status));
     return (
       uniqStatuses.size === 1 &&
+      (uniqStatuses.has("SHORTLISTED")
+        ? !props.selected.some((s) => s.alreadySelected)
+        : true) &&
       !uniqStatuses.has("SELECTED") &&
       !uniqStatuses.has("REJECTED")
     );

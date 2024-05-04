@@ -273,6 +273,11 @@ export const jobOpeningRouter = createTRPCRouter({
               program: true,
               cgpa: true,
               completedCredits: true,
+              selections: {
+                where: {
+                  year: ctx.session.user.year,
+                },
+              },
             },
           },
         },
@@ -371,6 +376,7 @@ export const jobOpeningRouter = createTRPCRouter({
       const data = jobOpenings.map((jobOpening) => ({
         ...jobOpening.jobOpening,
         canRegister:
+          userDetails.student.selections.length === 0 &&
           jobOpening.admissionYear === userDetails.student.admissionYear &&
           jobOpening.program === userDetails.student.program &&
           jobOpening.minCgpa <= userDetails.student.cgpa &&
@@ -402,6 +408,11 @@ export const jobOpeningRouter = createTRPCRouter({
               program: true,
               cgpa: true,
               completedCredits: true,
+              selections: {
+                where: {
+                  year: ctx.session.user.year,
+                },
+              },
             },
           },
         },
@@ -475,13 +486,15 @@ export const jobOpeningRouter = createTRPCRouter({
       delete data.JobOpeningParticipantGroups;
 
       if (jobOpening) {
-        data.canRegister = jobOpening.JobOpeningParticipantGroups.some(
-          (group) =>
-            group.admissionYear === userDetails.student.admissionYear &&
-            group.program === userDetails.student.program &&
-            group.minCgpa <= userDetails.student.cgpa &&
-            group.minCredits <= userDetails.student.completedCredits,
-        );
+        data.canRegister =
+          userDetails.student.selections.length === 0 &&
+          jobOpening.JobOpeningParticipantGroups.some(
+            (group) =>
+              group.admissionYear === userDetails.student.admissionYear &&
+              group.program === userDetails.student.program &&
+              group.minCgpa <= userDetails.student.cgpa &&
+              group.minCredits <= userDetails.student.completedCredits,
+          );
 
         data.alreadyRegistered = jobOpening.applications.length > 0;
       }
