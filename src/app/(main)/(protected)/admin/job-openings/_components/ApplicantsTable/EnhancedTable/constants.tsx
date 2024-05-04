@@ -2,9 +2,9 @@ import Link from "next/link";
 
 import ApplicationStatusChip from "~/app/common/components/ApplicationStatusChip";
 
-import { type Applications } from "./types";
+import { type Applications, type DataColumn } from "./types";
 
-export const BASE_COLUMNS = [
+export const BASE_COLUMNS: DataColumn[] = [
   {
     id: "name",
     numeric: false,
@@ -29,6 +29,14 @@ export const BASE_COLUMNS = [
     format: (value: Applications["data"][number]["status"]) => (
       <ApplicationStatusChip status={value} />
     ),
+  },
+  {
+    id: "alreadySelected",
+    numeric: false,
+    disablePadding: false,
+    label: "Already Selected",
+    disableSort: false,
+    format: (value: boolean) => (value ? "Yes" : "No"),
   },
   {
     id: "createdAt",

@@ -109,6 +109,7 @@ model Students {
 
     resume       StudentResume[]
     applications Application[]
+    selections   SelectedStudents[]
 
     @@index([userId])
 }
@@ -180,7 +181,9 @@ model JobOpening {
     role        String
     location    String
     pay         String
-    payNumeric  Int
+    payNumeric  Int?
+    basePay     Int?
+    stipend     Int?
     empBenefits String?
 
     jobType String
@@ -270,12 +273,17 @@ model ApplicationStatus {
 }
 
 model SelectedStudents {
-    id        String  @id @default(cuid())
-    userId    String
-    year      Int
-    jobType   String
-    companyId String?
+    id         String  @id @default(cuid())
+    userId     String
+    year       Int
+    jobType    String
+    payNumeric Int?
+    basePay    Int?
+    stipend    Int?
+    companyId  String?
+    isOnCampus Boolean @default(true)
 
+    student       Students      @relation(fields: [userId], references: [userId], onDelete: Cascade)
     placementType PlacementType @relation(fields: [jobType], references: [id])
     company       Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
 
@@ -284,6 +292,7 @@ model SelectedStudents {
 
     @@index([jobType])
     @@index([companyId])
+    @@index([userId])
 }
 
 enum EventType {
