@@ -1,5 +1,6 @@
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ClassIcon from "@mui/icons-material/Class";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import EmailIcon from "@mui/icons-material/Email";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
@@ -10,6 +11,11 @@ export const ADMIN_SIDEBAR = [
     base: "/admin",
     title: "",
     links: [
+      {
+        label: "Dashboard",
+        path: "",
+        icon: DashboardIcon,
+      },
       {
         label: "Job Openings",
         path: "/job-openings",

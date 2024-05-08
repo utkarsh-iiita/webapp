@@ -69,10 +69,19 @@ export const jobApplication = createTRPCRouter({
           },
           extraApplicationFields: true,
           noResumes: true,
+          placementType: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
 
-      if (userDetails.student.selections.length > 0) {
+      if (
+        userDetails.student.selections.filter(
+          (sel) => sel.jobType === job.placementType.id,
+        ).length > 0
+      ) {
         throw new Error("You have already selected a job for this year");
       }
 
@@ -159,10 +168,19 @@ export const jobApplication = createTRPCRouter({
         select: {
           autoApprove: true,
           noResumes: true,
+          placementType: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
 
-      if (userDetails.student.selections.length > 0) {
+      if (
+        userDetails.student.selections.filter(
+          (sel) => sel.jobType === job.placementType.id,
+        ).length > 0
+      ) {
         throw new Error("You have already selected a job for this year");
       }
       0;
@@ -239,6 +257,18 @@ export const jobApplication = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const filters = getFilterQuery(input.filterColumn, input.filterValue);
+      const jobPlacementType = await ctx.db.jobOpening.findUnique({
+        where: {
+          id: input.jobId,
+        },
+        select: {
+          placementType: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
       const [total, data] = await ctx.db.$transaction([
         ctx.db.application.count({
           where: {
@@ -263,6 +293,7 @@ export const jobApplication = createTRPCRouter({
                 selections: {
                   where: {
                     year: ctx.session.user.year,
+                    jobType: jobPlacementType.placementType.id,
                   },
                 },
               },
@@ -342,7 +373,10 @@ export const jobApplication = createTRPCRouter({
         });
         if (
           selectedStudents.some(
-            (student) => student.student.selections.length > 0,
+            (student) =>
+              student.student.selections.filter(
+                (sel) => sel.jobType === student.jobOpening.jobType,
+              ).length > 0,
           )
         ) {
           throw new Error("One or more students have already been selected");

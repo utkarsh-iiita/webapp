@@ -161,7 +161,7 @@ export default function Navbar({
                     }}
                   >
                     <MenuItem>
-                      Theme
+                      Dark Mode
                       <ThemeSwitch
                         sx={{ ml: 1 }}
                         small="true"
@@ -236,7 +236,7 @@ export default function Navbar({
             }}
           >
             <MenuItem>
-              Theme
+              Dark Mode
               <ThemeSwitch
                 sx={{ ml: 1 }}
                 small="true"
