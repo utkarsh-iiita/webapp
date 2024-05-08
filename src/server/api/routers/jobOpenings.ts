@@ -341,6 +341,7 @@ export const jobOpeningRouter = createTRPCRouter({
                 },
                 placementType: {
                   select: {
+                    id: true,
                     name: true,
                   },
                 },
@@ -376,7 +377,9 @@ export const jobOpeningRouter = createTRPCRouter({
       const data = jobOpenings.map((jobOpening) => ({
         ...jobOpening.jobOpening,
         canRegister:
-          userDetails.student.selections.length === 0 &&
+          userDetails.student.selections.filter(
+            (sel) => sel.jobType === jobOpening.jobOpening.placementType.id,
+          ).length === 0 &&
           jobOpening.admissionYear === userDetails.student.admissionYear &&
           jobOpening.program === userDetails.student.program &&
           jobOpening.minCgpa <= userDetails.student.cgpa &&
@@ -440,6 +443,7 @@ export const jobOpeningRouter = createTRPCRouter({
           },
           placementType: {
             select: {
+              id: true,
               name: true,
             },
           },
@@ -487,7 +491,9 @@ export const jobOpeningRouter = createTRPCRouter({
 
       if (jobOpening) {
         data.canRegister =
-          userDetails.student.selections.length === 0 &&
+          userDetails.student.selections.filter(
+            (sel) => sel.jobType === jobOpening.placementType.id,
+          ).length === 0 &&
           jobOpening.JobOpeningParticipantGroups.some(
             (group) =>
               group.admissionYear === userDetails.student.admissionYear &&
