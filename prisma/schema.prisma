@@ -339,6 +339,7 @@ model Post {
     published Boolean  @default(false)
     authorId  String
     content   String   @db.Text
+    year      Int      @default(2024)
 
     author   User          @relation(fields: [authorId], references: [id])
     comments PostComment[]

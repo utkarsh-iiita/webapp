@@ -4,11 +4,10 @@ import {
   adminProcedure,
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
 } from "~/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
-  getLatestPost: publicProcedure
+  getLatestPost: protectedProcedure
     .input(
       z.object({
         page: z.number().min(1).default(1),
@@ -24,6 +23,7 @@ export const postRouter = createTRPCRouter({
         },
         where: {
           published: true,
+          year: ctx.session.user.year,
         },
         orderBy: {
           createdAt: "desc",
@@ -33,26 +33,28 @@ export const postRouter = createTRPCRouter({
       });
       return data;
     }),
-  getPost: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
-    const data = await ctx.db.post.findUniqueOrThrow({
-      where: {
-        published: true,
-        id: input,
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        title: true,
-        content: true,
-        author: {
-          select: {
-            name: true,
+  getPost: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.db.post.findUniqueOrThrow({
+        where: {
+          published: true,
+          id: input,
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          title: true,
+          content: true,
+          author: {
+            select: {
+              name: true,
+            },
           },
         },
-      },
-    });
-    return data;
-  }),
+      });
+      return data;
+    }),
   addNewPost: adminProcedure
     .input(
       z.object({
@@ -65,6 +67,7 @@ export const postRouter = createTRPCRouter({
         data: {
           title: input.title,
           content: input.content,
+          year: ctx.session.user.year,
           authorId: ctx.session.user.id,
           published: true,
         },
@@ -87,6 +90,7 @@ export const postRouter = createTRPCRouter({
         data: {
           title: input.title,
           content: input.content,
+          authorId: ctx.session.user.id,
           published: true,
         },
       });
