@@ -374,6 +374,7 @@ export default function NewJobOpening() {
             type="submit"
             variant="contained"
             disabled={isCreationDisabled}
+            loading={createJobOpeningMutation.isLoading}
           >
             Create
           </LoadingButton>
