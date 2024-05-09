@@ -1,19 +1,16 @@
 "use client";
 
-import Link from "next/link";
-
-import PostAddIcon from "@mui/icons-material/PostAdd";
 import {
   Box,
   CircularProgress,
   Container,
   Divider,
-  IconButton,
   Typography,
 } from "@mui/material";
 
-import PostRow from "~/app/(main)/(protected)/admin/post/_components/PostRow";
 import { api } from "~/trpc/react";
+
+import PostRow from "./_components/PostRow";
 
 function Page() {
   const { data: allPosts, isLoading } = api.post.getLatestPost.useQuery({});
@@ -21,16 +18,9 @@ function Page() {
   return (
     <>
       <Container className="flex flex-col gap-4 py-4">
-        <div className="flex flex-row justify-between">
-          <Typography variant="h5" color="primary" className="px-4">
-            Inbox
-          </Typography>
-          <Link href="./post/new">
-            <IconButton>
-              <PostAddIcon />
-            </IconButton>
-          </Link>
-        </div>
+        <Typography variant="h5" color="primary" className="px-4">
+          Inbox
+        </Typography>
         <Divider />
         {isLoading && (
           <Container className="h-96 w-full flex justify-center items-center">
