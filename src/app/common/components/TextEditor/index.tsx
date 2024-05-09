@@ -15,7 +15,7 @@ function TextEditor(props: TextEditorProps, ref: any) {
       id="text-editor"
       onInit={(evt, editor) => (ref.current = editor)}
       initialValue={props.value}
-      apiKey="ah9w9dtmhnrt5yhzobg11p0jj9sdldd1x64lj89aipllnqn6"
+      apiKey="nnc0722uwomht0eu21pjcp4g53v9z0fp26l7ak118jtz0lfv"
       init={{
         height: props.height ?? "90vmin",
         toolbar_sticky: true,
