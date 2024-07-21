@@ -37,8 +37,12 @@ export const studentResumeRouter = createTRPCRouter({
 
       const arrayBuffer = await blob.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-
-      await uploadFile(buffer, key);
+      try {
+        await uploadFile(buffer, key);
+      } catch (err) {
+        console.error(err);
+        throw new Error("Failed to upload file");
+      }
 
       return await ctx.db.studentResume.create({
         data: {

@@ -31,12 +31,13 @@ export const env = createEnv({
       )
       .default("https://utkarsh.buddylonglegs.tech"),
     AVIRAL_SESSION: z.string().optional(),
-    USE_AVIRAL: z.string().optional(),
-    S3_ENDPOINT: z.string().optional(),
-    S3_BUCKET_NAME: z.string().optional(),
-    S3_ACCESS_KEY: z.string().optional(),
-    S3_SECRET_KEY: z.string().optional(),
-    S3_PUBLIC_URL: z.string().optional(),
+    USE_AVIRAL: z.string(),
+    S3_ENDPOINT: z.string(),
+    S3_BUCKET_REGION: z.string().default("apac"),
+    S3_BUCKET_NAME: z.string(),
+    S3_ACCESS_KEY: z.string(),
+    S3_SECRET_KEY: z.string(),
+    S3_PUBLIC_URL: z.string(),
   },
 
   /**
@@ -61,6 +62,7 @@ export const env = createEnv({
     AVIRAL_SESSION: process.env.AVIRAL_SESSION,
     USE_AVIRAL: process.env.USE_AVIRAL,
     S3_ENDPOINT: process.env.S3_ENDPOINT,
+    S3_BUCKET_REGION: process.env.S3_BUCKET_REGION,
     S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
     S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
     S3_SECRET_KEY: process.env.S3_SECRET_KEY,
