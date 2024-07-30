@@ -31,13 +31,13 @@ export const env = createEnv({
       )
       .default("https://utkarsh.buddylonglegs.tech"),
     AVIRAL_SESSION: z.string().optional(),
-    USE_AVIRAL: z.string(),
-    S3_ENDPOINT: z.string(),
+    USE_AVIRAL: z.string().default(""),
+    S3_ENDPOINT: z.string().default(""),
     S3_BUCKET_REGION: z.string().default("apac"),
-    S3_BUCKET_NAME: z.string(),
-    S3_ACCESS_KEY: z.string(),
-    S3_SECRET_KEY: z.string(),
-    S3_PUBLIC_URL: z.string(),
+    S3_BUCKET_NAME: z.string().default(""),
+    S3_ACCESS_KEY: z.string().default(""),
+    S3_SECRET_KEY: z.string().default(""),
+    S3_PUBLIC_URL: z.string().default(""),
   },
 
   /**
