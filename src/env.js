@@ -14,13 +14,12 @@ export const env = createEnv({
       .refine(
         (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
         "You forgot to change the default URL",
-      )
-      .optional(),
-    REDIS_URL: z.string().url().optional(),
+      ),
+    REDIS_URL: z.string().url(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    NEXTAUTH_SECRET: z.string().optional(),
+    NEXTAUTH_SECRET: z.string(),
     NEXTAUTH_URL: z
       .preprocess(
         // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
@@ -31,13 +30,21 @@ export const env = createEnv({
       )
       .default("https://utkarsh.buddylonglegs.tech"),
     AVIRAL_SESSION: z.string().optional(),
-    USE_AVIRAL: z.string().default(""),
-    S3_ENDPOINT: z.string().default(""),
+    USE_AVIRAL: z.string(),
+    S3_ENDPOINT: z.string(),
     S3_BUCKET_REGION: z.string().default("apac"),
-    S3_BUCKET_NAME: z.string().default(""),
-    S3_ACCESS_KEY: z.string().default(""),
-    S3_SECRET_KEY: z.string().default(""),
-    S3_PUBLIC_URL: z.string().default(""),
+    S3_BUCKET_NAME: z.string(),
+    S3_ACCESS_KEY: z.string(),
+    S3_SECRET_KEY: z.string(),
+    S3_PUBLIC_URL: z.string(),
+    FIREBASE_API_KEY: z.string(),
+    FIREBASE_AUTH_DOMAIN: z.string(),
+    FIREBASE_PROJECT_ID: z.string(),
+    FIREBASE_STORAGE_BUCKET: z.string(),
+    FIREBASE_MESSAGING_SENDER_ID: z.string(),
+    FIREBASE_APP_ID: z.string(),
+    FIREBASE_MEASUREMENT_ID: z.string(),
+    GOOGLE_APPLICATION_CREDENTIALS: z.string(),
   },
 
   /**
@@ -67,6 +74,14 @@ export const env = createEnv({
     S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
     S3_SECRET_KEY: process.env.S3_SECRET_KEY,
     S3_PUBLIC_URL: process.env.S3_PUBLIC_URL,
+    FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+    FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+    FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
+    FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
+    FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
+    GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

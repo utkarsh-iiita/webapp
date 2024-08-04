@@ -42,3 +42,5 @@ yarn-error.log*
 *.tsbuildinfo
 
 prod_backup
+
+google_application_credentials.json

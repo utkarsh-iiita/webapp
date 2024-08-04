@@ -39,6 +39,8 @@
     "@trpc/server": "^10.43.6",
     "axios": "^1.6.3",
     "dayjs": "^1.11.10",
+    "firebase": "^10.12.5",
+    "firebase-admin": "^12.3.0",
     "next": "^14.0.3",
     "next-auth": "^4.24.5",
     "nextjs-toploader": "^1.6.6",

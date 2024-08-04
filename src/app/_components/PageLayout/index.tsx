@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import Navbar from "../Navbar";
@@ -19,6 +19,29 @@ export default function PageLayout({
     () => NO_DRAWER_PAGES.includes(pathname),
     [pathname],
   );
+
+  useEffect(() => {
+    // TODO add startup logic here
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      navigator.serviceWorker
+        .register("/service-worker.js")
+        .then((serviceWorkerRegistration) => {
+          console.info("Service worker was registered.");
+          console.info({ serviceWorkerRegistration });
+        })
+        .catch((error) => {
+          console.error(
+            "An error occurred while registering the service worker.",
+          );
+          console.error(error);
+        });
+    } else {
+      console.info(
+        "!! Browser does not support service workers or push messages.",
+      );
+    }
+  }, []);
+
   return (
     <div className="flex flex-row w-full min-h-svh">
       {!noSidebar && (
