@@ -28,62 +28,9 @@ services:
           cpus: '0.6'
           memory: 400M
 
-  db:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: utkarsh
-      MYSQL_DATABASE: utkarsh
-      MYSQL_USER: utkarsh
-      MYSQL_PASSWORD: utkarsh
-    volumes:
-      - mysql-prod:/var/lib/mysql
-    networks:
-      internal:
-      default:
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uutkarsh", "-putkarsh"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  cache:
-    image: redis:4
-    restart: always
-    volumes:
-      - redis-prod:/data
-    networks:
-      default:
-      internal:
-
-  db-backup:
-    image: fradelg/mysql-cron-backup
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ./prod_backup:/backup
-    environment:
-      - MYSQL_HOST=db
-      - MYSQL_USER=utkarsh
-      - MYSQL_PASS=utkarsh
-      - MAX_BACKUPS=15
-      - INIT_BACKUP=0
-      # Every day at 03:00
-      - CRON_TIME=0 3 * * *
-      # Make it small
-      - GZIP_LEVEL=9
-      # As of MySQL 8.0.21 this is needed
-      - MYSQLDUMP_OPTS=--no-tablespaces
-    networks:
-      default:
-      internal:
-    restart: unless-stopped
 
 volumes:
-  mysql-prod:
   app-node-cache:
-  redis-prod:
 
 networks:
   default:
