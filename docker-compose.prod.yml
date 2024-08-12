@@ -3,9 +3,6 @@ services:
   app:
     image: buddylonglegs/utkarsh-webapp:latest
     restart: always
-    depends_on:
-      db:
-        condition: service_healthy
     command: sh -c "npm run db:seed && npm run start"
     # command: sh -c "npm run dev" # <-- use this command for testing/db:push
     ports:
@@ -13,8 +10,6 @@ services:
       - 5555:5555
     environment:
       # Optional variables
-      - DATABASE_URL=mysql://utkarsh:utkarsh@db/utkarsh
-      - REDIS_URL=redis://cache:6379
       - NODE_ENV=production
       - NEXT_PUBLIC_CLIENTVAR=clientvar
     env_file:
