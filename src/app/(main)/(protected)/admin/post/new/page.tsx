@@ -18,11 +18,13 @@ import {
 
 import TextEditor from "~/app/common/components/TextEditor";
 import { api } from "~/trpc/react";
+import PostGroupSelector from "../_components/ParticipatingGroupsSelector";
 
 export default function NewPost() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [open, setOpen] = useState<boolean>(false);
+  const [participatingGroups, setParticipatingGroups] = useState([]);
   const contentRef = useRef<any>();
   const handleClose = () => {
     setOpen(false);
@@ -40,6 +42,7 @@ export default function NewPost() {
     createPostMutation.mutate({
       title,
       content,
+      participatingGroups,
     });
   };
   return (
@@ -61,6 +64,10 @@ export default function NewPost() {
             />
 
             <TextEditor height="40vmin" value="" ref={contentRef} />
+            <PostGroupSelector
+              value={participatingGroups}
+              onChange={setParticipatingGroups}
+            />
             <div>
               <Button
                 variant="contained"

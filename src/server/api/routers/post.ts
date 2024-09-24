@@ -51,6 +51,13 @@ export const postRouter = createTRPCRouter({
               name: true,
             },
           },
+          participatingGroups: {
+            select: {
+              admissionYear: true,
+              minCgpa: true,
+              program: true,
+            }
+          }
         },
       });
       return data;
@@ -60,16 +67,35 @@ export const postRouter = createTRPCRouter({
       z.object({
         title: z.string(),
         content: z.string(),
+        participatingGroups: z.array(
+          z.object({
+            admissionYear: z.number(),
+            program: z.string(),
+            minCgpa: z.number().max(10).optional().default(0),
+
+          }),
+        ),
+
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.post.create({
         data: {
+
           title: input.title,
           content: input.content,
           year: ctx.session.user.year,
           authorId: ctx.session.user.id,
           published: true,
+          participatingGroups: {
+            createMany: {
+              data: input.participatingGroups.map((group) => ({
+                admissionYear: group.admissionYear,
+                program: group.program,
+                minCgpa: group.minCgpa,
+              })),
+            }
+          }
         },
       });
       return true;
@@ -80,9 +106,25 @@ export const postRouter = createTRPCRouter({
         id: z.string(),
         title: z.string(),
         content: z.string(),
+        participatingGroups: z.array(
+          z.object({
+            admissionYear: z.number(),
+            program: z.string(),
+            minCgpa: z.number().max(10).optional().default(0),
+          }),
+        ),
+
       }),
+
     )
     .mutation(async ({ ctx, input }) => {
+      await ctx.db.postParticipantGroups.deleteMany({
+        where: {
+          postId: input.id
+        }
+      })
+
+
       await ctx.db.post.update({
         where: {
           id: input.id,
@@ -92,6 +134,15 @@ export const postRouter = createTRPCRouter({
           content: input.content,
           authorId: ctx.session.user.id,
           published: true,
+          participatingGroups: {
+            createMany: {
+              data: input.participatingGroups.map((group) => ({
+                admissionYear: group.admissionYear,
+                program: group.program,
+                minCgpa: group.minCgpa,
+              })),
+            }
+          }
         },
       });
       return true;
