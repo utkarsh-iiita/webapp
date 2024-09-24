@@ -65,12 +65,12 @@ export default function EventTooltip(props: EventTooltipProps) {
           {dayjs(props.event.endTime).format("ddd D-M-YYYY, hh:mm A")}
         </Typography>
       </div>
-      <div className="flex flex-row gap-2 items-center">
+      {props.event.jobOpening ? <div className="flex flex-row gap-2 items-center">
         <Typography variant="subtitle2" color="textSecondary">
           Opening:
         </Typography>
         <Typography variant="body2">{props.event.jobOpening.title}</Typography>
-      </div>
+      </div> : <></>}
     </div>
   );
 }

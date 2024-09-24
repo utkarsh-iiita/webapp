@@ -4,8 +4,8 @@ import dayjs from "dayjs";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Avatar, Paper, Typography } from "@mui/material";
+import { EventTooltipProps } from "../EventTooltip/types";
 
-import { type EventTooltipProps } from "../../event/_components/EventTooltip/types";
 
 export default function EventRow(props: EventTooltipProps) {
   return (
@@ -69,14 +69,14 @@ export default function EventRow(props: EventTooltipProps) {
                 {dayjs(props.event.endTime).format("ddd D-M-YYYY, hh:mm A")}
               </Typography>
             </div>
-            <div className="flex flex-row gap-2 items-center">
+            {props.event.jobOpening ? <div className="flex flex-row gap-2 items-center">
               <Typography variant="subtitle2" color="textSecondary">
                 Opening:
               </Typography>
               <Typography variant="body2">
                 {props.event.jobOpening.title}
               </Typography>
-            </div>
+            </div> : <></>}
           </div>
         </div>
       </Paper>
