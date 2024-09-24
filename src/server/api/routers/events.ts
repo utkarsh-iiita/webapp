@@ -81,16 +81,16 @@ export const eventsRouter = createTRPCRouter({
           year: ctx.session.user.year,
           ...(input.placementTypes
             ? {
-                participatingGroups: {
-                  some: {
-                    participatingGroup: {
-                      placementTypeId: {
-                        in: input.placementTypes,
-                      },
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    placementTypeId: {
+                      in: input.placementTypes,
                     },
                   },
                 },
-              }
+              },
+            }
             : {}),
         },
       });
@@ -103,16 +103,16 @@ export const eventsRouter = createTRPCRouter({
           year: ctx.session.user.year,
           ...(input.placementTypes
             ? {
-                participatingGroups: {
-                  some: {
-                    participatingGroup: {
-                      placementTypeId: {
-                        in: input.placementTypes,
-                      },
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    placementTypeId: {
+                      in: input.placementTypes,
                     },
                   },
                 },
-              }
+              },
+            }
             : {}),
         },
         select: EventsListDTO,
@@ -138,16 +138,16 @@ export const eventsRouter = createTRPCRouter({
           year: ctx.session.user.year,
           ...(input.placementTypes
             ? {
-                participatingGroups: {
-                  some: {
-                    participatingGroup: {
-                      placementTypeId: {
-                        in: input.placementTypes,
-                      },
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    placementTypeId: {
+                      in: input.placementTypes,
                     },
                   },
                 },
-              }
+              },
+            }
             : {}),
         },
       });
@@ -156,16 +156,16 @@ export const eventsRouter = createTRPCRouter({
         where: {
           ...(input.placementTypes
             ? {
-                participatingGroups: {
-                  some: {
-                    participatingGroup: {
-                      placementTypeId: {
-                        in: input.placementTypes,
-                      },
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    placementTypeId: {
+                      in: input.placementTypes,
                     },
                   },
                 },
-              }
+              },
+            }
             : {}),
         },
         select: EventsListDTO,
@@ -205,21 +205,21 @@ export const eventsRouter = createTRPCRouter({
         type: z.string(),
         startTime: z.string(),
         endTime: z.string(),
-        description: z.string().optional(),
+        description: z.string().nullable(),
         location: z.string(),
-        link: z.string().optional(),
-        hidden: z.boolean().optional().default(true),
-        jobOpeningId: z.string().optional().default(null),
+        link: z.string().nullable(),
+        hidden: z.boolean().nullable().default(true),
+        jobOpeningId: z.string().nullable().default(null),
         company: z
           .object({
             name: z.string(),
             logo: z.string(),
             website: z.string(),
           })
-          .optional()
+          .nullable()
           .default(null),
-        participatingGroups: z.array(z.string()).optional(),
-        individualParticipants: z.array(z.string()).optional(),
+        participatingGroups: z.array(z.string()).nullable(),
+        individualParticipants: z.array(z.string()).nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {

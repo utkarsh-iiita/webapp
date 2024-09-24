@@ -123,13 +123,13 @@ export default function IndividualEventPage() {
       });
       setStartTime(dayjs(event.startTime));
       setEndTime(dayjs(event.endTime));
-      setJobOpening(event.jobOpening.id);
+      setJobOpening(event.jobOpening?.id);
       setCompany(event.company);
       setParticipatingGroups(
-        event.participatingGroups.map((grp) => grp.participatingGroup.id),
+        event.participatingGroups?.map((grp) => grp.participatingGroup.id),
       );
       setIndividualParticipants(
-        event.individualParticipants.map((p) => p.user),
+        event.individualParticipants?.map((p) => p.user),
       );
       setHidden(event.hidden);
     }
