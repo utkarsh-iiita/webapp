@@ -67,6 +67,181 @@ const EventsDTO = {
 };
 
 export const eventsRouter = createTRPCRouter({
+  getEventsInTimeRange: protectedProcedure
+    .input(
+      z.object({
+        startDate: z.date(),
+        endDate: z.date(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      if (ctx.session.user.userGroup !== "student") {
+        throw new Error("Only students can view job openings");
+      }
+      const userDetails = await ctx.db.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          student: {
+            select: {
+              admissionYear: true,
+              program: true,
+            },
+          },
+        },
+      });
+
+      const totalEvents = ctx.db.event.count({
+        where: {
+          year: ctx.session.user.year,
+          OR: [
+            {
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    admissionYear: userDetails.student.admissionYear,
+                    program: userDetails.student.program
+                  }
+                }
+              },
+            },
+            {
+              individualParticipants: {
+                some: {
+                  userId: ctx.session.user.id,
+                }
+              }
+            }
+          ],
+          hidden: false,
+        },
+      });
+      const eventsQuery = ctx.db.event.findMany({
+        where: {
+          startTime: {
+            lte: input.endDate,
+            gte: input.startDate,
+          },
+          year: ctx.session.user.year,
+          OR: [
+            {
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    admissionYear: userDetails.student.admissionYear,
+                    program: userDetails.student.program
+                  }
+                }
+              },
+            },
+            {
+              individualParticipants: {
+                some: {
+                  userId: ctx.session.user.id,
+                }
+              }
+            }
+          ],
+          hidden: false,
+        },
+        select: EventsListDTO,
+      });
+      const [events, total] = await Promise.all([eventsQuery, totalEvents]);
+
+      return {
+        events,
+        total,
+      };
+    }),
+
+  getPaginatedEvents: protectedProcedure
+    .input(
+      z.object({
+        page: z.number().default(1),
+        size: z.number().default(20),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      if (ctx.session.user.userGroup !== "student") {
+        throw new Error("Only students can view job openings");
+      }
+      const userDetails = await ctx.db.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          student: {
+            select: {
+              admissionYear: true,
+              program: true,
+            },
+          },
+        },
+      });
+
+      const totalEvents = ctx.db.event.count({
+        where: {
+          year: ctx.session.user.year,
+          OR: [
+            {
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    admissionYear: userDetails.student.admissionYear,
+                    program: userDetails.student.program
+                  }
+                }
+              },
+            },
+            {
+              individualParticipants: {
+                some: {
+                  userId: ctx.session.user.id,
+                }
+              }
+            }
+          ],
+          hidden: false,
+        },
+      });
+
+      const eventsQuery = ctx.db.event.findMany({
+        where: {
+          year: ctx.session.user.year,
+          OR: [
+            {
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    admissionYear: userDetails.student.admissionYear,
+                    program: userDetails.student.program
+                  }
+                }
+              },
+            },
+            {
+              individualParticipants: {
+                some: {
+                  userId: ctx.session.user.id,
+                }
+              }
+            }
+          ],
+          hidden: false,
+        },
+        select: EventsListDTO,
+        skip: (input.page - 1) * input.size,
+        take: input.size,
+      });
+
+      const [events, total] = await Promise.all([eventsQuery, totalEvents]);
+
+      return {
+        events,
+        total,
+      };
+    }),
   getAdminEventsInTimeRange: adminProcedure
     .input(
       z.object({
@@ -154,6 +329,7 @@ export const eventsRouter = createTRPCRouter({
 
       const eventsQuery = ctx.db.event.findMany({
         where: {
+          year: ctx.session.user.year,
           ...(input.placementTypes
             ? {
               participatingGroups: {
