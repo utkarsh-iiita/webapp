@@ -5,7 +5,7 @@ import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import MailIcon from "@mui/icons-material/Mail";
 import QuizIcon from "@mui/icons-material/Quiz";
 import WorkIcon from "@mui/icons-material/Work";
-
+import EventIcon from "@mui/icons-material/Event";
 export const USER_SIDEBAR = [
   {
     base: "/dashboard",
@@ -25,6 +25,11 @@ export const USER_SIDEBAR = [
         label: "My Applications",
         path: "/application",
         icon: ArticleIcon,
+      },
+      {
+        label: "Events",
+        path: "/event",
+        icon: EventIcon,
       },
     ],
   },

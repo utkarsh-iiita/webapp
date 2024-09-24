@@ -39,16 +39,8 @@ export const ADMIN_SIDEBAR = [
     base: "/admin",
     title: "",
     links: [
-      {
-        label: "Placement Years",
-        path: "/placement-years",
-        icon: CalendarMonthIcon,
-      },
-      {
-        label: "Job Types",
-        path: "/job-types",
-        icon: ClassIcon,
-      },
+
+
       {
         label: "Help Chat",
         path: "/help-chat",
@@ -63,6 +55,16 @@ export const ADMIN_SIDEBAR = [
         label: "Admin Access",
         path: "/manage-admins",
         icon: PeopleIcon,
+      },
+      {
+        label: "Placement Years",
+        path: "/placement-years",
+        icon: CalendarMonthIcon,
+      },
+      {
+        label: "Job Types",
+        path: "/job-types",
+        icon: ClassIcon,
       },
     ],
   },

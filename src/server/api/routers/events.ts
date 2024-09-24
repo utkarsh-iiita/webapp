@@ -429,6 +429,7 @@ export const eventsRouter = createTRPCRouter({
         link: input.link,
         jobOpeningId: input.jobOpeningId ? input.jobOpeningId : null,
         companyId: company ? company.id : null,
+        hidden: input.hidden,
 
         participatingGroups: {
           createMany: {
@@ -529,6 +530,7 @@ export const eventsRouter = createTRPCRouter({
         link: input.link,
         jobOpeningId: input.jobOpeningId ? input.jobOpeningId : null,
         companyId: company ? company.id : null,
+        hidden: input.hidden,
 
         participatingGroups: {
           createMany: {
