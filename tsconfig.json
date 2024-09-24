@@ -37,6 +37,6 @@
     "**/*.cjs",
     "**/*.js",
     ".next/types/**/*.ts"
-  ],
+, "src/server/api/routers/constants"  ],
   "exclude": ["node_modules"]
 }

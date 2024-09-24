@@ -550,15 +550,16 @@ export const jobOpeningRouter = createTRPCRouter({
           orderBy: {
             createdAt: "desc",
           },
-          take: input.limit + 1,
-          skip: (input.page - 1) * input.limit,
+          take: input.limit >= 0 ? input.limit + 1 : undefined,
+          skip: (input.page - 1) * (input.limit >= 0 ? input.limit : 0),
         }),
       ]);
 
       return {
-        data: jobOpenings.slice(0, input.limit),
+        data:
+          input.limit >= 0 ? jobOpenings.slice(0, input.limit) : jobOpenings,
         total: count,
-        hasMore: jobOpenings.length > input.limit,
+        hasMore: input.limit >= 0 && jobOpenings.length > input.limit,
       };
     }),
 

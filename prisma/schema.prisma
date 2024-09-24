@@ -52,15 +52,16 @@ model User {
     username  String @unique
     userGroup String
 
-    accounts         Account[]
-    sessions         Session[]
-    student          Students?
-    admin            Admin?
-    Post             Post[]
-    PostComment      PostComment[]
-    AdminHelpMessage AdminHelpMessage[]
-    AdminHelpChat    AdminHelpMessage[] @relation("AdminHelpParticipant")
-    Faq              Faq[]
+    accounts                    Account[]
+    sessions                    Session[]
+    student                     Students?
+    admin                       Admin?
+    Post                        Post[]
+    PostComment                 PostComment[]
+    AdminHelpMessage            AdminHelpMessage[]
+    AdminHelpChat               AdminHelpMessage[]            @relation("AdminHelpParticipant")
+    Faq                         Faq[]
+    EventIndividualParticipants EventIndividualParticipants[]
 }
 
 model Admin {
@@ -142,7 +143,8 @@ model ParticipatingGroups {
     admissionYear   Int
     program         String
 
-    placementType PlacementType @relation(fields: [placementTypeId], references: [id])
+    placementType PlacementType              @relation(fields: [placementTypeId], references: [id])
+    events        EventParticipatingGroups[]
 
     @@unique([year, placementTypeId, admissionYear, program])
     @@index([placementTypeId])
@@ -295,25 +297,15 @@ model SelectedStudents {
     @@index([userId])
 }
 
-enum EventType {
-    PLACEMENT_DRIVE
-    WORKSHOP
-    SEMINAR
-    TALK
-    WEBINAR
-    HACKATHON
-    COMPETITION
-    ASSESSMENT
-    OTHER
-}
-
 model Event {
-    id          String    @id @default(cuid())
+    id          String  @id @default(cuid())
     title       String
-    description String?   @db.Text
+    description String? @db.Text
     location    String
-    type        EventType
+    year        Int
+    type        String
     link        String?
+    hidden      Boolean @default(true)
 
     startTime DateTime
     endTime   DateTime
@@ -324,11 +316,38 @@ model Event {
     company    Company?    @relation(fields: [companyId], references: [id], onDelete: SetNull)
     jobOpening JobOpening? @relation(fields: [jobOpeningId], references: [id], onDelete: SetNull)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt              DateTime                      @default(now())
+    updatedAt              DateTime                      @updatedAt
+    participatingGroups    EventParticipatingGroups[]
+    individualParticipants EventIndividualParticipants[]
 
     @@index([companyId])
     @@index([jobOpeningId])
+}
+
+model EventParticipatingGroups {
+    id                   String @id @default(cuid())
+    eventId              String
+    participatingGroupId String
+    minCgpa              Float  @default(0)
+
+    event              Event               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+    participatingGroup ParticipatingGroups @relation(fields: [participatingGroupId], references: [id], onDelete: Cascade)
+
+    @@index([eventId])
+    @@index([participatingGroupId])
+}
+
+model EventIndividualParticipants {
+    eventId String
+    userId  String
+
+    event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+    user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([eventId, userId])
+    @@index([eventId])
+    @@index([userId])
 }
 
 model Post {
