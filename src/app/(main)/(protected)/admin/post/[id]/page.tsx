@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LoadingButton from "@mui/lab/LoadingButton";
+import PostGroupSelector from "../_components/ParticipatingGroupsSelector";
 import {
   Button,
   Container,
@@ -25,12 +26,14 @@ import FullPageLoader from "~/app/common/components/FullPageLoader";
 import { api } from "~/trpc/react";
 
 export default function PostDisplayPage({
+
   params,
 }: {
   params: { id: string };
 }) {
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [participatingGroups, setParticipatingGroups] = useState([]);
   const deletePostMutation = api.post.deletePost.useMutation({
     onSuccess: () => {
       router.replace("/admin/post");
@@ -49,6 +52,7 @@ export default function PostDisplayPage({
           </Typography>
           <Typography variant="subtitle1" className="whitespace-nowrap">
             {data.author.name} · {dayjs(data.createdAt).fromNow()}
+
           </Typography>
         </div>
         <div className="flex flex-row gap-2">
@@ -107,6 +111,12 @@ export default function PostDisplayPage({
           }}
         ></div>
       </Paper>
+      <Divider className="my-2" />
+      <PostGroupSelector
+        value={data.participatingGroups}
+        onChange={() => { }}
+        disabled
+      />
     </Container>
   );
 }

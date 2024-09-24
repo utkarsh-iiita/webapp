@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import PostGroupSelector from "../../_components/ParticipatingGroupsSelector";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
@@ -26,6 +26,7 @@ export default function NewPost({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [open, setOpen] = useState<boolean>(false);
+  const [participatingGroups, setParticipatingGroups] = useState([]);
   const contentRef = useRef<any>();
   const handleClose = () => {
     setOpen(false);
@@ -44,6 +45,7 @@ export default function NewPost({ params }: { params: { id: string } }) {
       id: params.id,
       title,
       content,
+      participatingGroups,
     });
   };
 
@@ -75,6 +77,10 @@ export default function NewPost({ params }: { params: { id: string } }) {
             />
 
             <TextEditor height="40vmin" value={data.content} ref={contentRef} />
+            <PostGroupSelector
+              value={participatingGroups}
+              onChange={setParticipatingGroups}
+            />
             <div>
               <Button
                 variant="contained"

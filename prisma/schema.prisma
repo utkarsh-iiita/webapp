@@ -339,12 +339,25 @@ model Post {
     published Boolean  @default(false)
     authorId  String
     content   String   @db.Text
-    year      Int      @default(2024)
+    year      Int
 
-    author   User          @relation(fields: [authorId], references: [id])
-    comments PostComment[]
+    author              User                    @relation(fields: [authorId], references: [id])
+    comments            PostComment[]
+    participatingGroups PostParticipantGroups[]
 
     @@index([authorId])
+}
+
+model PostParticipantGroups {
+    id            String @id @default(cuid())
+    postId        String
+    admissionYear Int
+    program       String
+    minCgpa       Float  @default(0)
+
+    post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+    @@index([postId])
 }
 
 model PostComment {
