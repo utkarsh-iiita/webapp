@@ -32,3 +32,23 @@ type extraApplicationField = {
   format: string;
   required: boolean;
 };
+
+type Company = {
+  name: string;
+  website: string;
+  logo: string;
+};
+
+type JobOpening = {
+  placementType: {
+    name: string;
+  };
+  company: Company;
+  title: string;
+  id: string;
+  location: string;
+  role: string;
+  pay: string;
+  registrationStart: Date;
+  registrationEnd: Date;
+};

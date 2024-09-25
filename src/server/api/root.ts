@@ -4,6 +4,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
 import { adminRouter } from "./routers/admin";
 import { adminHelpChatRouter } from "./routers/adminHelpChat";
 import { analyticsRouter } from "./routers/analytics";
+import { eventsRouter } from "./routers/events";
 import { faqRouter } from "./routers/faq";
 import { jobApplication } from "./routers/jobApplication";
 import { jobOpeningRouter } from "./routers/jobOpenings";
@@ -33,6 +34,7 @@ export const appRouter = createTRPCRouter({
   onboarding: onboardingRouter,
   jobApplication: jobApplication,
   analytics: analyticsRouter,
+  events: eventsRouter,
 });
 
 // export type definition of API

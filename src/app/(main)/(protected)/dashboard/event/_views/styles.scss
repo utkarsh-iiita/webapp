@@ -1,0 +1,86 @@
+@import "react-big-calendar/lib/sass/styles";
+
+.rbc-calendar {
+  height: calc(100svh - 168px);
+
+  .rbc-event {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event {
+    border-radius: 6px;
+  }
+
+  // event colors
+  .blue {
+    background-color: #42a5f5;
+  }
+
+  .orange {
+    background-color: #ff9800;
+  }
+
+  .green {
+    background-color: #388e3c;
+  }
+
+  .purple {
+    background-color: #ce93d8;
+  }
+
+  .gray {
+    background-color: #595a5c;
+  }
+
+  &.rbc-dark {
+    .rbc-btn-group button {
+      cursor: pointer;
+      color: #90caf9;
+      border-color: #90caf9;
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: #1b2227;
+      }
+
+      &.rbc-active {
+        border-color: rgb(66, 165, 245);
+        color: #111418;
+        background-color: #90caf9;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background-color: #42a5f5;
+        }
+      }
+    }
+
+    .rbc-month-view,
+    .rbc-time-view,
+    .rbc-time-header,
+    .rbc-label,
+    .rbc-time-header-content,
+    .rbc-time-content,
+    .rbc-events-container,
+    .rbc-timeslot-group,
+    .rbc-time-slot,
+    .rbc-day-bg,
+    .rbc-row-bg,
+    .rbc-month-row,
+    .rbc-header {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .rbc-off-range-bg {
+      background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .rbc-today {
+      background-color: #90caf9;
+    }
+  }
+}

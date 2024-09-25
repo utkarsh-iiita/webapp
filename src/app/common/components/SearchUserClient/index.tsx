@@ -13,6 +13,14 @@ type SearchFilterValue<Value, Multiple> = Multiple extends true
   ? Array<Value>
   : Value;
 
+type UserFullDetails<Value> = {
+  id: Value;
+  name: Value;
+  username: Value;
+};
+
+type FullDetails<Value> = Array<UserFullDetails<Value>>;
+
 type CustomAPIFilters = {
   exclude?: string[];
   isAdmin?: boolean;
@@ -21,7 +29,10 @@ type CustomAPIFilters = {
 interface SearchUserInputProps<Value, Multiple extends boolean | undefined> {
   label: string;
   value: SearchFilterValue<Value, Multiple>;
-  setValue: (value: SearchFilterValue<Value, Multiple>) => void;
+  setValue: (
+    value: SearchFilterValue<Value, Multiple>,
+    fullDetails?: FullDetails<Value>,
+  ) => void;
   customAPIFilters?: CustomAPIFilters;
   multiple?: Multiple;
   disabled?: boolean;
@@ -80,8 +91,25 @@ export default function SearchUserInput<
       disabled={disabled}
       value={value}
       onChange={(_, newValue) => {
-        // @ts-ignore
-        setValue(newValue);
+        setValue(
+          // @ts-ignore
+          newValue,
+          Array.isArray(newValue)
+            ? newValue.map((id) => ({
+                id,
+                name: names[id],
+                username: userNames[id],
+              }))
+            : [
+                {
+                  id: newValue,
+                  // @ts-ignore
+                  name: names[newValue],
+                  // @ts-ignore
+                  username: userNames[newValue],
+                },
+              ],
+        );
       }}
       onInputChange={handleInputChange}
       options={options}
