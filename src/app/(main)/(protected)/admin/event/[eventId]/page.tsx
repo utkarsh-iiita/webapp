@@ -1,17 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import dayjs from "dayjs";
 
 import CreateIcon from "@mui/icons-material/Create";
+import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
+  Button,
   Checkbox,
   CircularProgress,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   FormControl,
   FormControlLabel,
@@ -35,6 +42,7 @@ import ParticipatingGroupSelector from "../_components/ParticipatingGroupsSelect
 import useValueUx from "../_hooks/useValueUx";
 
 export default function IndividualEventPage() {
+  const router = useRouter();
   const { eventId } = useParams();
   const {
     data: event,
@@ -81,6 +89,15 @@ export default function IndividualEventPage() {
       refetch();
     },
   });
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const deleteEventMutation = api.events.deleteEvent.useMutation({
+    onSuccess() {
+      router.replace("./");
+    },
+  });
+
   const isValid = useMemo(() => {
     if (
       !startTime ||
@@ -151,21 +168,58 @@ export default function IndividualEventPage() {
             Event
           </Typography>
 
-          <ToggleButton
-            value="check"
-            selected={!disabled}
-            color={!disabled ? "success" : undefined}
-            onChange={() => {
-              setDisabled(!disabled);
-            }}
-            size="small"
-          >
-            {!disabled ? (
-              <DoneIcon fontSize="small" />
-            ) : (
-              <CreateIcon fontSize="small" />
-            )}
-          </ToggleButton>
+          <div className="flex flex-row gap-2">
+            <ToggleButton
+              value="check"
+              selected={!disabled}
+              color={!disabled ? "success" : undefined}
+              onChange={() => {
+                setDisabled(!disabled);
+              }}
+              size="small"
+            >
+              {!disabled ? (
+                <DoneIcon fontSize="small" />
+              ) : (
+                <CreateIcon fontSize="small" />
+              )}
+            </ToggleButton>
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
+              className="min-w-0"
+              onClick={() => setDeleteDialogOpen(true)}
+            >
+              <DeleteIcon fontSize="small" />
+            </Button>
+            <Dialog
+              open={deleteDialogOpen}
+              onClose={() => setDeleteDialogOpen(false)}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Are you sure?"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Do you really want to delete this event?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setDeleteDialogOpen(false)} autoFocus>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => deleteEventMutation.mutate(event.id)}
+                  color="error"
+                >
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
         </div>
         <Divider />
         <FormControl disabled={disabled}>

@@ -101,18 +101,18 @@ export const eventsRouter = createTRPCRouter({
                 some: {
                   participatingGroup: {
                     admissionYear: userDetails.student.admissionYear,
-                    program: userDetails.student.program
-                  }
-                }
+                    program: userDetails.student.program,
+                  },
+                },
               },
             },
             {
               individualParticipants: {
                 some: {
                   userId: ctx.session.user.id,
-                }
-              }
-            }
+                },
+              },
+            },
           ],
           hidden: false,
         },
@@ -130,18 +130,18 @@ export const eventsRouter = createTRPCRouter({
                 some: {
                   participatingGroup: {
                     admissionYear: userDetails.student.admissionYear,
-                    program: userDetails.student.program
-                  }
-                }
+                    program: userDetails.student.program,
+                  },
+                },
               },
             },
             {
               individualParticipants: {
                 some: {
                   userId: ctx.session.user.id,
-                }
-              }
-            }
+                },
+              },
+            },
           ],
           hidden: false,
         },
@@ -189,18 +189,18 @@ export const eventsRouter = createTRPCRouter({
                 some: {
                   participatingGroup: {
                     admissionYear: userDetails.student.admissionYear,
-                    program: userDetails.student.program
-                  }
-                }
+                    program: userDetails.student.program,
+                  },
+                },
               },
             },
             {
               individualParticipants: {
                 some: {
                   userId: ctx.session.user.id,
-                }
-              }
-            }
+                },
+              },
+            },
           ],
           hidden: false,
         },
@@ -215,18 +215,18 @@ export const eventsRouter = createTRPCRouter({
                 some: {
                   participatingGroup: {
                     admissionYear: userDetails.student.admissionYear,
-                    program: userDetails.student.program
-                  }
-                }
+                    program: userDetails.student.program,
+                  },
+                },
               },
             },
             {
               individualParticipants: {
                 some: {
                   userId: ctx.session.user.id,
-                }
-              }
-            }
+                },
+              },
+            },
           ],
           hidden: false,
         },
@@ -256,16 +256,16 @@ export const eventsRouter = createTRPCRouter({
           year: ctx.session.user.year,
           ...(input.placementTypes
             ? {
-              participatingGroups: {
-                some: {
-                  participatingGroup: {
-                    placementTypeId: {
-                      in: input.placementTypes,
+                participatingGroups: {
+                  some: {
+                    participatingGroup: {
+                      placementTypeId: {
+                        in: input.placementTypes,
+                      },
                     },
                   },
                 },
-              },
-            }
+              }
             : {}),
         },
       });
@@ -278,16 +278,16 @@ export const eventsRouter = createTRPCRouter({
           year: ctx.session.user.year,
           ...(input.placementTypes
             ? {
-              participatingGroups: {
-                some: {
-                  participatingGroup: {
-                    placementTypeId: {
-                      in: input.placementTypes,
+                participatingGroups: {
+                  some: {
+                    participatingGroup: {
+                      placementTypeId: {
+                        in: input.placementTypes,
+                      },
                     },
                   },
                 },
-              },
-            }
+              }
             : {}),
         },
         select: EventsListDTO,
@@ -313,16 +313,16 @@ export const eventsRouter = createTRPCRouter({
           year: ctx.session.user.year,
           ...(input.placementTypes
             ? {
-              participatingGroups: {
-                some: {
-                  participatingGroup: {
-                    placementTypeId: {
-                      in: input.placementTypes,
+                participatingGroups: {
+                  some: {
+                    participatingGroup: {
+                      placementTypeId: {
+                        in: input.placementTypes,
+                      },
                     },
                   },
                 },
-              },
-            }
+              }
             : {}),
         },
       });
@@ -332,16 +332,16 @@ export const eventsRouter = createTRPCRouter({
           year: ctx.session.user.year,
           ...(input.placementTypes
             ? {
-              participatingGroups: {
-                some: {
-                  participatingGroup: {
-                    placementTypeId: {
-                      in: input.placementTypes,
+                participatingGroups: {
+                  some: {
+                    participatingGroup: {
+                      placementTypeId: {
+                        in: input.placementTypes,
+                      },
                     },
                   },
                 },
-              },
-            }
+              }
             : {}),
         },
         select: EventsListDTO,
@@ -560,5 +560,17 @@ export const eventsRouter = createTRPCRouter({
       });
 
       return event;
+    }),
+
+  deleteEvent: adminProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.event.delete({
+        where: {
+          id: input,
+        },
+      });
+
+      return true;
     }),
 });
