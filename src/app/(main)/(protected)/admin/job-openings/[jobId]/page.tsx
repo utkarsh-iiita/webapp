@@ -5,6 +5,7 @@ import { api } from "~/trpc/server";
 import ApplicantsTable from "../_components/ApplicantsTable";
 import JobRow from "../_components/jobRow/JobRow";
 import RegDetails from "../_components/RegDetails";
+import DeleteJobOpening from "./_components/DeleteJobOpening";
 
 export default async function Page({
   params,
@@ -23,6 +24,9 @@ export default async function Page({
           jobId={params.jobId}
           extraApplicationFields={opening.extraApplicationFields}
         />
+        <div className="flex flex-row gap-4 justify-end">
+          <DeleteJobOpening jobId={params.jobId} />
+        </div>
       </Container>
     </>
   );
