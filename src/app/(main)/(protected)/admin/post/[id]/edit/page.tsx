@@ -19,7 +19,8 @@ import {
 import FullPageLoader from "~/app/common/components/FullPageLoader";
 import TextEditor from "~/app/common/components/TextEditor";
 import { api } from "~/trpc/react";
-
+import IndividualParticipantsSelector from "../../IndividualParticipantSelector";
+import { type UserMicro } from "../../IndividualParticipantSelector/types";
 export default function NewPost({ params }: { params: { id: string } }) {
   const { data, isLoading } = api.post.getPost.useQuery(params.id);
 
@@ -27,6 +28,9 @@ export default function NewPost({ params }: { params: { id: string } }) {
   const [title, setTitle] = useState("");
   const [open, setOpen] = useState<boolean>(false);
   const [participatingGroups, setParticipatingGroups] = useState([]);
+  const [individualParticipants, setIndividualParticipants] = useState<
+    UserMicro[]
+  >([]);
   const contentRef = useRef<any>();
   const handleClose = () => {
     setOpen(false);
@@ -46,6 +50,9 @@ export default function NewPost({ params }: { params: { id: string } }) {
       title,
       content,
       participatingGroups,
+      individualParticipants: individualParticipants.map(
+        (participant) => participant.id,
+      ),
     });
   };
 
@@ -81,6 +88,11 @@ export default function NewPost({ params }: { params: { id: string } }) {
               value={participatingGroups}
               onChange={setParticipatingGroups}
             />
+            <IndividualParticipantsSelector
+              individualParticipants={individualParticipants}
+              setIndividualParticipants={setIndividualParticipants}
+            />
+
             <div>
               <Button
                 variant="contained"

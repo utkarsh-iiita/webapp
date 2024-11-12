@@ -62,6 +62,7 @@ model User {
     AdminHelpChat               AdminHelpMessage[]            @relation("AdminHelpParticipant")
     Faq                         Faq[]
     EventIndividualParticipants EventIndividualParticipants[]
+    PostIndividualParticipants  PostIndividualParticipants[]
 }
 
 model Admin {
@@ -360,9 +361,10 @@ model Post {
     content   String   @db.Text
     year      Int
 
-    author              User                    @relation(fields: [authorId], references: [id])
-    comments            PostComment[]
-    participatingGroups PostParticipantGroups[]
+    author                 User                         @relation(fields: [authorId], references: [id])
+    comments               PostComment[]
+    participatingGroups    PostParticipantGroups[]
+    individualParticipants PostIndividualParticipants[]
 
     @@index([authorId])
 }
@@ -377,6 +379,19 @@ model PostParticipantGroups {
     post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
     @@index([postId])
+}
+
+model PostIndividualParticipants {
+    id     String @id @default(cuid())
+    postId String
+    userId String
+
+    post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([postId, userId])
+    @@index([postId])
+    @@index([userId])
 }
 
 model PostComment {

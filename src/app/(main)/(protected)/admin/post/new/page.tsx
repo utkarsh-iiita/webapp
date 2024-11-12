@@ -19,12 +19,17 @@ import {
 import TextEditor from "~/app/common/components/TextEditor";
 import { api } from "~/trpc/react";
 import PostGroupSelector from "../_components/ParticipatingGroupsSelector";
+import IndividualParticipantsSelector from "../IndividualParticipantSelector";
+import { type UserMicro } from "../IndividualParticipantSelector/types";
 
 export default function NewPost() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [open, setOpen] = useState<boolean>(false);
   const [participatingGroups, setParticipatingGroups] = useState([]);
+  const [individualParticipants, setIndividualParticipants] = useState<
+    UserMicro[]
+  >([]);
   const contentRef = useRef<any>();
   const handleClose = () => {
     setOpen(false);
@@ -43,8 +48,15 @@ export default function NewPost() {
       title,
       content,
       participatingGroups,
+      individualParticipants: individualParticipants.map(
+        (participant) => participant.id,
+      ),
+
     });
   };
+
+
+
   return (
     <>
       <Container className="flex flex-col h-full relative">
@@ -67,6 +79,10 @@ export default function NewPost() {
             <PostGroupSelector
               value={participatingGroups}
               onChange={setParticipatingGroups}
+            />
+            <IndividualParticipantsSelector
+              individualParticipants={individualParticipants}
+              setIndividualParticipants={setIndividualParticipants}
             />
             <div>
               <Button

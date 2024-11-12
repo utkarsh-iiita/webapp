@@ -24,6 +24,7 @@ import {
 import dayjs from "~/app/_utils/extendedDayjs";
 import FullPageLoader from "~/app/common/components/FullPageLoader";
 import { api } from "~/trpc/react";
+import IndividualParticipantsSelector from "../IndividualParticipantSelector";
 
 export default function PostDisplayPage({
 
@@ -115,6 +116,12 @@ export default function PostDisplayPage({
       <PostGroupSelector
         value={data.participatingGroups}
         onChange={() => { }}
+        disabled
+      />
+      <IndividualParticipantsSelector
+        individualParticipants={data.individualParticipants.map((participant) => participant.user)}
+        setIndividualParticipants={() => { }}
+        hideSelector
         disabled
       />
     </Container>
