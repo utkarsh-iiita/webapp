@@ -12,6 +12,7 @@ import { jobTypeRouter } from "./routers/jobType";
 import { onboardingRouter } from "./routers/onboarding";
 import { placementConfigRouter } from "./routers/placementConfig";
 import { studentResumeRouter } from "./routers/resume";
+import { selectedStudentsRouter } from "./routers/selectedStudents";
 import { studentRouter } from "./routers/student";
 import { userRouter } from "./routers/users";
 
@@ -35,6 +36,7 @@ export const appRouter = createTRPCRouter({
   jobApplication: jobApplication,
   analytics: analyticsRouter,
   events: eventsRouter,
+  selections: selectedStudentsRouter,
 });
 
 // export type definition of API
