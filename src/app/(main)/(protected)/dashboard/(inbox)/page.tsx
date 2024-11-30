@@ -23,12 +23,11 @@ function Page() {
           Inbox
         </Typography>
         <Divider />
-        {isLoading && (
+        {isLoading ? (
           <Container className="h-96 w-full flex justify-center items-center">
             <CircularProgress />
           </Container>
-        )}
-        {
+        ) : (
           <Box className="flex flex-col gap-2">
             {allPosts?.length ? (
               allPosts.map((post) => (
@@ -48,7 +47,7 @@ function Page() {
               </div>
             )}
           </Box>
-        }
+        )}
       </Container>
     </>
   );
