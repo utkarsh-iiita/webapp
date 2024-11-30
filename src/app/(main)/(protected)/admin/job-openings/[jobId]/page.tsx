@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Container, IconButton, Link } from "@mui/material";
 
 import { api } from "~/trpc/server";
 
@@ -26,7 +26,16 @@ export default async function Page({
         />
         <div className="flex flex-row gap-4 justify-end">
           <DeleteJobOpening jobId={params.jobId} />
+          <Link href={"./" + params.jobId + "/edit"}>
+            <IconButton size="small" color="success">
+              Edit
+            </IconButton>
+          </Link>
+
         </div>
+
+
+
       </Container>
     </>
   );
