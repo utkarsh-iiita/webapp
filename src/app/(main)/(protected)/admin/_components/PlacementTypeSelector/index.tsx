@@ -9,8 +9,8 @@ import {
 import { api } from "~/trpc/react";
 
 interface IPlacementType {
-  selectedPlacementTypes: string[] | null;
-  setSelectedPlacementTypes: (selectedPlacementTypes: string[] | null) => void;
+  selectedPlacementTypes: string | null;
+  setSelectedPlacementTypes: (selectedPlacementTypes: string | null) => void;
 }
 
 const ITEM_HEIGHT = 48;
@@ -34,32 +34,35 @@ export default function PlacementTypeSelector(props: IPlacementType) {
 
   return (
     <FormControl sx={{ width: 180 }} size="small">
-      <InputLabel id="demo-multiple-name-label">Job Types</InputLabel>
+      <InputLabel id="job-type-selector-label">Job Types</InputLabel>
       <Select
-        labelId="demo-multiple-name-label"
-        id="demo-multiple-name"
-        multiple
-        value={
-          props.selectedPlacementTypes ?? placementTypes.map((item) => item.id)
-        }
+        labelId="job-type-selector-label"
+        id="job-type-selector"
+        value={props.selectedPlacementTypes ?? "all"}
         onChange={(e) => {
           if (e.target.value.length) {
-            props.setSelectedPlacementTypes(e.target.value as string[]);
+            let value: string | null = e.target.value;
+            if (value === "all") {
+              value = null;
+            }
+            props.setSelectedPlacementTypes(value);
           }
         }}
         input={<OutlinedInput label="Job Types" />}
-        renderValue={(selected) =>
-          selected.length === placementTypes.length
-            ? "All"
-            : selected.length === 1
-              ? placementTypes.find((item) => item.id === selected[0])?.name
-              : placementTypes
-                  .filter((item) => selected.includes(item.id))
-                  .map((item) => item.name)
-                  .join(", ")
-        }
+        renderValue={(selected) => {
+          if (selected === "all") {
+            return "All";
+          }
+          const selectedJobType = placementTypes.find(
+            (jobType) => jobType.id === selected,
+          );
+          return selectedJobType?.name;
+        }}
         MenuProps={MenuProps}
       >
+        <MenuItem key="all" value="all">
+          All
+        </MenuItem>
         {placementTypes.map((jobType) => (
           <MenuItem key={jobType.id} value={jobType.id}>
             {jobType.name}

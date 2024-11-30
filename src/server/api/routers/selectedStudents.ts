@@ -74,7 +74,7 @@ export const selectedStudentsRouter = createTRPCRouter({
         page: z.number().min(0).default(0),
         pageSize: z.number().default(1000),
         query: z.string().optional(),
-        jobTypes: z.array(z.string()).nullable().optional(),
+        jobTypes: z.string().nullable().optional(),
         orderBy: z.string().optional(),
         sort: z.union([z.literal("asc"), z.literal("desc")]).optional(),
       }),
@@ -126,7 +126,7 @@ export const selectedStudentsRouter = createTRPCRouter({
           ? {
               placementType: {
                 id: {
-                  in: input.jobTypes,
+                  in: [input.jobTypes],
                 },
               },
             }

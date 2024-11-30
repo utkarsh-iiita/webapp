@@ -6,12 +6,13 @@ import { Container, Typography } from "@mui/material";
 
 import { api } from "~/trpc/react";
 
+import PlacementTypeSelector from "../_components/PlacementTypeSelector";
+
 import EnhancedTable from "./_components/EnhancedTable";
 import {
   COLUMNS,
   DEFAULT_COLUMNS,
 } from "./_components/EnhancedTable/constants";
-import PlacementTypeSelector from "./_components/PlacementTypeSelector";
 
 export default function SelectsPage() {
   const [page, setPage] = useState(0);
@@ -21,7 +22,7 @@ export default function SelectsPage() {
   const [filterColumn, setFilterColumn] = useState("");
   const [filterValue, setFilterValue] = useState("");
   const [query, setQuery] = useState("");
-  const [jobTypes, setJobTypes] = useState<string[] | null>(null);
+  const [jobTypes, setJobTypes] = useState<string | null>(null);
 
   const [columns, setColumns] = useState(DEFAULT_COLUMNS);
 
