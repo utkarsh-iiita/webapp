@@ -17,7 +17,7 @@ export default function SelectsPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [orderBy, setOrderBy] = useState("createdAt");
-  const [sort, setSort] = useState<"asc" | "desc">("asc");
+  const [sort, setSort] = useState<"asc" | "desc">("desc");
   const [filterColumn, setFilterColumn] = useState("");
   const [filterValue, setFilterValue] = useState("");
   const [query, setQuery] = useState("");
@@ -30,6 +30,8 @@ export default function SelectsPage() {
     pageSize,
     query,
     jobTypes,
+    orderBy,
+    sort,
   });
 
   return (
