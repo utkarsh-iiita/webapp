@@ -1,5 +1,6 @@
 "use client";
 
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import {
   Box,
   CircularProgress,
@@ -22,14 +23,13 @@ function Page() {
           Inbox
         </Typography>
         <Divider />
-        {isLoading && (
+        {isLoading ? (
           <Container className="h-96 w-full flex justify-center items-center">
             <CircularProgress />
           </Container>
-        )}
-        {
+        ) : (
           <Box className="flex flex-col gap-2">
-            {allPosts &&
+            {allPosts?.length ? (
               allPosts.map((post) => (
                 <PostRow
                   id={post.id}
@@ -37,9 +37,17 @@ function Page() {
                   title={post.title}
                   createdAt={post.createdAt}
                 />
-              ))}
+              ))
+            ) : (
+              <div className="flex flex-col justify-center items-center gap-2">
+                <MailOutlineIcon sx={{ fontSize: 100 }} />
+                <Typography variant="h6" color="primary">
+                  No posts yet!
+                </Typography>
+              </div>
+            )}
           </Box>
-        }
+        )}
       </Container>
     </>
   );

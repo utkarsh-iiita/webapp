@@ -337,7 +337,13 @@ export const jobApplication = createTRPCRouter({
     .input(
       z.object({
         applicationId: z.array(z.string()),
-        status: z.enum(["APPROVED", "REJECTED", "SHORTLISTED", "SELECTED"]),
+        status: z.enum([
+          "REGISTERED",
+          "APPROVED",
+          "REJECTED",
+          "SHORTLISTED",
+          "SELECTED",
+        ]),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -361,9 +367,11 @@ export const jobApplication = createTRPCRouter({
             },
             jobOpening: {
               select: {
+                id: true,
                 companyId: true,
                 jobType: true,
                 year: true,
+                role: true,
                 payNumeric: true,
                 basePay: true,
                 stipend: true,
@@ -371,22 +379,18 @@ export const jobApplication = createTRPCRouter({
             },
           },
         });
-        if (
-          selectedStudents.some(
-            (student) =>
-              student.student.selections.filter(
-                (sel) => sel.jobType === student.jobOpening.jobType,
-              ).length > 0,
-          )
-        ) {
-          throw new Error("One or more students have already been selected");
-        }
         await ctx.db.selectedStudents.createMany({
           data: selectedStudents.map(({ student, jobOpening }) => ({
             userId: student.userId,
+            authorId: ctx.session.user.id,
+            jobOpeningId: jobOpening.id,
             companyId: jobOpening.companyId,
+            role: jobOpening.role,
             jobType: jobOpening.jobType,
             year: jobOpening.year,
+            payNumeric: jobOpening.payNumeric,
+            basePay: jobOpening.basePay,
+            stipend: jobOpening.stipend,
           })),
         });
       }
