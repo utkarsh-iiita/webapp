@@ -40,7 +40,7 @@ export default function PostDisplayPage({
       router.replace("/admin/post");
     },
   });
-  const { data, isLoading } = api.post.getPost.useQuery(params.id);
+  const { data, isLoading } = api.post.getPostAdmin.useQuery(params.id);
   if (isLoading) {
     return <FullPageLoader />;
   }
