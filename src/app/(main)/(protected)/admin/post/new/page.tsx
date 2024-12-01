@@ -21,6 +21,7 @@ import { api } from "~/trpc/react";
 import PostGroupSelector from "../_components/ParticipatingGroupsSelector";
 import IndividualParticipantsSelector from "../IndividualParticipantSelector";
 import { type UserMicro } from "../IndividualParticipantSelector/types";
+import PlacementTypeSelector from "../../_components/PlacementTypeSelector";
 
 export default function NewPost() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function NewPost() {
   const [individualParticipants, setIndividualParticipants] = useState<
     UserMicro[]
   >([]);
+  const [jobType, setJobType] = useState<string | null>(null);
   const contentRef = useRef<any>();
   const handleClose = () => {
     setOpen(false);
@@ -51,10 +53,15 @@ export default function NewPost() {
       individualParticipants: individualParticipants.map(
         (participant) => participant.id,
       ),
-
+      jobType,
     });
   };
 
+  const isCreationDisabled = () => {
+    const content = contentRef.current?.getContent();
+    if (!content) return true;
+    return false;
+  }
 
 
   return (
@@ -84,6 +91,13 @@ export default function NewPost() {
               individualParticipants={individualParticipants}
               setIndividualParticipants={setIndividualParticipants}
             />
+            <PlacementTypeSelector
+              selectedPlacementTypes={jobType}
+              setSelectedPlacementTypes={setJobType}
+            />
+            <Typography variant="caption" className="-mt-3" color="GrayText">
+              * Job Type is only used to filter posts on admin side
+            </Typography>
             <div>
               <Button
                 variant="contained"
@@ -100,23 +114,34 @@ export default function NewPost() {
                   onSubmit: handleSubmit,
                 }}
               >
-                <DialogTitle>Create new Post?</DialogTitle>
-                <DialogContent>
-                  Do you really want to create this post?
-                </DialogContent>
-                <DialogActions className="p-4">
-                  <Button onClick={() => setOpen(false)} variant="outlined">
-                    Cancel
-                  </Button>
-                  <LoadingButton
-                    type="submit"
-                    color="success"
-                    variant="contained"
-                    loading={createPostMutation.isLoading}
-                  >
-                    Create
-                  </LoadingButton>
-                </DialogActions>
+                {isCreationDisabled() ? <>
+                  <DialogContent>
+                    Please add content to post
+                  </DialogContent>
+                  <DialogActions className="p-4">
+                    <Button onClick={() => setOpen(false)} variant="contained">
+                      Ok
+                    </Button>
+                  </DialogActions>
+                </> : <>
+                  <DialogTitle>Create new Post?</DialogTitle>
+                  <DialogContent>
+                    Do you really want to create this post?
+                  </DialogContent>
+                  <DialogActions className="p-4">
+                    <Button onClick={() => setOpen(false)} variant="outlined">
+                      Cancel
+                    </Button>
+                    <LoadingButton
+                      type="submit"
+                      color="success"
+                      variant="contained"
+                      loading={createPostMutation.isLoading}
+                    >
+                      Create
+                    </LoadingButton>
+                  </DialogActions>
+                </>}
               </Dialog>
             </div>
           </div>
