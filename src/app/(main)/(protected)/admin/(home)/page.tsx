@@ -1,6 +1,10 @@
 "use client";
 
-import { Container, Divider, Typography } from "@mui/material";
+import Link from "next/link";
+
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import { Button, Container, Divider, Typography } from "@mui/material";
 
 import FullPageLoader from "~/app/common/components/FullPageLoader";
 import { api } from "~/trpc/react";
@@ -14,9 +18,20 @@ export default function AdminHomePage() {
   }
   return (
     <Container className="py-4 flex flex-col gap-4">
-      <Typography variant="h5" color="primary" className="px-4">
-        Admin
-      </Typography>
+      <div className="flex flex-row justify-between items-center gap-2 px-4">
+        <Typography variant="h5" color="primary">
+          Admin
+        </Typography>
+        <Link href="/admin/selects">
+          <Button
+            variant="outlined"
+            startIcon={<HowToRegIcon />}
+            endIcon={<ArrowForwardIosIcon className="text-sm" />}
+          >
+            Selects
+          </Button>
+        </Link>
+      </div>
       <Divider />
       {jobTypes.map((jobType, index) => (
         <JobAnalyticsRow jobType={jobType} key={index} />

@@ -63,6 +63,7 @@ model User {
     Faq                         Faq[]
     EventIndividualParticipants EventIndividualParticipants[]
     PostIndividualParticipants  PostIndividualParticipants[]
+    SelectedStudents            SelectedStudents[]
 }
 
 model Admin {
@@ -208,6 +209,7 @@ model JobOpening {
     applications                Application[]
     events                      Event[]
     JobOpeningParticipantGroups JobOpeningParticipantGroups[]
+    SelectedStudents            SelectedStudents[]
 
     @@index([companyId])
     @@index([jobType])
@@ -276,25 +278,33 @@ model ApplicationStatus {
 }
 
 model SelectedStudents {
-    id         String  @id @default(cuid())
-    userId     String
-    year       Int
-    jobType    String
-    payNumeric Int?
-    basePay    Int?
-    stipend    Int?
-    companyId  String?
-    isOnCampus Boolean @default(true)
+    id           String   @id @default(cuid())
+    userId       String
+    authorId     String
+    year         Int
+    jobType      String
+    selectedAt   DateTime @default(now())
+    role         String?
+    payNumeric   Int?
+    basePay      Int?
+    stipend      Int?
+    companyId    String?
+    jobOpeningId String?
+    isOnCampus   Boolean  @default(true)
 
     student       Students      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+    author        User          @relation(fields: [authorId], references: [id])
     placementType PlacementType @relation(fields: [jobType], references: [id])
     company       Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
+    jobOpening    JobOpening?   @relation(fields: [jobOpeningId], references: [id], onDelete: SetNull)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     @@index([jobType])
+    @@index([authorId])
     @@index([companyId])
+    @@index([jobOpeningId])
     @@index([userId])
 }
 
