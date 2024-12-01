@@ -577,6 +577,7 @@ export const jobOpeningRouter = createTRPCRouter({
           location: true,
           role: true,
           pay: true,
+          payNumeric: true,
           empBenefits: true,
           company: {
             select: {
@@ -587,6 +588,7 @@ export const jobOpeningRouter = createTRPCRouter({
           },
           placementType: {
             select: {
+              id: true,
               name: true,
             },
           },

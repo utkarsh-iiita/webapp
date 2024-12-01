@@ -15,6 +15,19 @@ export const postRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      const userDetails = await ctx.db.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          student: {
+            select: {
+              admissionYear: true,
+              program: true,
+            },
+          },
+        },
+      });
       const data = await ctx.db.post.findMany({
         select: {
           id: true,
@@ -24,10 +37,28 @@ export const postRouter = createTRPCRouter({
         where: {
           published: true,
           year: ctx.session.user.year,
+          OR: [
+            {
+              participatingGroups: {
+                some: {
+                  admissionYear: userDetails.student.admissionYear,
+                  program: userDetails.student.program,
+                },
+              },
+            },
+            {
+              individualParticipants: {
+                some: {
+                  userId: ctx.session.user.id,
+                },
+              },
+            },
+          ],
         },
         orderBy: {
           createdAt: "desc",
         },
+
         take: input.pageSize,
         skip: (input.page - 1) * input.pageSize,
       });
@@ -36,10 +67,40 @@ export const postRouter = createTRPCRouter({
   getPost: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
+      const userDetails = await ctx.db.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          student: {
+            select: {
+              admissionYear: true,
+              program: true,
+            },
+          },
+        },
+      });
       const data = await ctx.db.post.findUniqueOrThrow({
         where: {
           published: true,
           id: input,
+          OR: [
+            {
+              participatingGroups: {
+                some: {
+                  admissionYear: userDetails.student.admissionYear,
+                  program: userDetails.student.program,
+                },
+              },
+            },
+            {
+              individualParticipants: {
+                some: {
+                  userId: ctx.session.user.id,
+                },
+              },
+            },
+          ],
         },
         select: {
           id: true,
@@ -56,6 +117,17 @@ export const postRouter = createTRPCRouter({
               admissionYear: true,
               minCgpa: true,
               program: true,
+            }
+          },
+          individualParticipants: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  username: true,
+                },
+              },
             }
           }
         },
@@ -75,7 +147,7 @@ export const postRouter = createTRPCRouter({
 
           }),
         ),
-
+        individualParticipants: z.array(z.string()).nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -95,7 +167,15 @@ export const postRouter = createTRPCRouter({
                 minCgpa: group.minCgpa,
               })),
             }
-          }
+          },
+          individualParticipants: {
+            createMany: {
+              data: input.individualParticipants.map((userId) => ({
+                userId,
+              })),
+            },
+          },
+
         },
       });
       return true;
@@ -114,15 +194,23 @@ export const postRouter = createTRPCRouter({
           }),
         ),
 
+        individualParticipants: z.array(z.string()).nullable(),
+
       }),
 
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.postParticipantGroups.deleteMany({
+      await Promise.all([ctx.db.postParticipantGroups.deleteMany({
         where: {
           postId: input.id
         }
-      })
+      }),
+      ctx.db.postIndividualParticipants.deleteMany({
+        where: {
+          postId: input.id
+        },
+      }),
+      ]);
 
 
       await ctx.db.post.update({
@@ -142,7 +230,14 @@ export const postRouter = createTRPCRouter({
                 minCgpa: group.minCgpa,
               })),
             }
-          }
+          },
+          individualParticipants: {
+            createMany: {
+              data: input.individualParticipants.map((userId) => ({
+                userId,
+              })),
+            },
+          },
         },
       });
       return true;
