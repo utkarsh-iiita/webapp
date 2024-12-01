@@ -24,6 +24,7 @@ export const postRouter = createTRPCRouter({
             select: {
               admissionYear: true,
               program: true,
+
             },
           },
         },
@@ -33,10 +34,12 @@ export const postRouter = createTRPCRouter({
           id: true,
           title: true,
           createdAt: true,
+
         },
         where: {
           published: true,
           year: ctx.session.user.year,
+
           OR: [
             {
               participatingGroups: {
@@ -147,6 +150,7 @@ export const postRouter = createTRPCRouter({
 
           }),
         ),
+        jobType: z.string().nullable().default(null),
         individualParticipants: z.array(z.string()).nullable(),
       }),
     )
@@ -159,6 +163,7 @@ export const postRouter = createTRPCRouter({
           year: ctx.session.user.year,
           authorId: ctx.session.user.id,
           published: true,
+          jobType: input.jobType,
           participatingGroups: {
             createMany: {
               data: input.participatingGroups.map((group) => ({
@@ -193,7 +198,7 @@ export const postRouter = createTRPCRouter({
             minCgpa: z.number().max(10).optional().default(0),
           }),
         ),
-
+        jobType: z.string().nullable().default(null),
         individualParticipants: z.array(z.string()).nullable(),
 
       }),
@@ -222,6 +227,7 @@ export const postRouter = createTRPCRouter({
           content: input.content,
           authorId: ctx.session.user.id,
           published: true,
+          jobType: input.jobType,
           participatingGroups: {
             createMany: {
               data: input.participatingGroups.map((group) => ({
@@ -253,4 +259,138 @@ export const postRouter = createTRPCRouter({
 
       return true;
     }),
+  getLatestPostAdmin: adminProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+        pageSize: z.number().max(100).default(10),
+        jobType: z.string().nullable().default(null),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const userDetails = await ctx.db.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          student: {
+            select: {
+              admissionYear: true,
+              program: true
+            },
+          },
+        },
+      });
+      const data = await ctx.db.post.findMany({
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          jobType: true,
+        },
+        where: {
+          published: true,
+          year: ctx.session.user.year,
+          ...(input.jobType ? {
+            jobType: input.jobType
+          } : {}),
+          OR: [
+            {
+              participatingGroups: {
+                some: {
+                  admissionYear: userDetails.student.admissionYear,
+                  program: userDetails.student.program,
+                },
+              },
+            },
+            {
+              individualParticipants: {
+                some: {
+                  userId: ctx.session.user.id,
+                },
+              },
+            },
+          ],
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+
+        take: input.pageSize,
+        skip: (input.page - 1) * input.pageSize,
+      });
+      return data;
+    }),
+  getPostAdmin: adminProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const userDetails = await ctx.db.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          student: {
+            select: {
+              admissionYear: true,
+              program: true,
+            },
+          },
+        },
+      });
+      const data = await ctx.db.post.findUniqueOrThrow({
+        where: {
+          published: true,
+          id: input,
+          OR: [
+            {
+              participatingGroups: {
+                some: {
+                  admissionYear: userDetails.student.admissionYear,
+                  program: userDetails.student.program,
+                },
+              },
+            },
+            {
+              individualParticipants: {
+                some: {
+                  userId: ctx.session.user.id,
+                },
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          title: true,
+          content: true,
+          jobType: true,
+          author: {
+            select: {
+              name: true,
+            },
+          },
+          participatingGroups: {
+            select: {
+              admissionYear: true,
+              minCgpa: true,
+              program: true,
+            }
+          },
+          individualParticipants: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  username: true,
+                },
+              },
+            }
+          }
+        },
+      });
+      return data;
+    }),
+
 });

@@ -21,6 +21,7 @@ import { api } from "~/trpc/react";
 import PostGroupSelector from "../_components/ParticipatingGroupsSelector";
 import IndividualParticipantsSelector from "../IndividualParticipantSelector";
 import { type UserMicro } from "../IndividualParticipantSelector/types";
+import PlacementTypeSelector from "../../_components/PlacementTypeSelector";
 
 export default function NewPost() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function NewPost() {
   const [individualParticipants, setIndividualParticipants] = useState<
     UserMicro[]
   >([]);
+  const [jobType, setJobType] = useState<string | null>(null);
   const contentRef = useRef<any>();
   const handleClose = () => {
     setOpen(false);
@@ -51,6 +53,7 @@ export default function NewPost() {
       individualParticipants: individualParticipants.map(
         (participant) => participant.id,
       ),
+      jobType,
 
     });
   };
@@ -84,6 +87,13 @@ export default function NewPost() {
               individualParticipants={individualParticipants}
               setIndividualParticipants={setIndividualParticipants}
             />
+            <PlacementTypeSelector
+              selectedPlacementTypes={jobType}
+              setSelectedPlacementTypes={setJobType}
+            />
+            <Typography variant="caption" className="-mt-3" color="GrayText">
+              * Job Type is only used to filter posts on admin side
+            </Typography>
             <div>
               <Button
                 variant="contained"
