@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import dayjs from "dayjs";
 
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
@@ -24,6 +25,7 @@ import {
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { useQuery } from "@tanstack/react-query";
 
+import FullPageLoader from "~/app/common/components/FullPageLoader";
 import TextEditor from "~/app/common/components/TextEditor";
 import { api } from "~/trpc/react";
 
@@ -31,7 +33,6 @@ import AdditionalFieldSelector from "../../_components/AdditionalFieldsSelector"
 import JobOpeningGroupSelector from "../../_components/ParticipatingGroupsSelector";
 
 import { DEFAULT_JOB_OPENING } from "./constants";
-import dayjs from "dayjs";
 
 export default function UpdateJobOpening() {
   const { jobId }: { jobId: string } = useParams();
@@ -40,15 +41,17 @@ export default function UpdateJobOpening() {
   const [jobOpening, setJobOpening] = useState(DEFAULT_JOB_OPENING);
   const descEditorRef = useRef<any>();
   const router = useRouter();
-  const { data: originalJobOpening } = api.jobOpenings.adminGetJobOpening.useQuery(jobId);
+  const { data: originalJobOpening, isLoading: isPageLoading } =
+    api.jobOpenings.adminGetJobOpening.useQuery(jobId);
 
   useEffect(() => {
     if (originalJobOpening) {
       setJobOpening({
         ...originalJobOpening,
+        allowSelected: originalJobOpening.allowSelected,
         company: {
           ...originalJobOpening.company,
-          domain: originalJobOpening.company.website
+          domain: originalJobOpening.company.website,
         },
         // @ts-ignore
         registrationStart: dayjs(originalJobOpening.registrationStart),
@@ -57,10 +60,10 @@ export default function UpdateJobOpening() {
         // @ts-ignore
         extraApplicationFields: originalJobOpening.extraApplicationFields,
         jobType: originalJobOpening.placementType.id,
-        participatingGroups: originalJobOpening.JobOpeningParticipantGroups
-      })
+        participatingGroups: originalJobOpening.JobOpeningParticipantGroups,
+      });
     }
-  }, [originalJobOpening])
+  }, [originalJobOpening]);
 
   const { data: jobTypes, isLoading: isJobTypesLoading } =
     api.jobType.getPlacementTypes.useQuery();
@@ -123,6 +126,8 @@ export default function UpdateJobOpening() {
 
     return false;
   }, [jobOpening]);
+
+  if (isPageLoading) return <FullPageLoader />;
 
   return (
     <Container className="flex flex-col gap-4 py-4">
@@ -385,6 +390,21 @@ export default function UpdateJobOpening() {
                   setJobOpening({
                     ...jobOpening,
                     autoVisible: e.target.checked,
+                  });
+                }}
+              />
+            }
+          />
+          <FormControlLabel
+            label="Allow Already Selected Students"
+            control={
+              <Checkbox
+                size="small"
+                checked={jobOpening.allowSelected}
+                onChange={(e) => {
+                  setJobOpening({
+                    ...jobOpening,
+                    allowSelected: e.target.checked,
                   });
                 }}
               />

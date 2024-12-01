@@ -366,6 +366,21 @@ export default function NewJobOpening() {
               />
             }
           />
+          <FormControlLabel
+            label="Allow Already Selected Students"
+            control={
+              <Checkbox
+                size="small"
+                checked={jobOpening.allowSelected}
+                onChange={(e) => {
+                  setJobOpening({
+                    ...jobOpening,
+                    allowSelected: e.target.checked,
+                  });
+                }}
+              />
+            }
+          />
         </div>
 
         <Divider className="mt-12" />

@@ -30,6 +30,7 @@ export const jobOpeningRouter = createTRPCRouter({
         hidden: z.boolean().optional().default(false),
         autoApprove: z.boolean().optional().default(false),
         autoVisible: z.boolean().optional().default(false),
+        allowSelected: z.boolean().optional().default(false),
         participatingGroups: z.array(
           z.object({
             admissionYear: z.number(),
@@ -86,6 +87,7 @@ export const jobOpeningRouter = createTRPCRouter({
           hidden: input.hidden,
           autoApprove: input.autoApprove,
           autoVisible: input.autoVisible,
+          allowSelected: input.allowSelected,
           JobOpeningParticipantGroups: {
             createMany: {
               data: input.participatingGroups.map((group) => ({
@@ -126,6 +128,7 @@ export const jobOpeningRouter = createTRPCRouter({
         hidden: z.boolean().optional().default(false),
         autoApprove: z.boolean().optional().default(false),
         autoVisible: z.boolean().optional().default(false),
+        allowSelected: z.boolean().optional().default(false),
         participatingGroups: z.array(
           z.object({
             id: z.string().optional(),
@@ -219,6 +222,7 @@ export const jobOpeningRouter = createTRPCRouter({
             hidden: input.hidden,
             autoApprove: input.autoApprove,
             autoVisible: input.autoVisible,
+            allowSelected: input.allowSelected,
             JobOpeningParticipantGroups: {
               createMany: {
                 data: input.participatingGroups
@@ -358,6 +362,7 @@ export const jobOpeningRouter = createTRPCRouter({
                     },
                   },
                 },
+                allowSelected: true,
                 registrationStart: true,
                 registrationEnd: true,
                 createdAt: true,
@@ -377,9 +382,10 @@ export const jobOpeningRouter = createTRPCRouter({
       const data = jobOpenings.map((jobOpening) => ({
         ...jobOpening.jobOpening,
         canRegister:
-          userDetails.student.selections.filter(
-            (sel) => sel.jobType === jobOpening.jobOpening.placementType.id,
-          ).length === 0 &&
+          (jobOpening.jobOpening.allowSelected ||
+            userDetails.student.selections.filter(
+              (sel) => sel.jobType === jobOpening.jobOpening.placementType.id,
+            ).length === 0) &&
           jobOpening.admissionYear === userDetails.student.admissionYear &&
           jobOpening.program === userDetails.student.program &&
           jobOpening.minCgpa <= userDetails.student.cgpa &&
@@ -460,6 +466,7 @@ export const jobOpeningRouter = createTRPCRouter({
               },
             },
           },
+          allowSelected: true,
           registrationStart: true,
           registrationEnd: true,
           JobOpeningParticipantGroups: {
@@ -491,9 +498,10 @@ export const jobOpeningRouter = createTRPCRouter({
 
       if (jobOpening) {
         data.canRegister =
-          userDetails.student.selections.filter(
-            (sel) => sel.jobType === jobOpening.placementType.id,
-          ).length === 0 &&
+          (jobOpening.allowSelected ||
+            userDetails.student.selections.filter(
+              (sel) => sel.jobType === jobOpening.placementType.id,
+            ).length === 0) &&
           jobOpening.JobOpeningParticipantGroups.some(
             (group) =>
               group.admissionYear === userDetails.student.admissionYear &&
@@ -599,6 +607,7 @@ export const jobOpeningRouter = createTRPCRouter({
           hidden: true,
           autoApprove: true,
           autoVisible: true,
+          allowSelected: true,
           JobOpeningParticipantGroups: {
             select: {
               id: true,

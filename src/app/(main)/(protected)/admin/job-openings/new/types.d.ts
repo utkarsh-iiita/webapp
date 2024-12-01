@@ -18,6 +18,7 @@ interface NewJobOpening {
   hidden: boolean;
   autoApprove: boolean;
   autoVisible: boolean;
+  allowSelected: boolean;
   participatingGroups: {
     admissionYear?: number;
     program?: string;

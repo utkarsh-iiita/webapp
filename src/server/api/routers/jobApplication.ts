@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { z } from "zod";
 
 import { adminProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
@@ -51,6 +52,7 @@ export const jobApplication = createTRPCRouter({
           registrationStart: {
             lte: new Date(),
           },
+
           applications: {
             none: {
               student: {
@@ -67,6 +69,7 @@ export const jobApplication = createTRPCRouter({
               name: true,
             },
           },
+          allowSelected: true,
           extraApplicationFields: true,
           noResumes: true,
           placementType: {
@@ -78,6 +81,7 @@ export const jobApplication = createTRPCRouter({
       });
 
       if (
+        !job.allowSelected &&
         userDetails.student.selections.filter(
           (sel) => sel.jobType === job.placementType.id,
         ).length > 0
@@ -173,10 +177,12 @@ export const jobApplication = createTRPCRouter({
               id: true,
             },
           },
+          allowSelected: true,
         },
       });
 
       if (
+        !job.allowSelected &&
         userDetails.student.selections.filter(
           (sel) => sel.jobType === job.placementType.id,
         ).length > 0
@@ -294,6 +300,9 @@ export const jobApplication = createTRPCRouter({
                   where: {
                     year: ctx.session.user.year,
                     jobType: jobPlacementType.placementType.id,
+                    jobOpeningId: {
+                      not: input.jobId,
+                    },
                   },
                 },
               },
@@ -333,6 +342,123 @@ export const jobApplication = createTRPCRouter({
         hasMore,
       };
     }),
+  getJobApplicantsCSV: adminProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      const jobPlacementType = await ctx.db.jobOpening.findUnique({
+        where: {
+          id: input,
+        },
+        select: {
+          title: true,
+          company: {
+            select: {
+              name: true,
+            },
+          },
+          placementType: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      const data = await ctx.db.application.findMany({
+        where: {
+          jobId: input,
+        },
+        include: {
+          student: {
+            include: {
+              user: {
+                select: {
+                  name: true,
+                  username: true,
+                },
+              },
+              selections: {
+                where: {
+                  year: ctx.session.user.year,
+                  jobType: jobPlacementType.placementType.id,
+                  jobOpeningId: {
+                    not: input,
+                  },
+                },
+              },
+            },
+          },
+          latestStatus: {
+            select: {
+              status: true,
+            },
+          },
+          resume: {
+            select: {
+              src: true,
+            },
+          },
+        },
+      });
+
+      const csvHeaders = [
+        "Name",
+        "Enrollment No.",
+        "Status",
+        "Resume",
+        "Program",
+        "CGPA",
+        "Email",
+        "Phone",
+        "Gender",
+        "Tenth Score",
+        "Twelfth Score",
+        "Admission Year",
+        "Submitted At",
+      ];
+
+      const extraCols = [];
+
+      const csvData = data.map((application) => {
+        let rowData = [
+          application.student.user.name,
+          application.student.user.username,
+          application.latestStatus.status,
+          application.resume.src,
+          application.student.program,
+          application.student.cgpa,
+          application.student.email,
+          application.student.phone,
+          application.student.gender,
+          application.student.tenthMarks,
+          application.student.twelvethMarks,
+          application.student.admissionYear,
+          application.createdAt,
+        ];
+        if (
+          application.additionalInfo &&
+          Object.keys(application.additionalInfo).length > 0
+        ) {
+          Object.keys(application.additionalInfo).forEach((key) => {
+            if (!extraCols.includes(key)) {
+              extraCols.push(key);
+            }
+          });
+        }
+        extraCols.forEach((col) => {
+          rowData.push(application.additionalInfo[col] || "");
+        });
+
+        return rowData;
+      });
+
+      const csv = [[...csvHeaders, ...extraCols], ...csvData];
+      const csvString = csv.map((row) => row.join(",")).join("\n");
+      const csvTitle = `${jobPlacementType.company.name}-${
+        jobPlacementType.title
+      }-${dayjs().format("DD_MM_YYYY_HH_mm_ss_a")}.csv`;
+      return { data: csvString, title: csvTitle };
+    }),
+
   upgradeStatus: adminProcedure
     .input(
       z.object({

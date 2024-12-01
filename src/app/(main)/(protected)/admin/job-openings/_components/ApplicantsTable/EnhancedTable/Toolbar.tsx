@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import SwipeLeftAltIcon from "@mui/icons-material/SwipeLeftAlt";
@@ -11,6 +12,7 @@ import {
   alpha,
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -29,6 +31,8 @@ import { api } from "~/trpc/react";
 import { STATUS_ORDER } from "./constants";
 import { type BasicStudentDetails, type DataColumn } from "./types";
 interface EnhancedTableToolbarProps {
+  isDownloadLoading: boolean;
+  handleDownload: () => void;
   selected: BasicStudentDetails[];
   setSelected: (newSelected: BasicStudentDetails[]) => void;
   columns: string[];
@@ -259,6 +263,15 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </>
       ) : (
         <>
+          <Tooltip title="Download all applications">
+            <IconButton onClick={props.handleDownload}>
+              {props.isDownloadLoading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <FileDownloadIcon />
+              )}
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Filter list">
             <IconButton onClick={handleOpenColumnSelect}>
               <FilterListIcon />

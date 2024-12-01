@@ -59,6 +59,21 @@ export default function ApplicantsTable(props: ApplicantsTableProps) {
     sort,
   });
 
+  const downloadCSVMutation =
+    api.jobApplication.getJobApplicantsCSV.useMutation({
+      onSuccess: (data) => {
+        const url = window.URL.createObjectURL(
+          new Blob([data.data], { type: "text/csv" }),
+        );
+        const link = document.createElement("a");
+        link.href = url;
+        link.target = "_blank";
+        link.setAttribute("download", data.title);
+        document.body.appendChild(link);
+        link.click();
+      },
+    });
+
   return (
     <EnhancedTable
       page={page}
@@ -72,6 +87,8 @@ export default function ApplicantsTable(props: ApplicantsTableProps) {
       isLoading={isLoading}
       columns={columns}
       allColumns={allColumns}
+      isDownloadLoading={downloadCSVMutation.isLoading}
+      handleDownload={() => downloadCSVMutation.mutate(props.jobId)}
       setPage={setPage}
       setPageSize={setPageSize}
       setOrderBy={setOrderBy}

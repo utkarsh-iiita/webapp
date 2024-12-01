@@ -14,5 +14,6 @@ export const DEFAULT_JOB_OPENING: NewJobOpening = {
   hidden: false,
   autoApprove: false,
   autoVisible: false,
+  allowSelected: false,
   participatingGroups: [],
 };

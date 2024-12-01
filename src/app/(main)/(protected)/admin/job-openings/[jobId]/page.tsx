@@ -5,6 +5,7 @@ import { api } from "~/trpc/server";
 import ApplicantsTable from "../_components/ApplicantsTable";
 import JobRow from "../_components/jobRow/JobRow";
 import RegDetails from "../_components/RegDetails";
+
 import DeleteJobOpening from "./_components/DeleteJobOpening";
 
 export default async function Page({
@@ -31,11 +32,7 @@ export default async function Page({
               Edit
             </IconButton>
           </Link>
-
         </div>
-
-
-
       </Container>
     </>
   );
