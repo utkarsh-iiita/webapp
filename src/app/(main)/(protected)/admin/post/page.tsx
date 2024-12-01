@@ -15,9 +15,14 @@ import {
 import { api } from "~/trpc/react";
 
 import PostRow from "./_components/PostRow";
+import { useState } from "react";
+import PlacementTypeSelector from "../_components/PlacementTypeSelector";
 
 function Page() {
-  const { data: allPosts, isLoading } = api.post.getLatestPost.useQuery({});
+  const [jobType, setJobType] = useState<string | null>(null);
+  const { data: allPosts, isLoading } = api.post.getLatestPostAdmin.useQuery({
+    jobType
+  });
 
   return (
     <>
@@ -26,11 +31,17 @@ function Page() {
           <Typography variant="h5" color="primary" className="px-4">
             All Posts
           </Typography>
-          <Link href="./post/new">
-            <IconButton>
-              <PostAddIcon />
-            </IconButton>
-          </Link>
+          <div className="flex flex-row items-center gap-4">
+            <PlacementTypeSelector
+              selectedPlacementTypes={jobType}
+              setSelectedPlacementTypes={setJobType}
+            />
+            <Link href="./post/new">
+              <IconButton>
+                <PostAddIcon />
+              </IconButton>
+            </Link>
+          </div>
         </div>
         <Divider />
         {isLoading && (

@@ -247,25 +247,23 @@ export const eventsRouter = createTRPCRouter({
       z.object({
         startDate: z.date(),
         endDate: z.date(),
-        placementTypes: z.array(z.string()).optional(),
+        placementType: z.string().nullable().default(null),
       }),
     )
     .query(async ({ ctx, input }) => {
       const totalEvents = ctx.db.event.count({
         where: {
           year: ctx.session.user.year,
-          ...(input.placementTypes
+          ...(input.placementType
             ? {
-                participatingGroups: {
-                  some: {
-                    participatingGroup: {
-                      placementTypeId: {
-                        in: input.placementTypes,
-                      },
-                    },
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    placementTypeId: input.placementType,
                   },
                 },
-              }
+              },
+            }
             : {}),
         },
       });
@@ -276,18 +274,16 @@ export const eventsRouter = createTRPCRouter({
             gte: input.startDate,
           },
           year: ctx.session.user.year,
-          ...(input.placementTypes
+          ...(input.placementType
             ? {
-                participatingGroups: {
-                  some: {
-                    participatingGroup: {
-                      placementTypeId: {
-                        in: input.placementTypes,
-                      },
-                    },
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    placementTypeId: input.placementType,
                   },
                 },
-              }
+              },
+            }
             : {}),
         },
         select: EventsListDTO,
@@ -304,25 +300,23 @@ export const eventsRouter = createTRPCRouter({
       z.object({
         page: z.number().default(1),
         size: z.number().default(20),
-        placementTypes: z.array(z.string()).optional(),
+        placementType: z.string().nullable().default(null),
       }),
     )
     .query(async ({ ctx, input }) => {
       const totalEvents = ctx.db.event.count({
         where: {
           year: ctx.session.user.year,
-          ...(input.placementTypes
+          ...(input.placementType
             ? {
-                participatingGroups: {
-                  some: {
-                    participatingGroup: {
-                      placementTypeId: {
-                        in: input.placementTypes,
-                      },
-                    },
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    placementTypeId: input.placementType,
                   },
                 },
-              }
+              },
+            }
             : {}),
         },
       });
@@ -330,18 +324,16 @@ export const eventsRouter = createTRPCRouter({
       const eventsQuery = ctx.db.event.findMany({
         where: {
           year: ctx.session.user.year,
-          ...(input.placementTypes
+          ...(input.placementType
             ? {
-                participatingGroups: {
-                  some: {
-                    participatingGroup: {
-                      placementTypeId: {
-                        in: input.placementTypes,
-                      },
-                    },
+              participatingGroups: {
+                some: {
+                  participatingGroup: {
+                    placementTypeId: input.placementType,
                   },
                 },
-              }
+              },
+            }
             : {}),
         },
         select: EventsListDTO,
