@@ -54,10 +54,14 @@ export default function NewPost() {
         (participant) => participant.id,
       ),
       jobType,
-
     });
   };
 
+  const isCreationDisabled = () => {
+    const content = contentRef.current?.getContent();
+    if (!content) return true;
+    return false;
+  }
 
 
   return (
@@ -110,23 +114,34 @@ export default function NewPost() {
                   onSubmit: handleSubmit,
                 }}
               >
-                <DialogTitle>Create new Post?</DialogTitle>
-                <DialogContent>
-                  Do you really want to create this post?
-                </DialogContent>
-                <DialogActions className="p-4">
-                  <Button onClick={() => setOpen(false)} variant="outlined">
-                    Cancel
-                  </Button>
-                  <LoadingButton
-                    type="submit"
-                    color="success"
-                    variant="contained"
-                    loading={createPostMutation.isLoading}
-                  >
-                    Create
-                  </LoadingButton>
-                </DialogActions>
+                {isCreationDisabled() ? <>
+                  <DialogContent>
+                    Please add content to post
+                  </DialogContent>
+                  <DialogActions className="p-4">
+                    <Button onClick={() => setOpen(false)} variant="contained">
+                      Ok
+                    </Button>
+                  </DialogActions>
+                </> : <>
+                  <DialogTitle>Create new Post?</DialogTitle>
+                  <DialogContent>
+                    Do you really want to create this post?
+                  </DialogContent>
+                  <DialogActions className="p-4">
+                    <Button onClick={() => setOpen(false)} variant="outlined">
+                      Cancel
+                    </Button>
+                    <LoadingButton
+                      type="submit"
+                      color="success"
+                      variant="contained"
+                      loading={createPostMutation.isLoading}
+                    >
+                      Create
+                    </LoadingButton>
+                  </DialogActions>
+                </>}
               </Dialog>
             </div>
           </div>
