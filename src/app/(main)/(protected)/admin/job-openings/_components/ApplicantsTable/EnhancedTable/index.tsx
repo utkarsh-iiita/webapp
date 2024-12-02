@@ -98,6 +98,8 @@ export default function EnhancedTable(props: EnhancedTableProps) {
         setColumns={props.setColumns}
         isDownloadLoading={props.isDownloadLoading}
         handleDownload={props.handleDownload}
+        query={props.query}
+        setQuery={props.setQuery}
       />
       {!props.data ? (
         <div className="flex items-center justify-center py-24">

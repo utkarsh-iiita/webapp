@@ -259,6 +259,7 @@ export const jobApplication = createTRPCRouter({
         pageSize: z.number().optional(),
         orderBy: z.string().optional(),
         sort: z.string().optional(),
+        query: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -279,12 +280,52 @@ export const jobApplication = createTRPCRouter({
         ctx.db.application.count({
           where: {
             jobId: input.jobId,
+            ...(input.query
+              ? {
+                student: {
+                  user: {
+                    OR: [
+                      {
+                        name: {
+                          contains: input.query,
+                        },
+                      },
+                      {
+                        username: {
+                          contains: input.query,
+                        },
+                      },
+                    ],
+                  },
+                },
+              }
+              : {}),
             ...filters,
           },
         }),
         ctx.db.application.findMany({
           where: {
             jobId: input.jobId,
+            ...(input.query
+              ? {
+                student: {
+                  user: {
+                    OR: [
+                      {
+                        name: {
+                          contains: input.query,
+                        },
+                      },
+                      {
+                        username: {
+                          contains: input.query,
+                        },
+                      },
+                    ],
+                  },
+                },
+              }
+              : {}),
             ...filters,
           },
           include: {
