@@ -6,6 +6,7 @@ import EventIcon from "@mui/icons-material/Event";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import PeopleIcon from "@mui/icons-material/People";
+import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import WorkIcon from "@mui/icons-material/Work";
 
 export const ADMIN_SIDEBAR = [
@@ -39,8 +40,11 @@ export const ADMIN_SIDEBAR = [
     base: "/admin",
     title: "",
     links: [
-
-
+      {
+        label: "Track Student",
+        path: "/student",
+        icon: PersonSearchIcon,
+      },
       {
         label: "Help Chat",
         path: "/help-chat",
