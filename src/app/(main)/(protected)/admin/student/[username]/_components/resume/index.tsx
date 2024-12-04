@@ -1,10 +1,11 @@
 "use client";
 
 import { Container, Divider, Typography } from "@mui/material";
+
 import ResumeCard from "./_components/ResumeCard";
 
 interface IResumeSection {
-  resumes: { name: string, src: string, id: string, createdAt: Date }[]
+  resumes: { name: string; src: string; id: string; createdAt: Date }[];
 }
 
 export default function ResumeSection({ resumes }: IResumeSection) {
@@ -12,9 +13,8 @@ export default function ResumeSection({ resumes }: IResumeSection) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-row justify-between items-center">
         <Typography variant="h5" color="primary" className="px-2">
-          Resumes
+          Resumes ({resumes.length})
         </Typography>
-
       </div>
       <Divider />
       {resumes.length > 0 ? (

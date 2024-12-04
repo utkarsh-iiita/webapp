@@ -18,7 +18,7 @@ export default function ApplicationsSection(props: IApplicationsSection) {
   return (
     <div className="flex flex-col gap-2">
       <Typography variant="h5" color="primary" className="px-2">
-        Applications
+        Applications ({props.data.length})
       </Typography>
       <Divider />
       {props.data.length > 0 ? (

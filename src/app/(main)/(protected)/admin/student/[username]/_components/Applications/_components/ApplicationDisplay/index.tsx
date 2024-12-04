@@ -44,16 +44,30 @@ export default function ApplicationDisplay(props: IApplicationDisplay) {
               <Typography variant="subtitle2" color="primary" className="m-0">
                 {props.data.jobOpening.company.name}{" "}
               </Typography>
-              <div>
+              <div className="flex flex-row gap-1">
                 <Typography variant="subtitle2" color="gray">
-                  Applied:{" "}
-                  {dayjs(props.data.createdAt).format("DD MMM, YYYY hh:mm A")}
+                  JobType:
+                </Typography>
+                <Typography variant="subtitle2">
+                  {props.data.jobOpening.placementType.name}
                 </Typography>
               </div>
+              <div className="flex flex-row gap-1">
+                <Typography variant="subtitle2" color="gray">
+                  Placement Year:
+                </Typography>
+                <Typography variant="subtitle2">
+                  {props.data.jobOpening.year}
+                </Typography>
+              </div>
+              <Typography variant="subtitle2" color="gray">
+                Applied:{" "}
+                {dayjs(props.data.createdAt).format("DD MMM, YYYY hh:mm A")}
+              </Typography>
             </div>
           </div>
         </div>
-        <Stepper orientation="vertical" className="md:hidden">
+        <Stepper orientation="vertical" className="lg:hidden mx-auto">
           {props.data.statuses.map((step, index) => (
             <Step key={index} active>
               <StepLabel>
@@ -67,7 +81,7 @@ export default function ApplicationDisplay(props: IApplicationDisplay) {
             </Step>
           ))}
         </Stepper>
-        <Stepper className="hidden md:flex mb-2">
+        <Stepper className="hidden lg:flex mb-2">
           {props.data.statuses.map((step, index) => (
             <Step key={index} active>
               <StepLabel>
