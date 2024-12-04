@@ -20,10 +20,12 @@ import { api } from "~/trpc/react";
 
 import CalendarView from "./_views/calendar";
 import ListView from "./_views/list";
+import PlacementTypeSelector from "../_components/PlacementTypeSelector";
 
 export default function EventsPage() {
   const [pageView, setPageView] = useState<"calendar" | "list">("calendar");
   const [view, setView] = useState<"month" | "week">("month");
+  const [placementType, setPlacementType] = useState<string | null>(null);
   const [date, setDate] = useState<[Date, Date]>([
     dayjs()
       .startOf(view)
@@ -41,6 +43,7 @@ export default function EventsPage() {
       {
         startDate: date[0],
         endDate: date[1],
+        placementType
       },
       { enabled: pageView === "calendar" },
     );
@@ -49,6 +52,7 @@ export default function EventsPage() {
     api.events.getPaginatedAdminEvents.useQuery(
       {
         page: page,
+        placementType
       },
       {
         enabled: pageView === "list",
@@ -63,6 +67,10 @@ export default function EventsPage() {
             Events
           </Typography>
           <div className="flex flex-row gap-4">
+            <PlacementTypeSelector
+              selectedPlacementTypes={placementType}
+              setSelectedPlacementTypes={setPlacementType}
+            />
             <ToggleButtonGroup
               value={pageView}
               size="small"
