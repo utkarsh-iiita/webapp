@@ -9,6 +9,7 @@ import { Container, Paper, Typography } from "@mui/material";
 import FullPageLoader from "~/app/common/components/FullPageLoader";
 import { api } from "~/trpc/react";
 
+import ApplicationsSection from "./_components/Applications";
 import DataDisplay from "./_components/DataDisplay";
 import ResumeSection from "./_components/resume";
 import SelectionsDataDisplay from "./_components/Selections";
@@ -66,6 +67,7 @@ export default function TrackStudentPage() {
         </div>
       </Paper>
       <SelectionsDataDisplay data={data.selections} />
+      <ApplicationsSection data={data.applications} />
       <ResumeSection resumes={data.resume} />
     </Container>
   );

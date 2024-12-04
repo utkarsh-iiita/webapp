@@ -184,12 +184,13 @@ export const studentRouter = createTRPCRouter({
               statuses: {
                 select: {
                   status: true,
-                  updatedAt: true,
+                  createdAt: true,
                 },
                 orderBy: {
                   createdAt: "desc",
                 },
               },
+              createdAt: true,
             },
             orderBy: {
               updatedAt: "desc",
