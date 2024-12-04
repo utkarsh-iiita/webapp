@@ -11,6 +11,7 @@ import { api } from "~/trpc/react";
 
 import DataDisplay from "./_components/DataDisplay";
 import ResumeSection from "./_components/resume";
+import SelectionsDataDisplay from "./_components/Selections";
 
 export default function TrackStudentPage() {
   const { username } = useParams();
@@ -35,7 +36,7 @@ export default function TrackStudentPage() {
   }
 
   return (
-    <Container className="py-2 max-w-[inherit]">
+    <Container className="py-2 max-w-[inherit] flex flex-col gap-6">
       <Paper className="p-3 flex flex-col gap-2" elevation={4}>
         <div className="flex flex-row gap-2 items-end">
           <Typography variant="h5">{data.user.name}</Typography>
@@ -64,6 +65,7 @@ export default function TrackStudentPage() {
           <DataDisplay label="Twelveth Marks" value={data.twelvethMarks} />
         </div>
       </Paper>
+      <SelectionsDataDisplay data={data.selections} />
       <ResumeSection resumes={data.resume} />
     </Container>
   );
