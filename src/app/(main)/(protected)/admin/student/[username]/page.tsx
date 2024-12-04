@@ -66,9 +66,9 @@ export default function TrackStudentPage() {
           <DataDisplay label="Twelveth Marks" value={data.twelvethMarks} />
         </div>
       </Paper>
+      <ResumeSection resumes={data.resume} />
       <SelectionsDataDisplay data={data.selections} />
       <ApplicationsSection data={data.applications} />
-      <ResumeSection resumes={data.resume} />
     </Container>
   );
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import dayjs from "dayjs";
 
 import {
@@ -35,9 +36,14 @@ export default function ApplicationDisplay(props: IApplicationDisplay) {
           />
           <div className="flex flex-col flex-1 gap-1">
             <div className="flex flex-row items-center gap-2 flex-wrap">
-              <Typography variant="h6" className="m-0 text-sm md:text-lg">
-                {props.data.jobOpening.title}
-              </Typography>
+              <Link href={"/admin/job-openings/" + props.data.jobOpening.id}>
+                <Typography
+                  variant="h6"
+                  className="m-0 text-sm md:text-lg underline"
+                >
+                  {props.data.jobOpening.title}
+                </Typography>
+              </Link>
               <ApplicationStatusChip status={props.data.latestStatus.status} />
             </div>
             <div className="flex flex-row items-center gap-2 flex-wrap">
