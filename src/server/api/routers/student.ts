@@ -203,6 +203,7 @@ export const studentRouter = createTRPCRouter({
           },
           selections: {
             select: {
+              id: true,
               company: {
                 select: {
                   name: true,
