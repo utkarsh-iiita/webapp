@@ -30,6 +30,7 @@ export default function ApplicantsTable(props: ApplicantsTableProps) {
     "status",
     "createdAt",
   ]);
+  const [query, setQuery] = useState("");
 
   const allColumns = useMemo(() => {
     const cols: DataColumn[] = [...BASE_COLUMNS];
@@ -57,6 +58,7 @@ export default function ApplicantsTable(props: ApplicantsTableProps) {
     pageSize,
     orderBy,
     sort,
+    query
   });
 
   const downloadCSVMutation =
@@ -89,6 +91,8 @@ export default function ApplicantsTable(props: ApplicantsTableProps) {
       allColumns={allColumns}
       isDownloadLoading={downloadCSVMutation.isLoading}
       handleDownload={() => downloadCSVMutation.mutate(props.jobId)}
+      query={query}
+      setQuery={setQuery}
       setPage={setPage}
       setPageSize={setPageSize}
       setOrderBy={setOrderBy}

@@ -31,7 +31,7 @@ export const COLUMNS: DataColumn[] = [
     id: "jobOpening",
     label: "Job Opening",
     minWidth: 100,
-    getData: (row: any) => row.jobOpening.id,
+    getData: (row: any) => row.jobOpening?.id,
     format: (value: any) =>
       value ? (
         <Link href={`/admin/job-openings/${value}`} className="underline">

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
   Checkbox,
+  CircularProgress,
   IconButton,
   ListItemIcon,
   Menu,
@@ -19,6 +20,8 @@ import {
 
 import { type DataColumn } from "./types";
 interface EnhancedTableToolbarProps {
+  isDownloadLoading: boolean;
+  handleDownload: () => void;
   columns: string[];
   allColumns: DataColumn[];
   setColumns: (cols: string[]) => void;
@@ -76,6 +79,15 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       <Tooltip title="Filter list">
         <IconButton onClick={handleOpenColumnSelect}>
           <FilterListIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Download all applications">
+        <IconButton onClick={props.handleDownload}>
+          {props.isDownloadLoading ? (
+            <CircularProgress size={20} color="inherit" />
+          ) : (
+            <FileDownloadIcon />
+          )}
         </IconButton>
       </Tooltip>
       <Menu

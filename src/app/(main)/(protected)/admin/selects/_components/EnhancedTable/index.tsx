@@ -44,12 +44,12 @@ export default function EnhancedTable(props: EnhancedTableProps) {
   return (
     <Paper sx={{ mb: 2 }}>
       <EnhancedTableToolbar
+        handleDownload={props.handleDownload}
         columns={props.columns}
         allColumns={props.allColumns}
         setColumns={props.setColumns}
         query={props.query}
-        setQuery={props.setQuery}
-      />
+        setQuery={props.setQuery} isDownloadLoading={false} />
       {!props.data ? (
         <div className="flex items-center justify-center py-24">
           <CircularProgress />

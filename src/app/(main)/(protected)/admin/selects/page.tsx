@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-
-import { Container, Typography } from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { Button, Container, Typography } from "@mui/material";
 
 import { api } from "~/trpc/react";
 
@@ -13,6 +13,8 @@ import {
   COLUMNS,
   DEFAULT_COLUMNS,
 } from "./_components/EnhancedTable/constants";
+import Link from "next/link";
+
 
 export default function SelectsPage() {
   const [page, setPage] = useState(0);
@@ -34,6 +36,21 @@ export default function SelectsPage() {
     orderBy,
     sort,
   });
+  const downloadCSVMutation =
+    api.selections.getSelectedStudentsCSV.useMutation({
+      onSuccess: (data) => {
+        const url = window.URL.createObjectURL(
+          new Blob([data.data], { type: "text/csv" }),
+        );
+        const link = document.createElement("a");
+        link.href = url;
+        link.target = "_blank";
+        link.setAttribute("download", data.title);
+        document.body.appendChild(link);
+        link.click();
+      },
+    });
+
 
   return (
     <Container
@@ -54,6 +71,15 @@ export default function SelectsPage() {
           selectedPlacementTypes={jobTypes}
           setSelectedPlacementTypes={setJobTypes}
         />
+        <Link href="./selects/new">
+          <Button
+            variant="outlined"
+            color="primary"
+            className="inline-flex p-2 min-w-0"
+          >
+            <AddCircleIcon />
+          </Button>
+        </Link>
       </div>
       <div className="absolute py-4 w-[calc(100%-3em)] top-12 box-border">
         <EnhancedTable
@@ -76,6 +102,8 @@ export default function SelectsPage() {
           sort={sort}
           query={query}
           setQuery={setQuery}
+          isDownloadLoading={downloadCSVMutation.isLoading}
+          handleDownload={() => downloadCSVMutation.mutate({ jobTypes })}
         />
       </div>
     </Container>

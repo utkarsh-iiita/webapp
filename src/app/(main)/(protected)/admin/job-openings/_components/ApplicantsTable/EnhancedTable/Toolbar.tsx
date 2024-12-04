@@ -6,10 +6,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
+import SearchIcon from "@mui/icons-material/Search";
 import SwipeLeftAltIcon from "@mui/icons-material/SwipeLeftAlt";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   alpha,
+  Box,
   Button,
   Checkbox,
   CircularProgress,
@@ -21,6 +23,7 @@ import {
   ListItemIcon,
   Menu,
   MenuItem,
+  TextField,
   Toolbar,
   Tooltip,
   Typography,
@@ -36,6 +39,8 @@ interface EnhancedTableToolbarProps {
   selected: BasicStudentDetails[];
   setSelected: (newSelected: BasicStudentDetails[]) => void;
   columns: string[];
+  query: string;
+  setQuery: (q: string) => void;
   allColumns: DataColumn[];
   setColumns: (cols: string[]) => void;
 }
@@ -263,6 +268,22 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </>
       ) : (
         <>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "flex-end",
+            }}
+          >
+            <SearchIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />
+            <TextField
+              size="small"
+              variant="standard"
+              value={props.query}
+              onChange={(e) => props.setQuery(e.target.value)}
+              placeholder="Search student"
+              className="min-w-48"
+            />
+          </Box>
           <Tooltip title="Download all applications">
             <IconButton onClick={props.handleDownload}>
               {props.isDownloadLoading ? (
