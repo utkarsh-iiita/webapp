@@ -14,11 +14,9 @@ import {
   DEFAULT_COLUMNS,
 } from "./_components/EnhancedTable/constants";
 import Link from "next/link";
-interface ApplicantsTableProps {
 
-  extraApplicationFields: any;
-}
-export default function SelectsPage(props: ApplicantsTableProps) {
+
+export default function SelectsPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [orderBy, setOrderBy] = useState("createdAt");
