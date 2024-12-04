@@ -29,6 +29,8 @@ interface EnhancedTableProps {
   columns: string[];
   allColumns: DataColumn[];
   query: string;
+  isDownloadLoading: boolean;
+  handleDownload: () => void;
   setPage: (newPage: number) => void;
   setPageSize: (newPageSize: number) => void;
   setOrderBy: (newOrderBy: string) => void;
