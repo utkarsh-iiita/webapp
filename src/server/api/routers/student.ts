@@ -203,7 +203,12 @@ export const studentRouter = createTRPCRouter({
                   logo: true,
                 },
               },
-              jobType: true,
+              placementType: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               role: true,
               year: true,
               author: {
