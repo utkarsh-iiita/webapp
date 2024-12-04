@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "~/server/api/trpc";
 import { getStudentAviralData } from "~/server/utils/aviral";
 
 export const studentRouter = createTRPCRouter({
@@ -71,5 +75,150 @@ export const studentRouter = createTRPCRouter({
       });
 
       return "Ok";
+    }),
+  searchStudent: adminProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const students = await ctx.db.students.findMany({
+        where: {
+          user: {
+            OR: [
+              {
+                name: {
+                  contains: input,
+                },
+              },
+              {
+                username: {
+                  contains: input,
+                },
+              },
+            ],
+          },
+        },
+        select: {
+          user: {
+            select: {
+              name: true,
+              username: true,
+            },
+          },
+          program: true,
+        },
+        take: 5,
+        skip: 0,
+      });
+
+      return students;
+    }),
+  getStudentDetails: adminProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const user = await ctx.db.user.findUnique({
+        where: {
+          username: input,
+        },
+        select: { id: true },
+      });
+
+      const student = await ctx.db.students.findUnique({
+        where: {
+          userId: user.id,
+        },
+        select: {
+          admissionYear: true,
+          cgpa: true,
+          currentSemester: true,
+          totalCredits: true,
+          completedCredits: true,
+          tenthMarks: true,
+          twelvethMarks: true,
+          addressLine1: true,
+          addressLine2: true,
+          city: true,
+          state: true,
+          country: true,
+          pincode: true,
+          dob: true,
+          gender: true,
+          program: true,
+          email: true,
+          phone: true,
+          user: {
+            select: {
+              name: true,
+              username: true,
+            },
+          },
+          resume: {
+            select: {
+              id: true,
+              name: true,
+              src: true,
+              updatedAt: true,
+            },
+          },
+          applications: {
+            select: {
+              id: true,
+              jobOpening: {
+                select: {
+                  id: true,
+                  title: true,
+                  jobType: true,
+                  company: {
+                    select: {
+                      name: true,
+                      logo: true,
+                    },
+                  },
+                  year: true,
+                },
+              },
+              latestStatus: {
+                select: {
+                  status: true,
+                  updatedAt: true,
+                },
+              },
+              statuses: {
+                select: {
+                  status: true,
+                  updatedAt: true,
+                },
+                orderBy: {
+                  createdAt: "desc",
+                },
+              },
+            },
+            orderBy: {
+              updatedAt: "desc",
+            },
+          },
+          selections: {
+            select: {
+              company: {
+                select: {
+                  name: true,
+                  logo: true,
+                },
+              },
+              jobType: true,
+              role: true,
+              year: true,
+              author: {
+                select: {
+                  name: true,
+                  username: true,
+                },
+              },
+              isOnCampus: true,
+              selectedAt: true,
+            },
+          },
+        },
+      });
+
+      return student;
     }),
 });
