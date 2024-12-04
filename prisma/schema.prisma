@@ -159,6 +159,8 @@ model PlacementType {
     ParticipatingGroups ParticipatingGroups[]
     JobOpening          JobOpening[]
     SelectedStudents    SelectedStudents[]
+
+    Post Post[]
 }
 
 model Company {
@@ -371,13 +373,16 @@ model Post {
     authorId  String
     content   String   @db.Text
     year      Int
+    jobType   String?
 
     author                 User                         @relation(fields: [authorId], references: [id])
     comments               PostComment[]
     participatingGroups    PostParticipantGroups[]
     individualParticipants PostIndividualParticipants[]
+    placementType          PlacementType?               @relation(fields: [jobType], references: [id])
 
     @@index([authorId])
+    @@index([jobType])
 }
 
 model PostParticipantGroups {

@@ -16,11 +16,13 @@ import {
   Typography,
 } from "@mui/material";
 
+
 import FullPageLoader from "~/app/common/components/FullPageLoader";
 import TextEditor from "~/app/common/components/TextEditor";
 import { api } from "~/trpc/react";
 import IndividualParticipantsSelector from "../../IndividualParticipantSelector";
 import { type UserMicro } from "../../IndividualParticipantSelector/types";
+import PlacementTypeSelector from "../../../_components/PlacementTypeSelector";
 export default function NewPost({ params }: { params: { id: string } }) {
   const { data, isLoading } = api.post.getPost.useQuery(params.id);
 
@@ -31,6 +33,7 @@ export default function NewPost({ params }: { params: { id: string } }) {
   const [individualParticipants, setIndividualParticipants] = useState<
     UserMicro[]
   >([]);
+  const [jobType, setJobType] = useState<string | null>(null);
   const contentRef = useRef<any>();
   const handleClose = () => {
     setOpen(false);
@@ -53,6 +56,7 @@ export default function NewPost({ params }: { params: { id: string } }) {
       individualParticipants: individualParticipants.map(
         (participant) => participant.id,
       ),
+      jobType,
     });
   };
 
@@ -91,6 +95,10 @@ export default function NewPost({ params }: { params: { id: string } }) {
             <IndividualParticipantsSelector
               individualParticipants={individualParticipants}
               setIndividualParticipants={setIndividualParticipants}
+            />
+            <PlacementTypeSelector
+              selectedPlacementTypes={jobType}
+              setSelectedPlacementTypes={setJobType}
             />
 
             <div>
