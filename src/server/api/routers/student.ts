@@ -155,7 +155,7 @@ export const studentRouter = createTRPCRouter({
               id: true,
               name: true,
               src: true,
-              updatedAt: true,
+              createdAt: true,
             },
           },
           applications: {

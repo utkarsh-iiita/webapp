@@ -10,6 +10,7 @@ import FullPageLoader from "~/app/common/components/FullPageLoader";
 import { api } from "~/trpc/react";
 
 import DataDisplay from "./_components/DataDisplay";
+import ResumeSection from "./_components/resume";
 
 export default function TrackStudentPage() {
   const { username } = useParams();
@@ -63,6 +64,7 @@ export default function TrackStudentPage() {
           <DataDisplay label="Twelveth Marks" value={data.twelvethMarks} />
         </div>
       </Paper>
+      <ResumeSection resumes={data.resume} />
     </Container>
   );
 }
