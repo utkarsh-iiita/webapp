@@ -32,13 +32,13 @@ The project has dockerized development environment. So, you don't have to worry 
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/BuddyLongLegs/utkarsh
+    git clone https://github.com/utkarsh-iiita/webapp.git
     ```
 
 2. Navigate to the project directory:
 
     ```bash
-    cd utkarsh
+    cd webapp
     ```
 3. Create a blank file named `.env.local`, optionally you can add custom environment variables that bypass the ones defined in `docker-compose.yml`.
 
@@ -108,13 +108,13 @@ When deploying with docker, the database, cache, nginx, and daily-backup is auto
 #### Instructions:
 1. Clone the repository:
     ```bash
-    git clone https://github.com/BuddyLongLegs/utkarsh
+    git clone https://github.com/utkarsh-iiita/webapp.git
     ```
 
 2. Navigate to the project directory:
 
     ```bash
-    cd utkarsh
+    cd webapp
     ```
 
 3. Edit the `docker-compose.prod.yml` file, and make the following changes:
